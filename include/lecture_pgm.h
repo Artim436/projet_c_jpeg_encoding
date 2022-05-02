@@ -14,7 +14,7 @@ struct image_pgm {
     char type_pgm[3];
 };
 
-extern bool process_file(struct image_pgm *pgm, const char *file_name);
+extern void process_file(struct image_pgm *pgm, const char *file_name);
 extern void affiche_details_image(struct image_pgm *pgm, const char * file_name);
 
 
