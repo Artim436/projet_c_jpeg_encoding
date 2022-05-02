@@ -17,3 +17,10 @@ Rajouter **régulièrement** des informations sur l'avancement de votre projet e
 - Problème relationnel au sein du groupe ? Contactez [Pascal](https://fr.wikipedia.org/wiki/Pascal,_le_grand_fr%C3%A8re) !
 - Besoin de prendre l'air ? Le [Mont Rachais](https://fr.wikipedia.org/wiki/Mont_Rachais) est accessible à pieds depuis la salle E301 !
 - Un peu juste sur le projet à quelques heures de la deadline ? Le [Montrachet](https://www.vinatis.com/achat-vin-puligny-montrachet) peut faire passer l'envie à vos profs de vous mettre une tôle !
+
+#### Journal de bord
+##### Lundi 2 mai :
+Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'imager invader :
+Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l'image JPEG et transformer les données RGB en YCbCr.
+Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux.
+Lebeurrier se charge du DCT, Zigzag et quantification.
