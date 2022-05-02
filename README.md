@@ -21,6 +21,10 @@ Rajouter **régulièrement** des informations sur l'avancement de votre projet e
 #### Journal de bord
 ##### Lundi 2 mai :
 Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'imager invader :
+
 Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l'image JPEG et transformer les données RGB en YCbCr.
-Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux.
-Lebeurrier se charge du DCT, Zigzag et quantification.
+
+Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux. 
+
+Lebeurrier se charge du DCT, Zigzag et quantification. 
+
