@@ -26,8 +26,7 @@ void process_file(struct image_pgm *pgm, const char *file_name) {
         for (uint32_t i=0; i<pgm->height; i++) {
             pgm->data[i] = calloc(pgm->width, sizeof(char));
             //Ecrit les données sur la mémoire allouée
-            fread(pgm->data[i], sizeof(char), pgm->width, file);
-            printf("%lu \n", sizeof(char));
+            fread(pgm->data[i], sizeof(uint8_t), pgm->width, file);
         }
     }
     //Ferme le fichier
@@ -41,7 +40,7 @@ void affiche_details_image(struct image_pgm *pgm, const char * file_name) {
     printf("Max_valeur : %d pixels \n", pgm->max_value);
     for (uint32_t i=0; i<pgm->height; i++) {
         for (uint32_t j =0; j<pgm->width; j++) {
-            printf("%c ", pgm->data[i][j]);
+            printf("%d ", pgm->data[i][j]);
         }
         printf("\n");
     }
