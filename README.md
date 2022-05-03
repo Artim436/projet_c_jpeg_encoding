@@ -27,4 +27,12 @@ Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l
 Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux. 
 
 Lebeurrier se charge du DCT, Zigzag et quantification. 
+##### A l'aubre du mardi 3 mai:
+Extraction donnée ppm et passage en argument fait.
+Découpage MCU fait.
+DCT et quantification fait.
+On va tester les liens entre mcu et extraction
+##### Questions pour les profs :
+Comment faire un makefile pour les tests
+Question sur les headers
 
