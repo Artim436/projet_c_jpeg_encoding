@@ -14,9 +14,7 @@ struct image_mcu *decoupe_mcu_8x8(struct image_pgm *image_pgm){
 
     l_mcu[i] correspondra au i+1 ème MCU (lu de gauche à droite de haut en bas.
     l_mcu[i][j] correspondra au j+1 ème pixel (avec  0<= j<= 63) lu de gauche à droite et de haut en bas du MCU i*/
-
     struct image_mcu *p_mcu = creation_mcu_8x8(image_pgm->type_pgm, image_pgm->width, image_pgm->height, image_pgm->max_value);//Commence par créer une table de MCU vierge.
-
     //Puis définit la de liste de mcu
     //On boucle directement sur la matrice ppm (de gauche à droite et de haut en bas)
 
@@ -31,6 +29,7 @@ struct image_mcu *decoupe_mcu_8x8(struct image_pgm *image_pgm){
             j += 8 * pos_x % 8; 
 
             //Puis on le rajoute à la matrice correspondante
+            printf("Erreur l32\n");
             p_mcu->l_mcu[i][j] = image_pgm->data[pos_x][pos_y];
         }
         //Traite le cas du débordement sur y
@@ -48,6 +47,7 @@ struct image_mcu *decoupe_mcu_8x8(struct image_pgm *image_pgm){
             p_mcu->l_mcu[i][j] = last_pix;
         }
     }
+    printf("Le reste a marché\n");
     for (uint8_t debord_x = 1; debord_x <= p_mcu->dev_height; debord_x ++){
         for(uint32_t pos_y = 0; pos_y < image_pgm->width; pos_y++){
             uint8_t last_pix = image_pgm->data[image_pgm->height-1][pos_y];
