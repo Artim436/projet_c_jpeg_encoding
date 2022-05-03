@@ -4,10 +4,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <qtables.h>
 #include <dct.h>
-#include <hatbles.h>
-
 
 typedef float matrix[8][8];
 
