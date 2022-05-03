@@ -13,7 +13,7 @@ extern float C_function(int i);
 
 extern float dct(matrix S);
 
-extern float quantization(matrix D, matrix Q, int i, int j)
+extern float quantization(matrix D, matrix Q, int i, int j);
 
 
 #endif /* _DCT_H_ */
