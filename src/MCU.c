@@ -65,7 +65,6 @@ struct image_mcu *decoupe_mcu_8x8(struct image_pgm *image_pgm){
         //Traite le cas du débordement sur y
         uint8_t last_pix = image_pgm->data[image_pgm->height - 1][image_pgm->width - 1];
         for(uint8_t debord_y = 1; debord_y <= p_mcu->dev_width; debord_y ++){
-            printf("l71");
             //On commence par calculer l'appartenance du pixel au MCU correspondant en fonction de la position
             uint32_t i = (image_pgm->width - 1) / 8;
             i = i + (image_pgm->width / 8 ) * ((image_pgm->height-1)/ 8);
@@ -111,7 +110,7 @@ struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint32_t he
 void affiche_img_mcu(struct image_mcu *p_gmu){
     /*Affiche les éléments de chaques MCU*/
     for(uint32_t j = 0; j<p_gmu->nmcu; j++){
-        printf("----- MCU numéro %u ----- \n ", j+1);
+        printf("----- MCU numéro %u ----- \n", j+1);
         for(uint8_t i = 0; i<64; i++){
             printf("%u ", p_gmu->l_mcu[j][i]);
             if(i % 8 == 7){
