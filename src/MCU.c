@@ -4,6 +4,8 @@
 #include <lecture_pgm.h>
 # include <MCU.h>
 
+/*Amélioration : modifier j en uint8_t*/
+
 struct image_mcu *decoupe_mcu_8x8(struct image_pgm *image_pgm){
     /*Cette fonction prend en entrée une image pgm "écrite" en décimal et la renvoie avec un découpage en MCU.
 
