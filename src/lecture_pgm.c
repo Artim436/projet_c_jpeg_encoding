@@ -36,12 +36,12 @@ void affiche_details_image(struct image_pgm *pgm, const char * file_name) {
     printf("Largeur : %d pixels \n", pgm->width);
     printf("Hauteur : %d pixels \n", pgm->height);
     printf("Max_valeur : %d pixels \n", pgm->max_value);
-    for (uint32_t i=0; i<pgm->height; i++) {
-        for (uint32_t j =0; j<pgm->width; j++) {
-            printf("%d ", pgm->data[i][j]);
-        }
-        printf("\n");
-    }
+    // for (uint32_t i=0; i<pgm->height; i++) {
+    //     for (uint32_t j =0; j<pgm->width; j++) {
+    //         printf("%d ", pgm->data[i][j]);
+    //     }
+    //     printf("\n");
+    // }
     fclose(file);
 }
 // int main (int argc, char **argv) {
