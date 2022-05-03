@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <lecture_pgm.h>
 #include <MCU.h>
+#include <convert_to_YCbCr.h>
+
 
 
 int main (int argc, char **argv) {
@@ -14,6 +16,8 @@ int main (int argc, char **argv) {
         affiche_details_image(pgm, file_name);
         struct image_mcu *img_mcu = decoupe_mcu_8x8(pgm);
         affiche_img_mcu(img_mcu);
+        struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
+        afficher_YCbCr(p_ycbcr);
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
     }
