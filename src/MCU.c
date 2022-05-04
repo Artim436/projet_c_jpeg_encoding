@@ -65,51 +65,51 @@ void decoupe_mcu_8x8(struct main_mcu *p_main){
 
             //Puis on calcule sa position dans le MCU
             uint8_t pos_init_x = pos_x % 8 - 1;
-            uint8_t pos_init_y = (p_main->width-1)%8;
+            uint8_t pos_init_y = (p_main->width-1)%8 + debord;
             //Puis on le rajoute à la matrice correspondante
-            p_main->bloc[i]->[pos_init_x][pos_init_y];
+            p_main->bloc[i]->[pos_init_x][pos_init_y] = last_pix ;
         }
     }
-    for (uint8_t debord_x = 1; debord_x <= p_mcu->dev_height; debord_x ++){
-        for(uint32_t pos_y = 0; pos_y < image_pgm->width; pos_y++){
-            uint8_t last_pix = image_pgm->data[image_pgm->height-1][pos_y];
+    for (uint8_t debord_x = 1; debord_x <= dev_height; debord_x ++){
+        for(uint32_t pos_y = 0; pos_y < p_main->width; pos_y++){
+            uint8_t last_pix = p_main->data[p_main->height-1][pos_y];
 
             //On commence par calculer l'appartenance du pixel au MCU correspondant en fonction de la position
             uint32_t i = pos_y / 8;
-            i = i + (image_pgm->width / 8 ) * ((image_pgm->height-1) / 8);
+            i = i + (p_main->width / 8 ) * ((p_main->height-1) / 8);
 
             //Puis on calcule sa position dans le MCU
-            uint32_t j = pos_y % 8;
-            j += 8 * (image_pgm->height - 1 + debord_x) % 8; 
+            uint8_t pos_init_x = (p_main->height-1)%8 + debord_x;
+            uint8_t pos_init_y = pos_y % 8 - 1;
 
             //Puis on le rajoute à la matrice correspondante
-            p_mcu->l_mcu[i][j] = last_pix;
+            p_main->bloc[i]->[pos_init_x][pos_init_y] = last_pix;
         }
         //Traite le cas du débordement sur y
-        uint8_t last_pix = image_pgm->data[image_pgm->height - 1][image_pgm->width - 1];
-        for(uint8_t debord_y = 1; debord_y <= p_mcu->dev_width; debord_y ++){
+        uint8_t last_pix = p_main->data[p_main->height - 1][p_main->width - 1];
+        for(uint8_t debord_y = 1; debord_y <= dev_width; debord_y ++){
             //On commence par calculer l'appartenance du pixel au MCU correspondant en fonction de la position
-            uint32_t i = (image_pgm->width - 1) / 8;
-            i = i + (image_pgm->width / 8 ) * ((image_pgm->height-1)/ 8);
+            uint32_t i = (p_main->width - 1) / 8;
+            i = i + (p_main->width / 8 ) * ((p_main->height-1)/ 8);
 
             //Puis on calcule sa position dans le MCU
-            uint32_t j = (image_pgm->width - 1 + debord_y) % 8;
-            j += 8 * (image_pgm->height - 1 + debord_x) % 8; 
+            uint8_t pos_init_x = (p_main->height-1)%8 + debord_x;
+            uint8_t pos_init_y = (p_main->width-1)%8 + debord;
 
             //Puis on le rajoute à la matrice correspondante
-            p_mcu->l_mcu[i][j] = last_pix;
+            p_main->bloc[i]->[pos_init_x][pos_init_y] = last_pix;
         }
     }
-    return p_mcu;
 }
 
-void affiche_img_mcu(struct image_mcu *p_gmu){
+void affiche_img_mcu(struct main_mcu *p_main){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 0; j<p_gmu->nmcu; j++){
+    for(uint32_t j = 0; j<p_main->nmcu; j++){
         printf("----- MCU numéro %u RGB----- \n", j+1);
-        for(uint8_t i = 0; i<64; i++){
-            printf("%u ", p_gmu->l_mcu[j][i]);
-            if(i % 8 == 7){
+        for(uint8_t i = 0; i<8; i++){
+                for(uint i_y = 0; i<8; i++){
+                    printf("%u ", p_gmu->bloc[j]->[i][i_y]);
+                }
                 printf("\n");
             }
         }
