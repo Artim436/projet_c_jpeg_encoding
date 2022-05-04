@@ -6,11 +6,9 @@
 #include <stdbool.h>
 #include <structure.h>
 
-struct image_pgm;
+extern void process_file(const char *file_name, struct main_mcu *mcu);
 
-extern void process_file(struct image_pgm *pgm, const char *file_name);
-
-extern void affiche_details_image(struct image_pgm *pgm, const char * file_name);
+extern void affiche_details_image(struct main_mcu *mcu, const char * file_name);
 
 
 #endif

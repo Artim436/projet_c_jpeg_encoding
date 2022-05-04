@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <lecture_pgm.h>
 # include <MCU.h>
 #include <structure.h>
 

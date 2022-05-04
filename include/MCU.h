@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include <lecture_pgm.h>
 #include <structure.h>
 
 extern void decoupe_mcu_8x8(struct main_mcu *p_main);
