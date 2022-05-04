@@ -11,10 +11,10 @@
 
 
 // Structure de donnée main
-struct main_mcu ;
+
 struct main_mcu {
     uint8_t** data; // On stock les données de l'image
-    uint8_t *bloc; //Liste contenants les pointeurs vers les blocs
+    char *bloc; //Liste contenants les pointeurs vers les blocs
     uint32_t n_mcu;//taille de la liste bloc
     uint32_t width; // Largeur de l'image d'entrée
     uint32_t height; // Hauteur de l'image d'entrée
@@ -30,20 +30,18 @@ struct main_mcu {
     uint8_t *qtable;
 };
 //Structure d'un bloc mcu 8x8
-struct bloc_8x8;
 struct bloc_8x8 {
     uint8_t matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
 };
-struct bloc_8x8_dtc;
+
 struct bloc_8x8_dtc {
     float matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
 };
 //Structure d'un vecteur bloc 64
-struct bloc_64;
 struct bloc_64 {
     uint8_t vector[64];
 };
-struct bloc_64_dtc;
+
 struct bloc_64_dtc {
     float vector[64];
 };
