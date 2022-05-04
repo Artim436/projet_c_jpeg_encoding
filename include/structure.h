@@ -10,18 +10,20 @@
 
 
 //Structure des données récupérées du fichier binaire
-// struct image_pgm ;
-// struct image_pgm {
-//     uint8_t** data; 
-//     uint32_t width;
-//     uint32_t height;
-//     uint32_t max_value;
-//     char type_pgm[3];
-// };
+struct image_pgm ;
+struct image_pgm {
+    uint8_t** data; 
+    uint32_t width;
+    uint32_t height;
+    uint32_t max_value;
+    char type_pgm[3];
+};
+
 // Structure de donnée main
 struct main_mcu ;
 struct main_mcu {
-    uint8_t *bloc; //Liste contenants les pointeurs vers les blocs
+    float *bloc; //Liste contenants les pointeurs vers les blocs
+    uint32_t n_mcu;//taille de la liste bloc
     uint32_t width; // Largeur de l'image d'entrée
     uint32_t height; // Hauteur de l'image d'entrée
     uint32_t max_value; // Valeur maximal des nuances RGB
