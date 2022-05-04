@@ -32,6 +32,13 @@ Extraction donnée ppm et passage en argument fait.
 Découpage MCU fait.
 DCT et quantification fait.
 On va tester les liens entre mcu et extraction
+
+#### Mardi 3 mai:
+La conversion RGB to YCbCr faite et adaptée pour les images en couleurs.
+L'écriture en jpeg est également faite
+Le "zig-zag" est terminé.
+Demain on écrit les tables de Huffman, l'objectif est de terminé invader demain.
+
 ##### Questions pour les profs :
 Comment faire un makefile pour les tests
 Question sur les headers
