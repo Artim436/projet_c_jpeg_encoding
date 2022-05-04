@@ -50,11 +50,11 @@ void decoupe_mcu_8x8(struct main_mcu *p_main){
             i = i + (p_main->width / 8 ) * (pos_x / 8);
 
             //Puis on calcule sa position dans le MCU
-            uint32_t pos_init_x = pos_x % 8 - 1;
-            uint32_t pos_init_y = pos_y % 8 - 1;
+            uint8_t pos_init_x = pos_x % 8 - 1;
+            uint8_t pos_init_y = pos_y % 8 - 1;
 
             //Puis on le rajoute à la matrice correspondante
-            p_main->bloc[i][pos_init_x][pos_init_y] = p_main->data[pos_x][pos_y];
+            p_main->bloc[i]->[pos_init_x][pos_init_y] = p_main->data[pos_x][pos_y];
         }
         //Traite le cas du débordement sur y
         uint8_t last_pix = p_main->data[pos_x][p_main->width - 1];
@@ -64,13 +64,10 @@ void decoupe_mcu_8x8(struct main_mcu *p_main){
             i = i + (p_main->width / 8 ) * (pos_x / 8);
 
             //Puis on calcule sa position dans le MCU
-            uint32_t j = (p_main->width - 1 + debord) % 8;
-            j += 8 * pos_x % 8; 
-
-            uint32_t pos_init_x = pos_x % 8 - 1;
-            uint32_t pos_init_y = pos_y % 8 - 1;
+            uint8_t pos_init_x = pos_x % 8 - 1;
+            uint8_t pos_init_y = (p_main->width-1)%8;
             //Puis on le rajoute à la matrice correspondante
-            p_main->bloc[i]
+            p_main->bloc[i]->[pos_init_x][pos_init_y];
         }
     }
     for (uint8_t debord_x = 1; debord_x <= p_mcu->dev_height; debord_x ++){

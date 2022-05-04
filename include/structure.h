@@ -32,7 +32,7 @@ struct main_mcu {
 //Structure d'un bloc mcu 8x8
 struct bloc_8x8;
 struct bloc_8x8 {
-    uint8_t matrix_bloc_quant[8][8]; //mettre peut etre des floats pour les operations dct
+    uint8_t matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
 };
 //Structure d'un vecteur bloc 64
 struct bloc_64;
