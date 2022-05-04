@@ -8,7 +8,7 @@
 #include <jpeg_writer.h>
 #include <write_jpeg_file.h> 
 #include <bitstream.h>
-#include <strucure.h>
+#include <structure.h>
 
 void write(const char *ppm_filename,
            uint32_t image_height,
