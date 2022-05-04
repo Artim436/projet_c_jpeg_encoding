@@ -10,14 +10,14 @@
 
 
 //Structure des données récupérées du fichier binaire
-struct image_pgm ;
-struct image_pgm {
-    uint8_t** data; 
-    uint32_t width;
-    uint32_t height;
-    uint32_t max_value;
-    char type_pgm[3];
-};
+// struct image_pgm ;
+// struct image_pgm {
+//     uint8_t** data; 
+//     uint32_t width;
+//     uint32_t height;
+//     uint32_t max_value;
+//     char type_pgm[3];
+// };
 // Structure de donnée main
 struct main_mcu ;
 struct main_mcu {
@@ -29,7 +29,7 @@ struct main_mcu {
     const char *ppm_filename; // nom du fichier d'entrée
     const char *jpeg_filename; // Nom du fichier de sortie
     uint8_t sampling_factor; // Facteur d'échantillonage
-    enum color_component cc, 
+    enum color_component cc; 
     enum direction dir;
     enum sample_type acdc;
     struct huff_table *htable;
@@ -38,12 +38,12 @@ struct main_mcu {
 //Structure d'un bloc mcu 8x8
 struct bloc_8x8;
 struct bloc_8x8 {
-    uint8_t matrix_bloc[8][8];
-}
+    float matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
+};
 //Structure d'un vecteur bloc 64
 struct bloc_64;
 struct bloc_64 {
-    uint8_t vector[64];
-}
+    float vector[64];
+};
 
 #endif

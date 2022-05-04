@@ -5,9 +5,9 @@
 #include <math.h>
 #include <qtables.h>
 
-typedef float matrix[8][8];
+typedef struct bloc_8x8 bloc8x8;
 
-typedef float vector[64];
+typedef struct bloc_64 bloc_64;
 
 
 extern float coef_dct(matrix S, int i, int j, int n);

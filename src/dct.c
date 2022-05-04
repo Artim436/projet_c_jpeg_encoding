@@ -6,13 +6,15 @@
 #include <stdlib.h>
 #include <dct.h>
 #include <qtables.h>
+#include <structure.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
 
-typedef float matrix[8][8];
+typedef struct bloc_8x8 bloc_8x8;
 
-typedef float vector[64];
+typedef struct bloc_64 bloc_64;
+
 
 float C_function(int i){  // middle function for DCT
     if (i == 0){
@@ -23,11 +25,12 @@ float C_function(int i){  // middle function for DCT
     }
 }
 
-float coef_dct(matrix S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
+float coef_dct(bloc_8x8 *S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
     float pi = 3.14159265358979323;
     float phi = 0.0;
     for (int x=0; x<n; x++){
         for (int y=0; y<n; y++){
+            S[x][y] -= 128; 
             phi = phi + S[x][y]*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
     }
@@ -39,9 +42,9 @@ float coef_dct(matrix S, int i, int j, int n){ // coefficient of DCT matrix (ne 
 
 
 
-int dct(matrix S){ // DCT matrix
+int dct(bloc_8x8 *S){ // DCT matrix
     int n=8;
-    matrix I;
+    struct bloc_8x8 *I;
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
             I[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
@@ -78,12 +81,12 @@ int dct(matrix S){ // DCT matrix
 // }
 
 
-int coef_quantization(vector D, int i){ // quantization vector
+int coef_quantization(bloc_64 *D, int i){ // quantization vector
     D[i] = D[i]/quantification_table_Y[i]; //D = D/Y
-    return (int)D[i];  //better than floor for numbers between -1 and 0
+    return (int)D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
 }
 
-int quantization(vector D){ // quantization vector
+int quantization(bloc_64 *D){ // quantization vector
     for (int i =0; i<64; i++){
         D[i] = coef_quantization(D, i);
     }
@@ -91,7 +94,7 @@ int quantization(vector D){ // quantization vector
     }
 
 
-int zigzag(matrix D, vector F){ // zigzag matrix
+int zigzag(bloc_8x8 *D, bloc_64 *F){ // zigzag matrix
     int cpt = 0;
     int len = 8;
     for (int k = 0; k<2*len-1; k++){
@@ -112,13 +115,25 @@ int zigzag(matrix D, vector F){ // zigzag matrix
 }
 
 int main(){
-    vector F;
-    matrix tab = {
-        {139,144,149,153,155,155,155,155},
+    struct bloc_8x8 tab;
+    tab.matrix_bloc[8][8] = {{139,144,149,153,155,155,155,155},
                   {144,151,153,156,159,156,156,156},
                   {150,155,160,163,158,156,156,156},
                   {159,161,162,160,160,159,159,159},
-                  {159,160,161,162,162,155,155,155},
+                  {int main (int argc, char **argv) {
+//     if (argc == 2) {
+//         struct image_pgm *pgm = malloc(sizeof(struct image_pgm));
+//         char *file_name = argv[1];
+//         process_file(pgm, file_name);
+//         affiche_details_image(pgm, file_name);
+//         struct image_mcu *img_mcu = decoupe_mcu_8x8(pgm);
+//         affiche_img_mcu(img_mcu);
+//         struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
+//         afficher_YCbCr(p_ycbcr);
+//     } else {
+//         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
+//     }
+// }159,160,161,162,162,155,155,155},
                   {161,161,161,161,160,157,157,157},
                   {162,162,161,163,162,157,157,157},
                   {162,162,161,161,163,158,158,158}
@@ -158,23 +173,23 @@ int main(){
         }
         printf("\n");
     }
-    printf("\n");
-    zigzag(tab, F);
-    printf("-----------zigzag dct matrix-----------\n");
-    for (int i=0; i<64; i++){
-        printf("%i ", (int)F[i]);
-    }
-    printf("\n");
-    quantization(F);
-    printf("-----------quantization table-----------\n");
-    for (int i=0; i<64; i++){
-        printf("%i ", (int)quantification_table_Y[i]);
-    }
-    printf("\n");
-    printf("-----------zigzag quantization matrix-----------\n");
-    for (int i=0; i<64; i++){
-        printf("%i ", (int)F[i]);
-    }
-    return 0;
-}
+//     printf("\n");
+//     zigzag(tab, F);
+//     printf("-----------zigzag dct matrix-----------\n");
+//     for (int i=0; i<64; i++){
+//         printf("%i ", (int)F[i]);
+//     }
+//     printf("\n");
+//     quantization(F);
+//     printf("-----------quantization table-----------\n");
+//     for (int i=0; i<64; i++){
+//         printf("%i ", (int)quantification_table_Y[i]);
+//     }
+//     printf("\n");
+//     printf("-----------zigzag quantization matrix-----------\n");
+//     for (int i=0; i<64; i++){
+//         printf("%i ", (int)F[i]);
+//     }
+//     return 0;
+// }
 
