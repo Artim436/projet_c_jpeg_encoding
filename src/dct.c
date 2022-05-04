@@ -25,9 +25,8 @@ float coef_dct(bloc_8x8 *S, int i, int j, int n){ // coefficient of DCT matrix (
     float pi = 3.14159265358979323;
     float phi = 0.0;
     for (int x=0; x<n; x++){
-        for (int y=0; y<n; y++){
-            S->matrix_bloc[x][y] -= 128; 
-            phi = phi + S->matrix_bloc[x][y]*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
+        for (int y=0; y<n; y++){ 
+            float phi = phi + (float)S->matrix_bloc[x][y]*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
     }
     phi*=0.25;
@@ -43,7 +42,10 @@ int dct(bloc_8x8 *S){ // DCT matrix
     struct bloc_8x8 *I;
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
-            I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
+            float S->matrix_bloc[x][y] -= 128;;
+    for (int i=0; i<n; i++){
+        for (int j=0; j<n; j++){
+            float I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
         }
     }
     for (int i=0; i<n; i++){
