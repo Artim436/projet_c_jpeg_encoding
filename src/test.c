@@ -5,6 +5,7 @@
 #include <lecture_pgm.h>
 #include <MCU.h>
 #include <convert_to_YCbCr.h>
+#include <structure.h>
 
 
 

@@ -5,7 +5,7 @@
 #include <MCU.h>
 #include <convert_to_YCbCr.h>
 #include <math.h>
-#include <strucure.h>
+#include <structure.h>
 
 /*Amélioration : -chercher le nb de bits nécessaires pour YCbCr
 -Faire des free()*/

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <lecture_pgm.h>
+#include <structure.h>
 
 void process_file(struct image_pgm *pgm, const char *file_name) {
     //Ouvre le fichier en mode lecture binaire

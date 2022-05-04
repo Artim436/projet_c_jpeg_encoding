@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <lecture_pgm.h>
 # include <MCU.h>
+#include <structure.h>
 
 /*Amélioration : modifier j en uint8_t*/
 
