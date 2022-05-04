@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <dct.h>
-#include <qtables.h>
 #include <structure.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
@@ -21,31 +20,31 @@ float C_function(int i){  // middle function for DCT
     }
 }
 
-float coef_dct(bloc_8x8 *S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
+float coef_dct(bloc_8x8_dtc *S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
     float pi = 3.14159265358979323;
     float phi = 0.0;
     for (int x=0; x<n; x++){
         for (int y=0; y<n; y++){ 
-            float phi = phi + (float)S->matrix_bloc[x][y]*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
+            float s = S->matrix_bloc[x][y];
+            phi += s*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
     }
-    phi*=0.25;
-    phi*=C_function(i);
-    phi*=C_function(j);
-    return phi;
+    return phi*0.25*C_function(i)*C_function(j);
 }
 
 
 
-int dct(bloc_8x8 *S){ // DCT matrix
+int dct(bloc_8x8_dtc *S){ // DCT matrixs
     int n=8;
-    struct bloc_8x8 *I;
+    struct bloc_8x8_dtc *I = malloc(sizeof(bloc_8x8_dtc));
+    for (int x=0; x<n; x++){
+        for (int y=0; y<n; y++){
+            S->matrix_bloc[x][y]-=128.0;
+        }
+    }
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
-            float S->matrix_bloc[x][y] -= 128;;
-    for (int i=0; i<n; i++){
-        for (int j=0; j<n; j++){
-            float I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
+            I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
         }
     }
     for (int i=0; i<n; i++){
@@ -79,41 +78,41 @@ int dct(bloc_8x8 *S){ // DCT matrix
 // }
 
 
-// int coef_quantization(bloc_64 *D, int i){ // quantization vector
-//     D[i] = D[i]/quantification_table_Y[i]; //D = D/Y
-//     return (int)D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
-// }
+int coef_quantization(bloc_64_dtc *D, int i){ // quantization vector
+    D->vector[i] = D->vector[i]/quantification_table_Y[i]; //D = D/Y
+    return (int)D->vector[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
+}
 
-// int quantization(bloc_64 *D){ // quantization vector
-//     for (int i =0; i<64; i++){
-//         D[i] = coef_quantization(D, i);
-//     }
-//     return 0;
-//     }
+int quantization(bloc_64_dtc *D){ // quantization vector
+    for (int i =0; i<64; i++){
+        D->vector[i] = coef_quantization(D, i);
+    }
+    return 0;
+    }
 
 
-// int zigzag(bloc_8x8 *D, bloc_64 *F){ // zigzag matrix
-//     int cpt = 0;
-//     int len = 8;
-//     for (int k = 0; k<2*len-1; k++){
-//         if (k%2 == 0){
-//             for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
-//                 F[cpt] = D[k-j][j];
-//                 cpt++;
-//             }
-//         }
-//         else{
-//             for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
-//                 F[cpt] = D[j][k-j];
-//                 cpt++;
-//             }
-//         }
-//     }
-//     return 0;
-// }
+int zigzag(bloc_8x8_dtc *D, bloc_64_dtc *F){ // zigzag matrix
+    int cpt = 0;
+    int len = 8;
+    for (int k = 0; k<2*len-1; k++){
+        if (k%2 == 0){
+            for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
+                F->vector[cpt] = D->matrix_bloc[k-j][j];
+                cpt++;
+            }
+        }
+        else{
+            for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
+                F->vector[cpt] = D->matrix_bloc[j][k-j];
+                cpt++;
+            }
+        }
+    }
+    return 0;
+}
 
 // int main(){
-//     struct bloc_8x8 *tab;
+//     bloc_8x8_dtc *tab = malloc(sizeof(struct bloc_8x8_dtc));
 //     float test[8][8]  = {{139,144,149,153,155,155,155,155},
 //                   {144,151,153,156,159,156,156,156},
 //                   {150,155,160,163,158,156,156,156},
@@ -123,45 +122,31 @@ int dct(bloc_8x8 *S){ // DCT matrix
 //                   {162,162,161,161,163,158,158,158},
 //                   {159,160,161,162,162,155,155,155}
 //                   };
-//     for (int i=0; i<8; i++){CU.c:84
+//     for (int i=0; i<8; i++){
 //         for (int j=0; j<8; j++){
 //             tab->matrix_bloc[i][j] = test[i][j];
 //         }
-//     }
-//     if (argc == 2) {
-//         struct image_pgm *pgm = malloc(sizeof(struct image_pgm));
-//         char *file_name = argv[1];
-//         process_file(pgm, file_name);
-//         affiche_details_image(pgm, file_name);
-//         struct image_mcu *img_mcu = decoupe_mcu_8x8(pgm);
-//         affiche_img_mcu(img_mcu);
-//         struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
-//         afficher_YCbCr(p_ycbcr);
-//     } else {
-//         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
-//     }
-// },
-                  
-    // matrix Q = {
-    //     {16,11,10,16,24,40,51,61},
-    //               {12,12,14,19,26,58,60,55},
-    //               {14,13,16,24,40,57,69,56},
-    //               {14,17,22,29,51,87,80,62},
-    //               {18,22,37,56,68,109,103,77},
-    //               {24,35,55,64,81,104,113,92},
-    //               {49,64,78,87,103,121,120,101},
-    //               {72,92,95,98,112,100,103,99}
-    //               };
-    // matrix Qtest = {
-    //               {16,11,10,16,24,40,51,61},
-    //               {12,12,14,19,26,58,60,55},
-    //               {14,13,16,24,40,57,69,56},
-    //               {14,17,22,29,51,87,80,62},
-    //               {18,22,37,56,68,109,103,77},
-    //               {24,35,55,64,81,104,113,92},
-    //               {49,64,78,87,103,121,120,101},
-    //               {72,92,95,98,112,100,103,99}
-    //};  
+//     }             
+// //     matrix Q = {
+// //         {16,11,10,16,24,40,51,61},
+// //                   {12,12,14,19,26,58,60,55},
+// //                   {14,13,16,24,40,57,69,56},
+// //                   {14,17,22,29,51,87,80,62},
+// //                   {18,22,37,56,68,109,103,77},
+// //                   {24,35,55,64,81,104,113,92},
+// //                   {49,64,78,87,103,121,120,101},
+// //                   {72,92,95,98,112,100,103,99}
+// //                   };
+// //     matrix Qtest = {
+// //                   {16,11,10,16,24,40,51,61},
+// //                   {12,12,14,19,26,58,60,55},
+// //                   {14,13,16,24,40,57,69,56},
+// //                   {14,17,22,29,51,87,80,62},
+// //                   {18,22,37,56,68,109,103,77},
+// //                   {24,35,55,64,81,104,113,92},
+// //                   {49,64,78,87,103,121,120,101},
+// //                   {72,92,95,98,112,100,103,99}
+// //     };  
 //     printf("------------------matrix--------------\n");
 //     for (int i=0; i<8; i++){
 //         for (int j=0; j<8; j++){
@@ -173,16 +158,16 @@ int dct(bloc_8x8 *S){ // DCT matrix
 //     printf("-----------dct matrix-----------\n");
 //     for (int i=0; i<8; i++){
 //         for (int j=0; j<8; j++){
-//             printf("%i ", (int)tab->matrix_bloc[i][j]);
+//             printf("%i ", (int) tab->matrix_bloc[i][j]);
 //         }
 //         printf("\n");
 //     }
-// }
 //     printf("\n");
+//     bloc_64_dtc *F = malloc(sizeof(struct bloc_64_dtc));
 //     zigzag(tab, F);
 //     printf("-----------zigzag dct matrix-----------\n");
 //     for (int i=0; i<64; i++){
-//         printf("%i ", (int)F[i]);
+//         printf("%i ", (int)F->vector[i]);
 //     }
 //     printf("\n");
 //     quantization(F);
@@ -193,7 +178,7 @@ int dct(bloc_8x8 *S){ // DCT matrix
 //     printf("\n");
 //     printf("-----------zigzag quantization matrix-----------\n");
 //     for (int i=0; i<64; i++){
-//         printf("%i ", (int)F[i]);
+//         printf("%i ", (int)F->vector[i]);
 //     }
 //     return 0;
 // }

@@ -34,10 +34,17 @@ struct bloc_8x8;
 struct bloc_8x8 {
     uint8_t matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
 };
+struct bloc_8x8_dtc;
+struct bloc_8x8_dtc {
+    float matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
+};
 //Structure d'un vecteur bloc 64
 struct bloc_64;
 struct bloc_64 {
     uint8_t vector[64];
 };
-
+struct bloc_64_dtc;
+struct bloc_64_dtc {
+    float vector[64];
+};
 #endif
