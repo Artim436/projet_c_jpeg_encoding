@@ -5,6 +5,7 @@
 #include <MCU.h>
 #include <convert_to_YCbCr.h>
 #include <math.h>
+#include <strucure.h>
 
 /*Amélioration : -chercher le nb de bits nécessaires pour YCbCr
 -Faire des free()*/
@@ -50,20 +51,20 @@ struct image_YCbCr *creation_YCbCr(struct image_mcu *p_mcu){
 void afficher_YCbCr(struct image_YCbCr *p_ycbcr){
     //Parcours les éléments de image_YCbCr et affiche le Y
     for(uint32_t j = 0; j<p_ycbcr->nmcu; j++){
-        printf("----- MCU numéro %u ----- \n", j+1);
+        printf("----- MCU numéro %u YCbCr----- \n", j+1);
         printf("Affichage de Y: \n");
         for(uint8_t i = 0; i<64; i++){
-            printf("%u ", p_ycbcr->l_ycbcr[j][i]->Y);
+            printf("%x ", p_ycbcr->l_ycbcr[j][i]->Y);
             if(i % 8 == 7){
                 printf("\n");
             }
         }
-        printf("Affichage de Cb : \n");
-        for(uint8_t i = 0; i<64; i++){
-            printf("%u ", p_ycbcr->l_ycbcr[j][i]->Cb);
-            if(i % 8 == 7){
-                printf("\n");
-            }
-        }
+        // printf("Affichage de Cb : \n");
+        // for(uint8_t i = 0; i<64; i++){
+        //     printf("%u ", p_ycbcr->l_ycbcr[j][i]->Cb);
+        //     if(i % 8 == 7){
+        //         printf("\n");
+        //     }
+        // }
     }
 }
