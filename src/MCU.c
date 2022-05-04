@@ -112,7 +112,7 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
     for(uint32_t j = 0; j<p_gmu->nmcu; j++){
         printf("----- MCU numéro %u RGB----- \n", j+1);
         for(uint8_t i = 0; i<64; i++){
-            printf("%u ", p_gmu->l_mcu[j][i]);
+            printf("%x ", p_gmu->l_mcu[j][i]);
             if(i % 8 == 7){
                 printf("\n");
             }
