@@ -7,39 +7,39 @@
 #include <lecture_pgm.h>
 #include <structure.h>
 
-void process_file(struct image_pgm *pgm, const char *file_name) {
+void process_file(const char *file_name, struct  main_mcu *mcu) {
     //Ouvre le fichier en mode lecture binaire
     FILE *file = fopen(file_name, "rb");
     //Lecture du type de fichier
-    fscanf(file, "%s", pgm->type_pgm);
-    printf("%s \n", pgm->type_pgm);
+    fscanf(file, "%s", mcu->type_pgm);
+    printf("%s \n", mcu->type_pgm);
     //Lecture des dimensions de l'image
-    fscanf(file, "%d %d", &(pgm->width), &(pgm->height));
+    fscanf(file, "%d %d", &(mcu->width), &(mcu->height));
     //Lecture de la valeur maximal du gris
-    fscanf(file, "%d", &(pgm->max_value));
+    fscanf(file, "%d", &(mcu->max_value));
     //Allocation de la mémoire pour la data
-    pgm->data = calloc(pgm->height, sizeof(char*));
+    mcu->data = calloc(mcu->height, sizeof(char*));
     //Stockage des pixels
-    if (pgm->type_pgm[1]== '5') {
+    if (mcu->type_pgm[1]== '5') {
         fgetc(file);
-        for (uint32_t i=0; i<pgm->height; i++) {
-            pgm->data[i] = calloc(pgm->width, sizeof(char));
+        for (uint32_t i=0; i<mcu->height; i++) {
+            mcu->data[i] = calloc(mcu->width, sizeof(char));
             //Ecrit les données sur la mémoire allouée
-            fread(pgm->data[i], sizeof(uint8_t), pgm->width, file);
+            fread(mcu->data[i], sizeof(uint8_t), mcu->width, file);
         }
     }
     //Ferme le fichier
     fclose(file);
 }
 
-void affiche_details_image(struct image_pgm *pgm, const char * file_name) {
+void affiche_details_image(struct main_mcu *mcu, const char * file_name) {
     FILE *file = fopen(file_name,  "rb");
-    printf("Largeur : %d pixels \n", pgm->width);
-    printf("Hauteur : %d pixels \n", pgm->height);
-    printf("Max_valeur : %d pixels \n", pgm->max_value);
-    for (uint32_t i=0; i<pgm->height; i++) {
-        for (uint32_t j =0; j<pgm->width; j++) {
-            printf("%x ", pgm->data[i][j]);
+    printf("Largeur : %d pixels \n", mcu->width);
+    printf("Hauteur : %d pixels \n", mcu->height);
+    printf("Max_valeur : %d pixels \n", mcu->max_value);
+    for (uint32_t i=0; i<mcu->height; i++) {
+        for (uint32_t j =0; j<mcu->width; j++) {
+            printf("%x ", mcu->data[i][j]);
         }
         printf("\n");
     }
