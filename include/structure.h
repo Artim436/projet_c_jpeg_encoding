@@ -14,7 +14,7 @@
 
 struct main_mcu {
     uint8_t** data; // On stock les données de l'image
-    uint32_t  *bloc; //Liste contenants les pointeurs vers les blocs
+    uint32_t *bloc; //Liste contenants les pointeurs vers les blocs
     uint32_t n_mcu;//taille de la liste bloc
     uint32_t width; // Largeur de l'image d'entrée
     uint32_t height; // Hauteur de l'image d'entrée
@@ -45,4 +45,15 @@ struct bloc_64 {
 struct bloc_64_dtc {
     float vector[64];
 };
+
+struct image_mcu{
+    /*Structure des mcu*/
+    char type_pgm[3];
+    uint8_t **l_mcu;
+    uint32_t nmcu;//Pour la largeur comme pour la hauteur on renverra la taille par pixel et non par MCU
+    uint32_t max_value;
+    uint8_t dev_width;//En soit pas utile pour la structure mais nécessaire pour la construction, il s'agit du reste modulo8 des dimensions de image pgm
+    uint8_t dev_height;
+};
+
 #endif

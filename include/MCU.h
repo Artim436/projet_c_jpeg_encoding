@@ -3,10 +3,15 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <structure.h>
 
-extern void decoupe_mcu_8x8(struct main_mcu *p_main);
+extern struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main);
 
-extern void affiche_img_mcu(struct main_mcu *p_main);
+extern struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint32_t height, uint32_t max_value);
+
+extern void affiche_img_mcu(struct image_mcu *p_gmu);
+
+extern void convert_vect_to_matrix(uint8_t *l_mcu);
 
 #endif
