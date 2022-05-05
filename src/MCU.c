@@ -120,14 +120,36 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
     }
 }
 
-void convert_vect_to_matrix(uint8_t *l_mcu){
-        //On crée une sentinelle
-        uint8_t **sent = &l_mcu;
-        uint8_t new_mat[8][8];
-        uint8_t j=0;
-        for(uint8_t i = 0; i<63;i++){
-            new_mat[i%8][j] = l_mcu[i];
-            j%=8;
+/*uint8_t ***convert_vect_to_matrix(uint8_t **vect_mcu, uint32_t n_mcu){
+    uint8_t *(l_mcu[8][8]) = calloc(n_mcu, sizeof(char *));
+    for (uint32_t k=0; k<n_mcu; k++) {
+            l_mcu[k] = calloc(64, sizeof(uint8_t));
+    }
+    return l_mcu;
+}*/
+
+void convert_vect_to_mat(uint8_t vect[64]){
+    uint8_t mat[8][8];
+    for (uint8_t i = 0;i<8; i++){
+        for(uint8_t j=0; j <8; j++){
+            mat[i][j] = vect[i+j];
         }
-        *sent = new_mat;
+    }
+    print_mat(mat);
+}
+
+void print_vect(uint8_t *vect, uint8_t len_vect){
+    for(uint8_t i = 0; i<len_vect-1; i++){
+        printf("%u , ", vect[i]);
+    }
+    printf("\n");
+}
+
+void print_mat(uint8_t mat[8][8]){
+    for(uint8_t i =0; i<8;i++){
+        for(uint8_t j =0; j<8;j++){
+            printf("%u ", mat[i][j]);
+        }
+        printf("\n");
+    }   
 }

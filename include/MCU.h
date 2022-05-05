@@ -12,6 +12,10 @@ extern struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint
 
 extern void affiche_img_mcu(struct image_mcu *p_gmu);
 
-extern void convert_vect_to_matrix(uint8_t *l_mcu);
+extern void convert_vect_to_mat(uint8_t vect[64]);
+
+extern void print_vect(uint8_t *vect, uint8_t len_vect);
+
+extern void print_mat(uint8_t mat[8][8]);
 
 #endif

@@ -19,6 +19,10 @@ int main (int argc, char **argv) {
         affiche_img_mcu(img_mcu);
         struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
         afficher_YCbCr(p_ycbcr);
+
+        print_vect(img_mcu->l_mcu[0], 64);
+        convert_vect_to_mat(img_mcu->l_mcu[0]);
+
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
     }
