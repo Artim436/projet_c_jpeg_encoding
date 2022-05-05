@@ -39,6 +39,11 @@ L'écriture en jpeg est également faite
 Le "zig-zag" est terminé.
 Demain on écrit les tables de Huffman, l'objectif est de terminé invader demain.
 
+### Mercredi 4 mai:
+On a décidé de créer une structure commune à toutes les fonctions.
+Nous sommes obligés de réadapter notre code en conséquence.
+Nous avons également exploiter les tables de Huffman pour l'écriture en jpeg.
+
 ##### Questions pour les profs :
 Comment faire un makefile pour les tests
 Question sur les headers
