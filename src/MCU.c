@@ -128,14 +128,24 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
     return l_mcu;
 }*/
 
-void convert_vect_to_mat(uint8_t vect[64]){
+uint8_t *convert_vect_to_mat(uint8_t vect[64]){
     uint8_t mat[8][8];
     for (uint8_t i = 0;i<8; i++){
         for(uint8_t j=0; j <8; j++){
             mat[i][j] = vect[i+j];
         }
     }
-    print_mat(mat);
+    return &mat;
+}
+
+float *convert_vect_ycbcr_to_mat(struct YCbCr* vect[64]){
+    float mat[8][8];
+    for (uint8_t i = 0;i<8; i++){
+        for(uint8_t j=0; j <8; j++){
+            mat[i][j] = (float) vect[i+j]->Y;
+        }
+    }
+    return &mat;
 }
 
 void print_vect(uint8_t *vect, uint8_t len_vect){

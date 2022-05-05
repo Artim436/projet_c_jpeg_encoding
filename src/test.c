@@ -6,6 +6,7 @@
 #include <MCU.h>
 #include <structure.h>
 #include <convert_to_YCbCr.h>
+#include <dct.h>
 
 
 
@@ -19,9 +20,10 @@ int main (int argc, char **argv) {
         affiche_img_mcu(img_mcu);
         struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
         afficher_YCbCr(p_ycbcr);
-
-        print_vect(img_mcu->l_mcu[0], 64);
-        convert_vect_to_mat(img_mcu->l_mcu[0]);
+        printf("on est l23\n");
+        fonction(mcu, p_ycbcr);
+        printf("on est l25\n");
+        affiche_bloc(mcu);
 
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
