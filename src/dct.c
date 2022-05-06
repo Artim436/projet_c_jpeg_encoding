@@ -6,6 +6,11 @@
 #include <dct.h>
 #include <structure.h>
 #include <MCU.h>
+#include <convert_to_YCbCr.h>
+#include <lecture_pgm.h>
+#include <jpeg_writer.h>
+#include <test.h>
+#include <huffman.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
@@ -123,9 +128,10 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
         dct(p_mat);
         printf("après dct\n");
         print_mat(p_mat, 8);
-        printf("on est ici");
+        printf("on est ici\n");
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
+        rle(main_mcu->bloc[k]);
     }   
 }
  

@@ -26,7 +26,7 @@ struct main_mcu {
     enum color_component cc; 
     enum direction dir;
     enum sample_type acdc;
-    struct huff_table *htable;
+    struct huff_table **htable;
     uint8_t *qtable;
 };
 //Structure d'un bloc mcu 8x8

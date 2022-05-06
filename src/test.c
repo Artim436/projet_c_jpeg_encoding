@@ -7,6 +7,7 @@
 #include <structure.h>
 #include <convert_to_YCbCr.h>
 #include <dct.h>
+#include <htables.h>
 
 
 
@@ -20,10 +21,37 @@ int main (int argc, char **argv) {
         affiche_img_mcu(img_mcu);
         struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
         afficher_YCbCr(p_ycbcr);
-        printf("on est l23\n");
+        printf("\n on est l23\n");
         fonction(mcu, p_ycbcr);
-        printf("on est l25\n");
+        printf("\n on est l25\n");
         affiche_bloc(mcu);
+        // printf("nb symbol par longueur\n");
+        // printf("------------DC--------------\n");
+        // for (int i=0; i<16; i++){
+        //     printf(" %d ", htables_nb_symb_per_lengths[DC][Y][i]);
+        // }
+        // printf("\n");
+        // printf("----------AC----------\n");
+        // for (int i=0; i<16; i++){
+        //     printf(" %d ", htables_nb_symb_per_lengths[AC][Y][i]);
+        // }
+        // printf("\n");
+        // printf("----------symbol----------\n");
+        // printf("----------DC----------\n");
+        // for (int i=0; i<16; i++){
+        //     printf(" %d ", htables_symbols[DC][Y][i]);
+        // }
+        // printf("\n----------AC----------\n");
+        // for (int i=0; i<16; i++){
+        //     printf(" %d ", htables_symbols[AC][Y][i]);
+        // }
+        // printf("\n----------lenght tab symbol----------\n");
+        // printf("----------DC----------\n");
+        // printf("%d\n", htables_nb_symbols[DC][Y]);
+        // printf("----------AC----------\n");
+        // printf("%d\n", htables_nb_symbols[AC][Y]);
+        // printf("\n----------rle----------\n");
+
 
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
