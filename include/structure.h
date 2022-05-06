@@ -14,7 +14,7 @@
 
 struct main_mcu {
     uint8_t** data; // On stock les données de l'image
-    float **bloc; //Liste contenants les pointeurs vers les blocs
+    int16_t **bloc; //Liste contenants les pointeurs vers les blocs
     uint32_t n_mcu;//taille de la liste bloc
     uint32_t width; // Largeur de l'image d'entrée
     uint32_t height; // Hauteur de l'image d'entrée

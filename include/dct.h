@@ -15,13 +15,13 @@ extern float coef_dct(float** S, int i, int j, int n);
 
 extern float C_function(int i);
 
-extern int dct(float** S);
+extern void dct(float** S);
 
-extern int quantization(float* D);
+extern void quantization(int16_t* D);
 
-extern int coef_quantization(float* D, int i);
+extern int coef_quantization(int16_t* D, int i);
 
-extern int zigzag(float** D, float* F);
+extern void zigzag(float** D, int16_t* F);
 
 extern void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr);
 
