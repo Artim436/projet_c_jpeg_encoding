@@ -16,7 +16,9 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
     l_mcu[i] correspondra au i+1 ème MCU (lu de gauche à droite de haut en bas.
     l_mcu[i][j] correspondra au j+1 ème pixel (avec  0<= j<= 63) lu de gauche à droite et de haut en bas du MCU i*/
     struct image_mcu *p_mcu = creation_mcu_8x8(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
-    
+    p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
+
+
     //Puis définit la de liste de mcu
     //On boucle directement sur la matrice ppm (de gauche à droite et de haut en bas)
     for(uint32_t pos_x = 0; pos_x < p_main->height; pos_x++){
@@ -120,46 +122,23 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
     }
 }
 
-/*uint8_t ***convert_vect_to_matrix(uint8_t **vect_mcu, uint32_t n_mcu){
-    uint8_t *(l_mcu[8][8]) = calloc(n_mcu, sizeof(char *));
-    for (uint32_t k=0; k<n_mcu; k++) {
-            l_mcu[k] = calloc(64, sizeof(uint8_t));
-    }
-    return l_mcu;
-}*/
-
-uint8_t *convert_vect_to_mat(uint8_t vect[64]){
-    uint8_t mat[8][8];
-    for (uint8_t i = 0;i<8; i++){
-        for(uint8_t j=0; j <8; j++){
-            mat[i][j] = vect[i+j];
-        }
-    }
-    return &mat;
-}
-
-float *convert_vect_ycbcr_to_mat(struct YCbCr* vect[64]){
-    float mat[8][8];
-    for (uint8_t i = 0;i<8; i++){
-        for(uint8_t j=0; j <8; j++){
-            mat[i][j] = (float) vect[i+j]->Y;
-        }
-    }
-    return &mat;
-}
-
-void print_vect(uint8_t *vect, uint8_t len_vect){
-    for(uint8_t i = 0; i<len_vect-1; i++){
-        printf("%u , ", vect[i]);
-    }
-    printf("\n");
-}
-
-void print_mat(uint8_t mat[8][8]){
-    for(uint8_t i =0; i<8;i++){
-        for(uint8_t j =0; j<8;j++){
-            printf("%u ", mat[i][j]);
+void print_mat(float** mat, uint8_t len){
+    for(uint8_t i =0; i<len;i++){
+        for(uint8_t j =0; j<len;j++){
+            printf("%f ", mat[i][j]);
         }
         printf("\n");
     }   
+}
+
+
+float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
+    float **matrice = malloc(8*sizeof(float*));
+    for(uint8_t j = 0;j<8; j++){
+        matrice[j] = malloc(8*sizeof(float));
+        for(uint8_t k=0; k<8; k++){
+            matrice[j][k] = (float) p_YCbCr[j+k]->Y;
+        }
+    }
+    return matrice;
 }

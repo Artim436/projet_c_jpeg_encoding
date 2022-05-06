@@ -6,10 +6,12 @@
 #include <stdlib.h>
 #include <dct.h>
 #include <structure.h>
+#include <MCU.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
 
+/*Note : pk int en dct(pareil pour les autres fonctions, utiliser void?) + enlever la déclaration de I en bloc et plutot mettre en float** .*/
 
 float C_function(int i){  // middle function for DCT
     if (i == 0){
@@ -20,12 +22,12 @@ float C_function(int i){  // middle function for DCT
     }
 }
 
-float coef_dct(float *S[8][8], int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
+float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
     float pi = 3.14159265358979323;
     float phi = 0.0;
     for (int x=0; x<n; x++){
         for (int y=0; y<n; y++){ 
-            float s = (*S)[x][y];  //(*S).matrix_bloc[x][y]
+            float s = S[x][y];  //(*S).matrix_bloc[x][y]
             phi += s*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
     }
@@ -34,12 +36,12 @@ float coef_dct(float *S[8][8], int i, int j, int n){ // coefficient of DCT matri
 
 
 
-int dct(float *S[8][8]){ // DCT matrixs
+int dct(float** S){ // DCT matrixs
     int n=8;
     bloc_8x8_dtc *I = malloc(sizeof(bloc_8x8_dtc));
     for (int x=0; x<n; x++){
         for (int y=0; y<n; y++){
-            (*S)[x][y]-=128.0; // (*S)
+            S[x][y]-=128.0; // (*S)
         }
     }
     for (int i=0; i<n; i++){
@@ -49,39 +51,39 @@ int dct(float *S[8][8]){ // DCT matrixs
     }
     for (int i=0; i<n; i++){
         for (int j=0; j<n; j++){
-            (*S)[i][j] = I->matrix_bloc[i][j];
+            S[i][j] = I->matrix_bloc[i][j];
         }
     }
     return 0;
 }
 
 
-int coef_quantization(float *D[64], int i){ // quantization vector
-    (*D)[i] = (*D)[i]/quantification_table_Y[i]; //D = D/Y
-    return (int)(*D)[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
+int coef_quantization(float *D, int i){ // quantization vector
+    D[i] = D[i]/quantification_table_Y[i]; //D = D/Y
+    return (int) D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
 }
 
-int quantization(float *D[64]){ // quantization vector
+int quantization(float *D){ // quantization vector
     for (int i =0; i<64; i++){
-        (*D)[i] = coef_quantization(D, i);
+        D[i] = coef_quantization(D, i);
     }
     return 0;
     }
 
 
-int zigzag(float *D[8][8], float *F[64]){ // zigzag matrix
+int zigzag(float** D, float* F){ // zigzag matrix
     int cpt = 0;
     int len = 8;
     for (int k = 0; k<2*len-1; k++){
         if (k%2 == 0){
             for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
-                (*F)[cpt] = (*D)[k-j][j];
+                F[cpt] = D[k-j][j];
                 cpt++;
             }
         }
         else{
             for (int j = max(0, k-len+1); j<=min(k,len-1); j++){
-                (*F)[cpt] = (*D)[j][k-j];
+                F[cpt] = D[j][k-j];
                 cpt++;
             }
         }
@@ -89,18 +91,17 @@ int zigzag(float *D[8][8], float *F[64]){ // zigzag matrix
     return 0;
 }
 
+
 void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     
     //On prépare la structure de bloc
-    main_mcu->bloc = calloc(main_mcu->n_mcu, sizeof(char *));
+    main_mcu->bloc = calloc(main_mcu->n_mcu, sizeof(float *));
     for (uint32_t i=0; i<main_mcu->n_mcu; i++) {
             main_mcu->bloc[i] = calloc(64, sizeof(float));
     }
-    printf("on a fini les callocs\n");
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
-        float (*p_mat)[8][8] = convert_vect_ycbcr_to_mat(im_ycbcr->l_ycbcr[k]);
-        print_mat(*p_mat);
+        float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
         dct(p_mat);
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);

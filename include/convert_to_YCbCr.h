@@ -9,7 +9,6 @@
 #include <math.h>
 #include <structure.h>
 
-
 extern struct image_YCbCr *convert_YCbCr(struct image_mcu *p_mcu);
 
 extern struct image_YCbCr *creation_YCbCr(struct image_mcu *p_mcu);
