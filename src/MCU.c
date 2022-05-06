@@ -137,7 +137,7 @@ float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
     for(uint8_t j = 0;j<8; j++){
         matrice[j] = malloc(8*sizeof(float));
         for(uint8_t k=0; k<8; k++){
-            matrice[j][k] = (float) p_YCbCr[j+k]->Y;
+            matrice[j][k] = (float) p_YCbCr[j*8+k]->Y;
         }
     }
     return matrice;

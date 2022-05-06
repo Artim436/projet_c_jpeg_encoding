@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <dct.h>
 #include <structure.h>
+#include <MCU.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
@@ -25,7 +26,7 @@ float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne
     float phi = 0.0;
     for (int x=0; x<n; x++){
         for (int y=0; y<n; y++){ 
-            float s = S[x][y];  //(*S).matrix_bloc[x][y]
+            float s = S[x][y]; 
             phi += s*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
     }
@@ -97,7 +98,32 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
+        print_mat(p_mat, 8);
+        printf("\n");
+
+        float **pmat;
+        pmat = calloc(8, sizeof(float* ));
+        float test[8][8]  = {{0x00,0x00,0x00,0xff,0xff,0x00,0x00,0x00},
+                        {0x00,0x00,0xff,0xff,0xff,0xff,0x00,0x00},
+                        {0x00,0xff,0xff,0xff,0xff,0xff,0xff,0x00},
+                        {0xff,0xff,0x00,0xff,0xff,0x00,0xff,0xff},
+                        {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff},
+                        {0x00,0x00,0xff,0x00,0x00,0xff,0x00,0x00},
+                        {0x00,0xff,0x00,0xff,0xff,0x00,0xff,0x00},
+                        {0xff,0x00,0xff,0x00,0x00,0xff,0x00,0xff}
+                  };
+        for (int i=0; i<8; i++){
+            pmat[i] = calloc(8, sizeof(float));
+            for (int j=0; j<8; j++){
+                pmat[i][j] = test[i][j];
+            }
+        }          
+        print_mat(pmat, 8);
+
         dct(p_mat);
+        printf("après dct\n");
+        print_mat(p_mat, 8);
+        printf("on est ici");
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
     }   
@@ -117,53 +143,55 @@ void affiche_bloc(struct main_mcu *main_mcu){
 }
 
 // int main(){
-//     bloc_8x8_dtc *tab = malloc(sizeof(struct bloc_8x8_dtc));
-//     float test[8][8]  = {{139,144,149,153,155,155,155,155},
-//                   {144,151,153,156,159,156,156,156},
-//                   {150,155,160,163,158,156,156,156},
-//                   {159,161,162,160,160,159,159,159},
-//                   {161,161,161,161,160,157,157,157},
-//                   {162,162,161,163,162,157,157,157},
-//                   {162,162,161,161,163,158,158,158},
-//                   {159,160,161,162,162,155,155,155}
+//     float **p_mat;
+//     p_mat = calloc(8, sizeof(float* ));
+//     float test[8][8]  = {{0x00,0x00,0x00,0xff,0xff,0x00,0x00,0x00},
+//                         {0x00,0x00,0xff,0xff,0xff,0xff,0x00,0x00},
+//                         {0x00,0xff,0xff,0xff,0xff,0xff,0xff,0x00},
+//                         {0xff,0xff,0x00,0xff,0xff,0x00,0xff,0xff},
+//                         {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff},
+//                         {0x00,0x00,0xff,0x00,0x00,0xff,0x00,0x00},
+//                         {0x00,0xff,0x00,0xff,0xff,0x00,0xff,0x00},
+//                         {0xff,0x00,0xff,0x00,0x00,0xff,0x00,0xff}
 //                   };
 //     for (int i=0; i<8; i++){
+//         p_mat[i] = calloc(8, sizeof(float));
 //         for (int j=0; j<8; j++){
-//             tab[i][j] = test[i][j];
+//             p_mat[i][j] = test[i][j];
 //         }
 //     }             
 //     printf("------------------matrix--------------\n");
 //     for (int i=0; i<8; i++){
 //         for (int j=0; j<8; j++){
-//             printf("%i ", (short)tab[i][j]);
+//             printf("%i ", (short)test[i][j]);
 //         }
 //         printf("\n");
 //     }           
-//     dct(tab);
+//     dct(p_mat);
 //     printf("-----------dct matrix-----------\n");
 //     for (int i=0; i<8; i++){
 //         for (int j=0; j<8; j++){
-//             printf("%i ", (short)tab[i][j]);
+//             printf("%x ", (int16_t)p_mat[i][j]);
 //         }
 //         printf("\n");
 //     }
 //     printf("\n");
-//     bloc_64_dtc *F = malloc(sizeof(struct bloc_64_dtc));
-//     zigzag(tab, F);
+//     int16_t *F = calloc(64, sizeof(int16_t));
+//     zigzag(p_mat, F);
 //     printf("-----------zigzag dct matrix-----------\n");
 //     for (int i=0; i<64; i++){
-//         printf("%i ", (int)F[i]);
+//         printf("%x ", (int)F[i]);
 //     }
 //     printf("\n");
 //     quantization(F);
 //     printf("-----------quantization table-----------\n");
 //     for (int i=0; i<64; i++){
-//         printf("%i ", (short)quantification_table_Y[i]);
+//         printf("%x ", (short)quantification_table_Y[i]);
 //     }
 //     printf("\n");
 //     printf("-----------zigzag quantization matrix-----------\n");
 //     for (int i=0; i<64; i++){
-//         printf("%i ", (short)F[i]);
+//         printf("%x ", (short)F[i]);
 //     }
 //     printf("\n");
 //     return 0;
