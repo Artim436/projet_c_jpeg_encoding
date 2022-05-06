@@ -19,7 +19,7 @@ Rajouter **régulièrement** des informations sur l'avancement de votre projet e
 - Un peu juste sur le projet à quelques heures de la deadline ? Le [Montrachet](https://www.vinatis.com/achat-vin-puligny-montrachet) peut faire passer l'envie à vos profs de vous mettre une tôle !
 
 #### Journal de bord
-##### Lundi 2 mai :
+##### Lundi 2 Mai :
 Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'imager invader :
 
 Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l'image JPEG et transformer les données RGB en YCbCr.
@@ -27,24 +27,28 @@ Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l
 Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux. 
 
 Lebeurrier se charge du DCT, Zigzag et quantification. 
-##### A l'aubre du mardi 3 mai:
+##### A l'aubre du mardi 3 Mai:
 Extraction donnée ppm et passage en argument fait.
 Découpage MCU fait.
 DCT et quantification fait.
 On va tester les liens entre mcu et extraction
 
-#### Mardi 3 mai:
+##### Mardi 3 Mai:
 La conversion RGB to YCbCr faite et adaptée pour les images en couleurs.
 L'écriture en jpeg est également faite
 Le "zig-zag" est terminé.
 Demain on écrit les tables de Huffman, l'objectif est de terminé invader demain.
 
-### Mercredi 4 mai:
+##### Mercredi 4 Mai:
 On a décidé de créer une structure commune à toutes les fonctions.
 Nous sommes obligés de réadapter notre code en conséquence.
 Nous avons également exploiter les tables de Huffman pour l'écriture en jpeg.
 
+##### Jeudi 5 Mai :
+On a passé la journée à réadapter notre code à la nouvelle structure.
+Nous pouvons à présent terminer les codes restants pour finir invader.
+
+
 ##### Questions pour les profs :
-Comment faire un makefile pour les tests
-Question sur les headers
+
 

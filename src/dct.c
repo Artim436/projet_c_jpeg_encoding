@@ -111,7 +111,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
 void affiche_bloc(struct main_mcu *main_mcu){
     for(uint8_t i = 0; i<main_mcu->n_mcu; i++){
         for(uint8_t j = 0; j<64; j++){
-            printf("%f ", main_mcu->bloc[i][j]);
+            printf("%x ", main_mcu->bloc[i][j]);
         }
         printf("\n");
     }

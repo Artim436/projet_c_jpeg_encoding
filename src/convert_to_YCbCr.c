@@ -15,7 +15,7 @@ struct image_YCbCr *convert_YCbCr(struct image_mcu *p_mcu){
     /*Prend en entrée le découpage MCU et transforme les RGB en YCbCr.
     La valeur retournée sera un pointeur vers l'image convertie en YCbCr et toujours découpée en MCU.
     Cette fonction traite dans un premier temps le cas où l'image est en noir et blanc (P5), on pourra l'améliorer à base de if.*/
-    
+
     struct image_YCbCr *p_ycbcr = creation_YCbCr(p_mcu);
 
     for(uint32_t i = 0; i < p_ycbcr->nmcu; i++){
