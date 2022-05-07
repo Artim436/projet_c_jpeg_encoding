@@ -124,7 +124,7 @@ uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){
         else{
             if(cpt_0 <= 15){ //0000000000bloc[k]
                 *i += cpt_0+1;
-                cpt_0 = cpt_0*pow(2,4) + magnitude_table_DC(F[k]);  //cpt_0magnitude(bloc[k])
+                cpt_0 = cpt_0*pow(2,4) + magnitude_table_AC(F[k]);  //cpt_0magnitude(bloc[k])
                 return cpt_0;
             }
             else{ //cpt_0 =16
@@ -149,3 +149,12 @@ void rle(int16_t *F, uint8_t *R){
 }
 
 
+uint32_t index(int16_t value){
+    uint8_t m = magnitude_table_AC(value);
+    if(value < 0){
+        return pow(2,m)-1 + value;
+    }
+    else{
+        return pow(2,m)-1-pow(2,m-1)+ - pow(2,m-1)+ value +1;
+    }
+}
