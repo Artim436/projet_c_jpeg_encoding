@@ -114,7 +114,7 @@ uint32_t encoding_rle_DC(int16_t *F, uint8_t *i){
         }
         else{
             if(cpt_0 <= 15){ //0000000000bloc[k]
-                cpt_0 = cpt_0*pow(2,8) + magnitude_table_DC(F[k]);  //cpt_0magnitude(bloc[k])
+                cpt_0 = cpt_0*pow(2,4) + magnitude_table_DC(F[k]);  //cpt_0magnitude(bloc[k])
                 *i += cpt_0+1;
                 return cpt_0;
             }

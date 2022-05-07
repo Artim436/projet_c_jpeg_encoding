@@ -19,7 +19,7 @@ void write(const char *ppm_filename,
            enum direction dir,
            uint8_t sampling_factor,
            enum sample_type acdc,
-           struct huff_table *htable,
+           struct huff_table **htable,
            uint8_t *qtable) {
     // On crée la structure JPEG
     struct jpeg *jpg = jpeg_create();

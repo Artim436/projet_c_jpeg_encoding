@@ -52,6 +52,18 @@ int main (int argc, char **argv) {
         // printf("%d\n", htables_nb_symbols[AC][Y]);
         // printf("\n----------rle----------\n");
 
+        /*
+        write(mcu->ppm_filename,
+           mcu-> height,
+           mcu->width,
+           mcu->n_mcu,
+           mcu->jpeg_filename,
+           mcu->cc,
+           mcu->dir,
+           mcu->sampling_factor,
+           mcu->acdc,
+           mcu->htable,
+          mcu->qtable);*/
 
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
