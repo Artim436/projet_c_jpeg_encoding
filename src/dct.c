@@ -111,6 +111,19 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
         printf("on est ici\n");
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
+        uint8_t *R = calloc(64, sizeof(uint8_t));
+        rle(main_mcu->bloc[k], R);
+        for (int i=0; i<64; i++){
+            printf(" value: ");
+            printf(" %d ", main_mcu->bloc[k][i]);
+            printf(" magnitude: ");
+            printf(" %d ", magnitude_table_AC(main_mcu->bloc[k][i]));
+            printf(" index: ");
+            printf(" %d ", index(main_mcu->bloc[k][i]));
+            printf(" rle: ");
+            printf(" %d ", R[i]);
+            printf("\n");
+        }
     }   
 }
  

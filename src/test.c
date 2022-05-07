@@ -28,7 +28,6 @@ int main (int argc, char **argv) {
         printf("\n on est l25\n");
         affiche_bloc(mcu);
         printf("On rentre dans encodage_Y : \n");
-        encodage_Y(mcu);
         // printf("nb symbol par longueur\n");
         // printf("------------DC--------------\n");
         // for (int i=0; i<16; i++){
