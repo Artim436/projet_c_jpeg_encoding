@@ -8,6 +8,8 @@
 #include <convert_to_YCbCr.h>
 #include <dct.h>
 #include <htables.h>
+#include <huffman.h>
+#include <encoding.h>
 
 
 
@@ -25,6 +27,8 @@ int main (int argc, char **argv) {
         fonction(mcu, p_ycbcr);
         printf("\n on est l25\n");
         affiche_bloc(mcu);
+        printf("On rentre dans encodage_Y : \n");
+        encodage_Y(mcu);
         // printf("nb symbol par longueur\n");
         // printf("------------DC--------------\n");
         // for (int i=0; i<16; i++){

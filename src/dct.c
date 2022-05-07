@@ -111,7 +111,6 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
         printf("on est ici\n");
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
-        rle(main_mcu->bloc[k]);
     }   
 }
  
@@ -126,6 +125,7 @@ void affiche_bloc(struct main_mcu *main_mcu){
             }
         }
     }
+    printf("\n");
 }
 
 // int main(){

@@ -46,15 +46,4 @@ extern uint8_t *huffman_table_get_length_vector(struct huff_table *ht);
 */
 extern void huffman_table_destroy(struct huff_table *ht);
 
-extern void creation_table(struct main_mcu *mcu);
-
-extern uint8_t magnitude_table_DC(int16_t value);
-
-extern uint8_t magnitude_table_AC(int16_t value);
-
-extern uint32_t encoding_rle_DC(int16_t *F, uint8_t *i);
-
-extern void rle(int16_t *F);
-
-
 #endif /* HUFFMAN_H */
