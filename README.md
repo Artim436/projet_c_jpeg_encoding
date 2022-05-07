@@ -48,6 +48,9 @@ Nous avons également exploiter les tables de Huffman pour l'écriture en jpeg.
 On a passé la journée à réadapter notre code à la nouvelle structure.
 Nous pouvons à présent terminer les codes restants pour finir invader.
 
+#### Vendredi 6 Mai :
+Nous avons corriger les dernières erreurs de conversions, nous avons également commencé l'encodage RLE ainsi que les tables de Huffman.
+
 
 ##### Questions pour les profs :
 

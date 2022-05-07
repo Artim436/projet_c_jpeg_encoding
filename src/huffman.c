@@ -106,7 +106,7 @@ uint8_t magnitude_table_AC(int16_t value){
     }
 }
 
-uint32_t encoding_rle_DC(int16_t *F, uint8_t *i){ 
+uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){ 
     uint8_t cpt_0 = 0;
     for(uint8_t k = *i; k < min(64, *i+15); k++){
         if(F[k] == 0){
