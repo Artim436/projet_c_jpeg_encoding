@@ -28,7 +28,7 @@ struct main_mcu {
     enum sample_type acdc;
     struct huff_table **htable;
     uint8_t *qtable;
-    struct bitstream* blitztream;
+    struct bitstream *blitzstream;
 };
 //Structure d'un bloc mcu 8x8
 struct bloc_8x8 {

@@ -27,48 +27,30 @@ void creation_table(struct main_mcu *mcu){
     mcu->htable[3] = huffman_table_build(htables_nb_symb_per_lengths[AC][Cb], htables_symbols[AC][Cb], htables_nb_symbols[AC][Cb]);
 }
 
-/*
 void encodage_Y(struct main_mcu *p_main){
     creation_table(p_main);
-    //p_main->blitztream = bitstream_create(p_main->jpeg_filename);
+    p_main->blitzstream = bitstream_create(p_main->jpeg_filename);
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
+        uint8_t *R = calloc(64, sizeof(uint8_t));
+        uint8_t *compteur = calloc(1,sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i], R, compteur);//On écrit dans R l'encodage RLE de toutes les valeurs
         //Encoding DC:
+        uint8_t *nb_bits = malloc(sizeof(uint8_t));
+        uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], R[0], nb_bits);
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0]), magnitude_table(p_main->bloc[mcu_i][0]), false);
         //Encoding AC:
-        uint8_t cpt_bloc_0 = 0;
-        uint8_t cpt_0 = 0;
-
-        for(uint8_t i = 1;i<64; i++){
-
-            if(p_main->bloc[mcu_i][i] == 0 && cpt_0 < 16){
-                cpt_0++;
-            }
-            else{
-                if(cpt_0 == 16){
-                    cpt_0 = 0;
-                    cpt_bloc_0++;
-                }
-                else{
-                    while(cpt_bloc_0 != 0){
-                        //bitstream_write_bits(p_main->blitztream, 0xF0, 16, false);
-                        printf("%x ", 0xF0);
-                        cpt_bloc_0 --;
-                    }
-                    uint8_t *magnitude = calloc(1,sizeof(uint8_t));
-                    uint32_t valeur = huffman_table_get_path(p_main->htable[1], (uint8_t) p_main->bloc[mcu_i][i], magnitude);
-                    printf("%u ", valeur);
-                    cpt_0 = cpt_0*pow(2,4) + *magnitude;  //cpt_0magnitude(bloc[k])
-                    //bitstream_write_bits(p_main->blitztream, valeur, *magnitude, false);
-                    cpt_0 = 0;
-                }
-            }
+        for (uint8_t i=1; i<*compteur; i++){
+            huffman_path = huffman_table_get_path(p_main->htable[1], R[i], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+            bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][i]), magnitude_table(p_main->bloc[mcu_i][i]), false);
         }
-        //bitstream_write_bits(p_main->blitztream, 0x00, 16, false);
     }
 }
-*/
 
 
-uint8_t magnitude_table_AC(int16_t value){
+
+uint8_t magnitude_table(int16_t value){
     if (value < 0){
         value = -value;
     }
@@ -124,37 +106,55 @@ uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){
         else{
             if(cpt_0 <= 15){ //0000000000bloc[k]
                 *i += cpt_0+1;
-                cpt_0 = cpt_0*pow(2,4) + magnitude_table_AC(F[k]);  //cpt_0magnitude(bloc[k])
+                cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[k]);  //cpt_0magnitude(bloc[k])
                 return cpt_0;
             }
             else{ //cpt_0 =16
                 *i += 16; //
                 return 0xF0;
             }
-        }
+        }        
     }
+    return 0;//sert juste à enlever le warning
 }
 
 
-void rle(int16_t *F, uint8_t *R){
+void rle(int16_t *F, uint8_t *R, uint8_t *compteur){
     uint8_t index = 1;
     uint8_t k = 0;
-    // cpt = 0;
     while (index < 64){
-        // R = malloc(cpt*sizeof(uint8_t));
         R[k] = encoding_rle_AC(F, &index);
-        //cpt++;
         k++;
     }
+    *compteur = k;//Pour connaître le nombre d'éléments à inscire;
 }
 
 
 uint32_t index(int16_t value){
-    uint8_t m = magnitude_table_AC(value);
+    uint8_t m = magnitude_table(value);
     if(value < 0){
         return pow(2,m)-1 + value;
     }
     else{
         return pow(2,m)-1-pow(2,m-1)+ - pow(2,m-1)+ value +1;
+    }
+}
+
+void affichage_encodage(struct main_mcu *p_main){
+    for(uint32_t k = 0; k <p_main->n_mcu; k++){
+        uint8_t *R = calloc(64, sizeof(uint8_t));
+        uint8_t *compteur = calloc(1,sizeof(uint8_t));
+        rle(p_main->bloc[k], R, compteur);
+        for (int i=0; i<*compteur; i++){
+            printf(" value: ");
+            printf(" %d ", p_main->bloc[k][i]);
+            printf(" magnitude: ");
+            printf(" %d ", magnitude_table(p_main->bloc[k][i]));
+            printf(" index: ");
+            printf(" %d ", index(p_main->bloc[k][i]));
+            printf(" rle: ");
+            printf(" %d ", R[i]);
+            printf("\n");
+        }
     }
 }
