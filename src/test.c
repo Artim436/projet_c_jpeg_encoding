@@ -10,6 +10,7 @@
 #include <htables.h>
 #include <huffman.h>
 #include <encoding.h>
+#include <write_jpeg_file.h>
 
 
 
@@ -28,20 +29,8 @@ int main (int argc, char **argv) {
         fonction(mcu, p_ycbcr);
         printf("\n on est l25\n");
         affiche_bloc(mcu);
-        printf("On rentre dans encodage_Y : \n");
-        /*
-        write(mcu->ppm_filename,
-           mcu-> height,
-           mcu->width,
-           mcu->n_mcu,
-           mcu->jpeg_filename,
-           mcu->cc,
-           mcu->dir,
-           mcu->sampling_factor,
-           mcu->acdc,
-           mcu->htable,
-          mcu->qtable);*/
-
+        printf("On rentre dans write_jpeg : \n");
+        write_jpeg_Y(mcu);
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
     }

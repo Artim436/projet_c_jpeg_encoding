@@ -23,9 +23,6 @@ struct main_mcu {
     const char *ppm_filename; // nom du fichier d'entrée
     const char *jpeg_filename; // Nom du fichier de sortie
     uint8_t sampling_factor; // Facteur d'échantillonage
-    enum color_component cc; 
-    enum direction dir;
-    enum sample_type acdc;
     struct huff_table **htable;
     uint8_t *qtable;
     struct bitstream *blitzstream;

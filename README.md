@@ -51,6 +51,8 @@ Nous pouvons à présent terminer les codes restants pour finir invader.
 #### Vendredi 6 Mai :
 Nous avons corriger les dernières erreurs de conversions, nous avons également commencé l'encodage RLE ainsi que les tables de Huffman.
 
+#### Samedi 7 Mai :
+Journée consacrée à l'encodage RLE et à l'utilisation des tables de Huffman.
 
 ##### Questions pour les profs :
 

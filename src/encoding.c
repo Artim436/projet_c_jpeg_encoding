@@ -29,18 +29,20 @@ void creation_table(struct main_mcu *mcu){
 
 void encodage_Y(struct main_mcu *p_main){
     creation_table(p_main);
-    p_main->blitzstream = bitstream_create(p_main->jpeg_filename);
+    printf("On est rentré dans encoade de Y\n");
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
         uint8_t *R = calloc(64, sizeof(uint8_t));
         uint8_t *compteur = calloc(1,sizeof(uint8_t));
         rle(p_main->bloc[mcu_i], R, compteur);//On écrit dans R l'encodage RLE de toutes les valeurs
         //Encoding DC:
-        uint8_t *nb_bits = malloc(sizeof(uint8_t));
+        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
         uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], R[0], nb_bits);
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0]), magnitude_table(p_main->bloc[mcu_i][0]), false);
+        printf("Encodage de DC done");
         //Encoding AC:
         for (uint8_t i=1; i<*compteur; i++){
+            printf("On est ligne %u", i);
             huffman_path = huffman_table_get_path(p_main->htable[1], R[i], nb_bits);
             bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
             bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][i]), magnitude_table(p_main->bloc[mcu_i][i]), false);
