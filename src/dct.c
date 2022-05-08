@@ -114,13 +114,14 @@ void affiche_bloc(struct main_mcu *main_mcu){
         uint8_t k = 0;
         for(uint8_t j = 0; j<64; j++){
             printf("%x ", main_mcu->bloc[i][j]);
-            if(k != 0){
+            k = (k+1)%8;
+            if(k  == 0){
                 printf("\n");
-                k = (k+1)%8;
             }
         }
+        printf("\n");
     }
-    printf("\n");
+
 }
 
 // int main(){

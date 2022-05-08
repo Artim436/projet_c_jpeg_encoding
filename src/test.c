@@ -17,7 +17,7 @@
 int main (int argc, char **argv) {
     if (argc == 2) {
         struct main_mcu *mcu = malloc(sizeof(struct main_mcu)); //On alloue la mémoire pour la structure main_mcu
-        mcu->jpeg_filename = "mon_test.jpeg";
+        mcu->jpeg_filename = "mon_test.jpg";
         mcu->ppm_filename = argv[1]; //We store the name of the file in the structure main_mcu
         process_file(mcu->ppm_filename, mcu); //We call the function process_file to read the file
         affiche_details_image(mcu, mcu->ppm_filename); // On affiche les données de l'image
