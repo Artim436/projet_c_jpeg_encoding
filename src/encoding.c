@@ -33,18 +33,21 @@ void encodage_Y(struct main_mcu *p_main){
     p_main->blitzstream = bitstream_create(p_main->jpeg_filename);
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
         uint8_t *R = calloc(64, sizeof(uint8_t));
-        uint8_t *compteur = calloc(1,sizeof(uint8_t));
-        rle(p_main->bloc[mcu_i], R, compteur);//On écrit dans R l'encodage RLE de toutes les valeurs
+        uint8_t compteur = 1;
+        rle(p_main->bloc[mcu_i], R);//On écrit dans R l'encodage RLE de toutes les valeurs
         //Encoding DC:
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
         uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], R[0], nb_bits);
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0]), magnitude_table(p_main->bloc[mcu_i][0]), false);
         //Encoding AC:
-        for (uint8_t i=1; i<*compteur; i++){
-            huffman_path = huffman_table_get_path(p_main->htable[1], R[i], nb_bits);
-            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-            bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][i]), magnitude_table(p_main->bloc[mcu_i][i]), false);
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][i] != 0){
+                huffman_path = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][i]), magnitude_table(p_main->bloc[mcu_i][i]), false);
+                compteur ++;
+            }
         }
     }
 }
@@ -120,14 +123,13 @@ uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){
 }
 
 
-void rle(int16_t *F, uint8_t *R, uint8_t *compteur){
+void rle(int16_t *F, uint8_t *R){
     uint8_t index = 0;
     uint8_t k = 0;
     while (index < 64){
         R[k] = encoding_rle_AC(F, &index);
         k++;
     }
-    *compteur = k;//Pour connaître le nombre d'éléments à inscire;
 }
 
 
@@ -143,19 +145,22 @@ uint32_t index(int16_t value){
 
 void affichage_encodage(struct main_mcu *p_main){
     for(uint32_t k = 0; k <p_main->n_mcu; k++){
-        uint8_t *R = calloc(64, sizeof(uint8_t));
-        uint8_t *compteur = calloc(1,sizeof(uint8_t));
-        rle(p_main->bloc[k], R, compteur);
-        for (int i=0; i<*compteur; i++){
-            printf(" value: ");
-            printf(" %d ", p_main->bloc[k][i]);
-            printf(" magnitude: ");
-            printf(" %d ", magnitude_table(p_main->bloc[k][i]));
-            printf(" index: ");
-            printf(" %d ", index(p_main->bloc[k][i]));
-            printf(" rle: ");
-            printf(" %d ", R[i]);
-            printf("\n");
+        uint8_t *R = calloc(63, sizeof(uint8_t));
+        uint8_t compteur = 0;
+        rle(p_main->bloc[k], R);
+        for (int i=0; i<64; i++){
+            if(p_main->bloc[k][i] != 0){
+                printf(" value: ");
+                printf(" %d ", p_main->bloc[k][i]);
+                printf(" magnitude: ");
+                printf(" %d ", magnitude_table(p_main->bloc[k][i]));
+                printf(" index: ");
+                printf(" %d ", index(p_main->bloc[k][i]));
+                printf(" rle: ");
+                printf(" %d ", R[compteur]);
+                printf("\n");
+                compteur ++;
+            }
         }
     }
 }
