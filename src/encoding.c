@@ -30,30 +30,24 @@ void creation_table(struct main_mcu *mcu){
 void encodage_Y(struct main_mcu *p_main){
     int16_t precursor = 0;
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
+        printf("----- %u ------\n", mcu_i);
+        
         uint8_t *R = calloc(64, sizeof(uint8_t));
         uint8_t compteur = 1;
         int16_t tmp = precursor;
         precursor = p_main->bloc[mcu_i][0];
         p_main->bloc[mcu_i][0] = p_main->bloc[mcu_i][0] - tmp;
         rle(p_main->bloc[mcu_i], R);//On écrit dans R l'encodage RLE de toutes les valeurs
-        printf("ok;\n");
         //Encoding DC:
+       
+        //coemd
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
         uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], R[0], nb_bits);
+
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0]), magnitude_table(p_main->bloc[mcu_i][0]), false);
+        printf("ok;\n");
 
-        printf(" value: ");
-        printf(" %d ", p_main->bloc[mcu_i][0]);
-        printf(" magnitude: ");
-        printf(" %d ", magnitude_table(p_main->bloc[mcu_i][0]));
-        printf(" index: ");
-        printf(" %d ", index(p_main->bloc[mcu_i][0]));
-        printf(" rle: ");
-        printf(" %d ", R[compteur]);
-        uint32_t huffman = huffman_table_get_path(p_main->htable[0], R[compteur], nb_bits);
-        printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
-        printf("\n");
 
         //Encoding AC:
         for (uint8_t i=1; i<64; i++){
@@ -61,23 +55,13 @@ void encodage_Y(struct main_mcu *p_main){
                 huffman_path = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
                 bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
                 bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][i]), magnitude_table(p_main->bloc[mcu_i][i]), false);
-                printf(" value: ");
-                printf(" %d ", p_main->bloc[mcu_i][i]);
-                printf(" magnitude: ");
-                printf(" %d ", magnitude_table(p_main->bloc[mcu_i][i]));
-                printf(" index: ");
-                printf(" %d ", index(p_main->bloc[mcu_i][i]));
-                printf(" rle: ");
-                printf(" %d ", R[compteur]);
-                uint32_t huffman = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
-                printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
-                printf("\n");
                 compteur ++;
             }
         
         }
         huffman_path = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        
     }
 }
 
@@ -128,7 +112,7 @@ uint8_t magnitude_table(int16_t value){
 
 uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){ 
     uint8_t cpt_0 = 0;
-    for(uint8_t k = *i; k < 64; k++){
+    for(uint8_t k = *i; k < min(64, *i+16); k++){
         if(F[k] == 0){
             cpt_0++;
             if (k == 63){
@@ -151,36 +135,42 @@ uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){
     return 0;//sert juste à enlever le warning
 }
 
-// uint8_t encoding_rle_2(int16_t* F, uint8_t * cpt_bloc_0,uint8_t *pos){
-//     uint8_t cpt_0 = 0;
-//     while(F[*pos] == 0 && *pos<64){
-//         cpt_0 ++;
-//         if(cpt_0 == 16){
-//             cpt_0=0;
-//             *cpt_bloc_0 = *cpt_bloc_0 + 1;
-//             *pos = *pos + 1;
-//         }
-//     }
-//     if(*pos == 64){
-//         return 0x00;
-//     }
-//     while(*cpt_bloc_0 != 0){
-//         *cpt_bloc_0 = *cpt_bloc_0 - 1;
-//         return 0xF0;
-//     }
-    
-//     cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[*pos]);  //cpt_0magnitude(bloc[k])
-//     *pos = *pos + 1;
-//     return cpt_0;
+uint8_t encoding_rle_ac_2(int16_t* F, uint8_t * cpt_bloc_0,uint8_t *pos){
+    uint8_t cpt_0 = 0;
+    while(F[*pos] == 0 && *pos<64){
+        cpt_0 ++;
+        *pos = *pos + 1;
+        if(cpt_0 == 16){
+            cpt_0=0;
+            *cpt_bloc_0 = *cpt_bloc_0 + 1;
 
-// }
+        }
+    }
+    if(*pos == 64){
+        return 0x00;
+    }
+    while(*cpt_bloc_0 != 0){
+        *cpt_bloc_0 = *cpt_bloc_0 - 1;
+        return 0xF0;
+    }
+    
+    cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[*pos]);  //cpt_0magnitude(bloc[k])
+    *pos = *pos + 1;
+    return cpt_0;
+
+}
 
 void rle(int16_t *F, uint8_t *R){
     uint8_t index = 0;
     uint8_t k = 0;
     uint8_t cpt_bloc_0 = 0;
+    if(F[0]==0){
+        R[k] = 0;
+        index ++;
+        k ++;
+    }
     while (index < 64){
-        R[k] = encoding_rle_AC(F, &index);
+        R[k] = encoding_rle_ac_2(F, &cpt_bloc_0, &index);
         k++;
     }
     if (R[k] != 0x00){
