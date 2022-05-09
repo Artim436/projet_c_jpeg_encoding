@@ -28,9 +28,8 @@ void creation_table(struct main_mcu *mcu){
 }
 
 void encodage_Y(struct main_mcu *p_main){
-    creation_table(p_main);
-    p_main->blitzstream = calloc(1,sizeof(struct bitstream*));
-    p_main->blitzstream = bitstream_create(p_main->jpeg_filename);
+    // p_main->blitzstream = calloc(1,sizeof(struct bitstream*));
+    // p_main->blitzstream = bitstream_create(p_main->jpeg_filename);
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
         uint8_t *R = calloc(64, sizeof(uint8_t));
         uint8_t compteur = 1;

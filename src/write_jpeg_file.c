@@ -30,8 +30,7 @@ void write_jpeg_Y(struct main_mcu *p_main){
     jpeg_set_sampling_factor(p_jpeg, Cr, V, 64);
 
     //Par convention, on fait l'encodage dès maintenant car on crée les tables de huffman dans cette fonction
-    p_main->blitzstream = jpeg_get_bitstream(p_jpeg);
-    encodage_Y(p_main);
+    creation_table(p_main);
 
     //Table de Huffman
     jpeg_set_huffman_table(p_jpeg, DC, Y, p_main->htable[0]);
@@ -51,7 +50,7 @@ void write_jpeg_Y(struct main_mcu *p_main){
     jpeg_write_header(p_jpeg);
 
     //On récupère le bitstream positioné à la fin du header
-    //p_main->blitzstream = jpeg_get_bitstream(p_jpeg);
+    p_main->blitzstream = jpeg_get_bitstream(p_jpeg);
     encodage_Y(p_main);
     affichage_encodage(p_main);
     //On écrit dans le bitstream sur toutes les valeurs necéssaires
