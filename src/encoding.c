@@ -128,7 +128,7 @@ uint8_t magnitude_table(int16_t value){
 
 uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){ 
     uint8_t cpt_0 = 0;
-    for(uint8_t k = *i; k < min(64, *i+16); k++){
+    for(uint8_t k = *i; k < 64; k++){
         if(F[k] == 0){
             cpt_0++;
             if (k == 63){
@@ -151,36 +151,36 @@ uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){
     return 0;//sert juste à enlever le warning
 }
 
-uint8_t encoding_rle_2(int16_t* F, uint8_t * cpt_bloc_0,uint8_t *pos){
-    uint8_t cpt_0 = 0;
-    while(F[*pos] == 0 && *pos<64){
-        cpt_0 ++;
-        if(cpt_0 == 16){
-            cpt_0=0;
-            *cpt_bloc_0 = *cpt_bloc_0 + 1;
-            *pos = *pos + 1;
-        }
-    }
-    if(*pos == 64){
-        return 0x00;
-    }
-    while(*cpt_bloc_0 != 0){
-        *cpt_bloc_0 = *cpt_bloc_0 - 1;
-        return 0xF0;
-    }
+// uint8_t encoding_rle_2(int16_t* F, uint8_t * cpt_bloc_0,uint8_t *pos){
+//     uint8_t cpt_0 = 0;
+//     while(F[*pos] == 0 && *pos<64){
+//         cpt_0 ++;
+//         if(cpt_0 == 16){
+//             cpt_0=0;
+//             *cpt_bloc_0 = *cpt_bloc_0 + 1;
+//             *pos = *pos + 1;
+//         }
+//     }
+//     if(*pos == 64){
+//         return 0x00;
+//     }
+//     while(*cpt_bloc_0 != 0){
+//         *cpt_bloc_0 = *cpt_bloc_0 - 1;
+//         return 0xF0;
+//     }
     
-    cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[*pos]);  //cpt_0magnitude(bloc[k])
-    *pos = *pos + 1;
-    return cpt_0;
+//     cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[*pos]);  //cpt_0magnitude(bloc[k])
+//     *pos = *pos + 1;
+//     return cpt_0;
 
-}
+// }
 
 void rle(int16_t *F, uint8_t *R){
     uint8_t index = 0;
     uint8_t k = 0;
     uint8_t cpt_bloc_0 = 0;
     while (index < 64){
-        R[k] = encoding_rle_2(F, &cpt_bloc_0, &index);
+        R[k] = encoding_rle_AC(F, &index);
         k++;
     }
     if (R[k] != 0x00){

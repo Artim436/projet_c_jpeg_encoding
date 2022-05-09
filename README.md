@@ -52,7 +52,13 @@ Nous pouvons à présent terminer les codes restants pour finir invader.
 Nous avons corriger les dernières erreurs de conversions, nous avons également commencé l'encodage RLE ainsi que les tables de Huffman.
 
 #### Samedi 7 Mai :
-Journée consacrée à l'encodage RLE et à l'utilisation des tables de Huffman.
+Journée consacrée à l'encodage RLE et à l'utilisation des tables de Huffman. Création des fonctions magnitudes et indices dans la magnitude.
+
+#### Dimanche 8 Mai :
+Travail sur le fichier write_jpeg_file avoir un rendu.
+
+#### Lundi 9 Mai :
+Invaders marche, mais gris nous indique qui il y a un problème sur l'encoding des coefficients AC. Nous faisons également l'encoding de DC.
 
 ##### Questions pour les profs :
 
