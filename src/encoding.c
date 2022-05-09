@@ -49,6 +49,8 @@ void encodage_Y(struct main_mcu *p_main){
                 compteur ++;
             }
         }
+        huffman_path = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
     }
 }
 
@@ -130,6 +132,9 @@ void rle(int16_t *F, uint8_t *R){
         R[k] = encoding_rle_AC(F, &index);
         k++;
     }
+    if (R[k] != 0x00){
+        R[k] = 0x00;
+    }
 }
 
 
@@ -145,7 +150,8 @@ uint32_t index(int16_t value){
 
 void affichage_encodage(struct main_mcu *p_main){
     for(uint32_t k = 0; k <p_main->n_mcu; k++){
-        uint8_t *R = calloc(63, sizeof(uint8_t));
+        uint8_t *R = calloc(65, sizeof(uint8_t));
+        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
         uint8_t compteur = 0;
         rle(p_main->bloc[k], R);
         for (int i=0; i<64; i++){
@@ -158,9 +164,12 @@ void affichage_encodage(struct main_mcu *p_main){
                 printf(" %d ", index(p_main->bloc[k][i]));
                 printf(" rle: ");
                 printf(" %d ", R[compteur]);
+                uint32_t huffman = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
+                printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
                 printf("\n");
                 compteur ++;
             }
         }
+        printf("EndOfBlock : %d\n", R[compteur]);
     }
 }
