@@ -50,7 +50,7 @@ struct image_YCbCr *creation_YCbCr(struct image_mcu *p_mcu){
 
 void afficher_YCbCr(struct image_YCbCr *p_ycbcr){
     //Parcours les éléments de image_YCbCr et affiche le Y
-    for(uint32_t j = 0; j<p_ycbcr->nmcu; j++){
+    for(uint32_t j = 0; j<20; j++){
         printf("----- MCU numéro %u YCbCr----- \n", j+1);
         printf("Affichage de Y: \n");
         for(uint8_t i = 0; i<64; i++){
@@ -59,11 +59,11 @@ void afficher_YCbCr(struct image_YCbCr *p_ycbcr){
                 printf("\n");
             }
         }
-        printf("Affichage de Cb : \n");
+        //printf("Affichage de Cb : \n");
         for(uint8_t i = 0; i<64; i++){
-            printf("%u ", p_ycbcr->l_ycbcr[j][i]->Cb);
+            //printf("%u ", p_ycbcr->l_ycbcr[j][i]->Cb);
             if(i % 8 == 7){
-                printf("\n");
+                //printf("\n");
             }
         }
     }

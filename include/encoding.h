@@ -23,5 +23,6 @@ extern uint32_t index(int16_t value);
 
 extern void affichage_encodage(struct main_mcu *p_main);
 
+extern uint8_t encoding_rle_2(int16_t* F, uint8_t * cpt_bloc_0,uint8_t *pos);
 
 #endif
