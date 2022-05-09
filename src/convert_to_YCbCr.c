@@ -22,9 +22,9 @@ struct image_YCbCr *convert_YCbCr(struct image_mcu *p_mcu){
         for(uint8_t j = 0; j<64; j++){
             struct YCbCr *new_ycbcr= calloc(1, sizeof(struct YCbCr));
             uint8_t coeff = p_mcu->l_mcu[i][j];
-            new_ycbcr->Y = (0.299 * coeff + 0.587 * coeff + 0.114 * coeff);
-            new_ycbcr->Cb = (-0.1687 * coeff + -0.3313 * coeff + 0.5 * coeff+ 128);
-            new_ycbcr->Cr = (0.5 * coeff + -0.4187 * coeff + -0.0813 * coeff+ 128);
+            new_ycbcr->Y = round(0.299 * coeff + 0.587 * coeff + 0.114 * coeff);
+            new_ycbcr->Cb = round(-0.1687 * coeff + -0.3313 * coeff + 0.5 * coeff+ 128);
+            new_ycbcr->Cr = round(0.5 * coeff + -0.4187 * coeff + -0.0813 * coeff+ 128);
             p_ycbcr->l_ycbcr[i][j] = new_ycbcr;
         }
     }

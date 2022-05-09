@@ -4,6 +4,7 @@
 #include <lecture_pgm.h>
 #include <MCU.h>
 #include <structure.h>
+#include <math.h>
 
 struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
     /*Cette fonction prend en entrée une image pgm "écrite" en décimal et la renvoie avec un découpage en MCU.
@@ -125,7 +126,7 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
 void print_mat(float** mat, uint8_t len){
     for(uint8_t i =0; i<len;i++){
         for(uint8_t j =0; j<len;j++){
-            printf("%f ", mat[i][j]);
+            printf("%x ", (int16_t) mat[i][j]);
         }
         printf("\n");
     }   

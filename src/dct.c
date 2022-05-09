@@ -27,10 +27,10 @@ float C_function(int i){  // middle function for DCT
 }
 
 float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
-    float pi = 3.14159265358979323;
+    float pi = 3.14;//159265358979323846264338
     float phi = 0.0;
-    for (int x=0; x<n; x++){
-        for (int y=0; y<n; y++){ 
+    for (uint8_t x=0; x<n; x++){
+        for (uint8_t y=0; y<n; y++){ 
             float s = S[x][y]; 
             phi += s*cos((((2.0*x)+1)*(float)i*pi)/(2.0*(float)n))*cos((((2.0*y)+1)*(float)j*pi)/(2.0*(float)n));
         }
@@ -41,20 +41,20 @@ float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne
 
 
 void dct(float** S){ // DCT matrixs
-    int n=8;
+    uint8_t n=8;
     bloc_8x8_dtc *I = malloc(sizeof(bloc_8x8_dtc));
-    for (int x=0; x<n; x++){
-        for (int y=0; y<n; y++){
+    for (uint8_t x=0; x<n; x++){
+        for (uint8_t y=0; y<n; y++){
             S[x][y]-=128.0; // (*S)
         }
     }
-    for (int i=0; i<n; i++){
-        for (int j=0; j<n; j++){
+    for (uint8_t i=0; i<n; i++){
+        for (uint8_t j=0; j<n; j++){
             I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
         }
     }
-    for (int i=0; i<n; i++){
-        for (int j=0; j<n; j++){
+    for (uint8_t i=0; i<n; i++){
+        for (uint8_t j=0; j<n; j++){
             S[i][j] = I->matrix_bloc[i][j];
         }
     }
@@ -104,13 +104,18 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
         dct(p_mat);
+        if(k < 20){
+            printf("mat: %u   => dct\n", k);
+            print_mat(p_mat, 8);
+        }
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
         }  
 }
  
 void affiche_bloc(struct main_mcu *main_mcu){
-    for(uint8_t i = 0; i<main_mcu->n_mcu; i++){
+    for(uint8_t i = 0; i<20; i++){
+        printf("-------mcu : %u --------\n", i);
         uint8_t k = 0;
         for(uint8_t j = 0; j<64; j++){
             printf("%x ", main_mcu->bloc[i][j]);

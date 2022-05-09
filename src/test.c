@@ -28,7 +28,7 @@ int main (int argc, char **argv) {
         printf("\n on est l23\n");
         fonction(mcu, p_ycbcr);
         printf("\n on est l25\n");
-        // //affiche_bloc(mcu);
+        //affiche_bloc(mcu);
         printf("On rentre dans write_jpeg : \n");
         write_jpeg_Y(mcu);
     } else {
