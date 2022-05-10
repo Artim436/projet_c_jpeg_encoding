@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <lecture_pgm.h>
 #include <structure.h>
-
+//#CLEANED
 void process_file(const char *file_name, struct  main_mcu *mcu) {
     //Ouvre le fichier en mode lecture binaire
     FILE *file = fopen(file_name, "rb");
@@ -18,13 +18,13 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
     //Lecture de la valeur maximal du gris
     fscanf(file, "%d", &(mcu->max_value));
     //Allocation de la mémoire pour la data
-    mcu->data = calloc(mcu->height, sizeof(char*));
+    mcu->data = calloc(mcu->height, sizeof(char*)); //CLEANED
     //Stockage des pixels
     printf("woola \n");
     if (mcu->type_pgm[1]== '5') {
         fgetc(file);
         for (uint32_t i=0; i<mcu->height; i++) {
-            mcu->data[i] = calloc(mcu->width, sizeof(char));
+            mcu->data[i] = calloc(mcu->width, sizeof(char)); //CLEANED
             //Ecrit les données sur la mémoire allouée
             fread(mcu->data[i], sizeof(uint8_t), mcu->width, file);
         }

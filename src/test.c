@@ -11,6 +11,7 @@
 #include <huffman.h>
 #include <encoding.h>
 #include <write_jpeg_file.h>
+#include <nettoyage.h>
 
 
 
@@ -29,11 +30,15 @@ int main (int argc, char **argv) {
         //afficher_YCbCr(p_ycbcr);
         printf("\n on est l23\n");
         fonction(mcu, p_ycbcr);
+        clean_image_mcu(img_mcu);
+        clean_image_YCbCr(p_ycbcr);
         printf("\n on est l25\n");
         printf("nmcu = %u\n", mcu->n_mcu);
         //affiche_bloc(mcu);
         printf("On rentre dans write_jpeg : \n");
         write_jpeg_Y(mcu);
+        clean_main_mcu(mcu);
+
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");
     }
