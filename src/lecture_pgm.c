@@ -20,6 +20,7 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
     //Allocation de la mémoire pour la data
     mcu->data = calloc(mcu->height, sizeof(char*));
     //Stockage des pixels
+    printf("woola \n");
     if (mcu->type_pgm[1]== '5') {
         fgetc(file);
         for (uint32_t i=0; i<mcu->height; i++) {
@@ -27,6 +28,12 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
             //Ecrit les données sur la mémoire allouée
             fread(mcu->data[i], sizeof(uint8_t), mcu->width, file);
         }
+    // } else if (mcu->type_pgm[1]== '2') {
+    //     for (uint32_t i=0; i<mcu->height; i++) {
+    //         char *tmp[100000000];
+    //         mcu->data[i] = calloc(mcu->width, sizeof(char));
+    //         fgets(tmp, 10000000, file);
+    //     }
     }
     //Ferme le fichier
     fclose(file);
