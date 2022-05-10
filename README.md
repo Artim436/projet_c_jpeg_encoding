@@ -20,7 +20,7 @@ Rajouter **régulièrement** des informations sur l'avancement de votre projet e
 
 #### Journal de bord
 ##### Lundi 2 Mai :
-Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'imager invader :
+Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'image invader :
 
 Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l'image JPEG et transformer les données RGB en YCbCr.
 
@@ -37,7 +37,7 @@ On va tester les liens entre mcu et extraction
 La conversion RGB to YCbCr faite et adaptée pour les images en couleurs.
 L'écriture en jpeg est également faite
 Le "zig-zag" est terminé.
-Demain on écrit les tables de Huffman, l'objectif est de terminé invader demain.
+Demain on écrit les tables de Huffman, l'objectif est de terminer invader demain.
 
 ##### Mercredi 4 Mai:
 On a décidé de créer une structure commune à toutes les fonctions.
@@ -55,13 +55,13 @@ Nous avons corriger les dernières erreurs de conversions, nous avons également
 Journée consacrée à l'encodage RLE et à l'utilisation des tables de Huffman. Création des fonctions magnitudes et indices dans la magnitude.
 
 #### Dimanche 8 Mai :
-Travail sur le fichier write_jpeg_file avoir un rendu.
+Travail sur le fichier write_jpeg_file afin d'avoir un rendu.
 
 #### Lundi 9 Mai :
-Invaders marche, mais gris nous indique qui il y a un problème sur l'encoding des coefficients AC. Nous faisons également l'encoding de DC.
+Invaders marche, mais gris nous indique qu'il y a un problème sur l'encoding des coefficients AC. Nous faisons également l'encoding de DC.
 
 #### Mardi 10 Mai :
-Gris marche assez tôt dans la matinée grâce à l'encoding des coefficients. Cependant complexite.pgm ne marche pas ce qui pousse Cedric à retravailler le decoupage d'une image en MCU pednant que Arthur A. travaille avec l'outil valgrind afin de nettoyer notre code et empêcher tout problème qui pourrait être lié à l'écriturre sur une case mémoire déjà occupée. Arthur L. de son côté réalise une optimisation du DCT avec la méthode de stockage du produit de cosinus.
+Gris marche assez tôt dans la matinée grâce à l'encoding des coefficients. Cependant complexite.pgm ne marche pas ce qui pousse Cedric à retravailler le decoupage d'une image en MCU pednant que Arthur A. travaille avec l'outil valgrind afin de nettoyer notre code et empêcher tout problème qui pourrait être lié à l'écriture sur une case mémoire déjà occupée. Arthur L. de son côté réalise une optimisation du DCT avec la méthode de stockage du produit de cosinus.
 Le groupe est bloqué car aucune image générée par gimp en pgm (peu importe sa taille) n'est encodée par notre encodeur jpeg.
 
 ##### Questions pour les profs :
