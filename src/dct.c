@@ -136,7 +136,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
 }
  
 void affiche_bloc(struct main_mcu *main_mcu){
-    for(uint8_t i = 0; i<20; i++){
+    for(uint32_t i = 1108; i<1113; i++){
         printf("-------mcu : %u --------\n", i);
         uint8_t k = 0;
         for(uint8_t j = 0; j<64; j++){
