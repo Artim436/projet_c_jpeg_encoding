@@ -27,7 +27,7 @@ float C_function(int i){  // middle function for DCT
 }
 
 float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
-    float pi = 3.14;//159265358979323846264338
+    float pi = 3.14159265358979323846264338;//159265358979323846264338
     float phi = 0.0;
     for (uint8_t x=0; x<n; x++){
         for (uint8_t y=0; y<n; y++){ 
@@ -63,7 +63,7 @@ void dct(float** S){ // DCT matrixs
 
 int coef_quantization(int16_t *D, int i){ // quantization vector
     D[i] = (float) D[i]/quantification_table_Y[i]; //D = D/Y
-    return (int16_t) D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
+    return D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
 }
 
 void quantization(int16_t *D){ // quantization vector

@@ -22,12 +22,12 @@ void write_jpeg_Y(struct main_mcu *p_main){
     
     // Paramètre de l'encodage
     jpeg_set_jpeg_filename(p_jpeg, p_main->jpeg_filename);
-    jpeg_set_sampling_factor(p_jpeg, Y, H, 1);
-    jpeg_set_sampling_factor(p_jpeg, Cb, H, 1);
-    jpeg_set_sampling_factor(p_jpeg, Cr, H, 1);
-    jpeg_set_sampling_factor(p_jpeg, Y, V, 1);
-    jpeg_set_sampling_factor(p_jpeg, Cb, V, 1);
-    jpeg_set_sampling_factor(p_jpeg, Cr, V, 1);
+    jpeg_set_sampling_factor(p_jpeg, Y, H, 2);
+    jpeg_set_sampling_factor(p_jpeg, Cb, H, 2);
+    jpeg_set_sampling_factor(p_jpeg, Cr, H, 2);
+    jpeg_set_sampling_factor(p_jpeg, Y, V, 2);
+    jpeg_set_sampling_factor(p_jpeg, Cb, V, 2);
+    jpeg_set_sampling_factor(p_jpeg, Cr, V, 2);
 
     //Par convention, on fait l'encodage dès maintenant car on crée les tables de huffman dans cette fonction
     creation_table(p_main);
