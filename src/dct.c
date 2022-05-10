@@ -104,10 +104,10 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
         dct(p_mat);
-        if(k < 20){
+        /*if(k < 20){
             printf("mat: %u   => dct\n", k);
             print_mat(p_mat, 8);
-        }
+        }*/
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization(main_mcu->bloc[k]);
         }  
