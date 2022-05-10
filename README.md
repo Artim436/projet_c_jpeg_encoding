@@ -60,6 +60,10 @@ Travail sur le fichier write_jpeg_file avoir un rendu.
 #### Lundi 9 Mai :
 Invaders marche, mais gris nous indique qui il y a un problème sur l'encoding des coefficients AC. Nous faisons également l'encoding de DC.
 
+#### Mardi 10 Mai :
+Gris marche assez tôt dans la matinée grâce à l'encoding des coefficients. Cependant complexite.pgm ne marche pas ce qui pousse Cedric à retravailler le decoupage d'une image en MCU pednant que Arthur A. travaille avec l'outil valgrind afin de nettoyer notre code et empêcher tout problème qui pourrait être lié à l'écriturre sur une case mémoire déjà occupée. Arthur L. de son côté réalise une optimisation du DCT avec la méthode de stockage du produit de cosinus.
+Le groupe est bloqué car aucune image générée par gimp en pgm (peu importe sa taille) n'est encodée par notre encodeur jpeg.
+
 ##### Questions pour les profs :
 
 
