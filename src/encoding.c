@@ -58,7 +58,6 @@ void encodage_Y(struct main_mcu *p_main){
         }
         huffman_path = huffman_table_get_path(p_main->htable[1], R[compteur], nb_bits);
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        
     }
 }
 
