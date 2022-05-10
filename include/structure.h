@@ -27,22 +27,11 @@ struct main_mcu {
     uint8_t *qtable;
     struct bitstream *blitzstream;
 };
-//Structure d'un bloc mcu 8x8
-struct bloc_8x8 {
-    uint8_t matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
-};
 
 struct bloc_8x8_dtc {
     float matrix_bloc[8][8]; //mettre peut etre des floats pour les operations dct
 };
-//Structure d'un vecteur bloc 64
-struct bloc_64 {
-    uint8_t vector[64];
-};
 
-struct bloc_64_dtc {
-    float vector[64];
-};
 
 struct image_mcu{
     /*Structure des mcu*/
@@ -71,4 +60,26 @@ struct image_YCbCr{
     uint32_t nmcu;//Equivalent aux nombre de MCU
 };
 
+
+struct main_mcu_rgb {
+    struct rgb ***data; // On stock les données de l'image dans une nouvelle structure rgb
+    int16_t **bloc; //Liste contenants les pointeurs vers les blocs
+    uint32_t n_mcu;//taille de la liste bloc
+    uint32_t width; // Largeur de l'image d'entrée
+    uint32_t height; // Hauteur de l'image d'entrée
+    uint32_t max_value; // Valeur maximal des nuances RGB
+    char type_pgm[3]; //Type de l'image d'entrée : permet de définir nb de components
+    const char *ppm_filename; // nom du fichier d'entrée
+    const char *jpeg_filename; // Nom du fichier de sortie
+    uint8_t sampling_factor; // Facteur d'échantillonage
+    struct huff_table **htable;
+    uint8_t *qtable;
+    struct bitstream *blitzstream;
+};
+
+struct rgb{
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+};
 #endif
