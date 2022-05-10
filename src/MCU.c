@@ -87,8 +87,6 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
             uint32_t i = p_main->n_mcu-1;
 
             //Puis on calcule sa position dans le MCU
-            /*uint32_t j = (p_main->width - 1 ) % 8 + debord_y;
-            j += 8 * (p_main->height - 1 + debord_x) % 8;*/
 
             uint32_t j = (((p_mcu->dev_height)+debord_x-1)%8) * 8 + (p_mcu->dev_width+debord_y -1)%8;
 

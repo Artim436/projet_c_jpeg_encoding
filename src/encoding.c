@@ -195,7 +195,7 @@ uint32_t index(int16_t value){
 }
 
 void affichage_encodage(struct main_mcu *p_main){
-    for(uint32_t k = 8; k <15; k++){
+    for(uint32_t k = p_main->n_mcu-20; k <p_main->n_mcu; k++){
         printf("-----MCU : %u ------\n", k);
         uint8_t *R = calloc(65, sizeof(uint8_t));
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
