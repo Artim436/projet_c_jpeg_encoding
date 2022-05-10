@@ -61,17 +61,27 @@ void dct(float** S){ // DCT matrixs
 }
 
 
-int coef_quantization(int16_t *D, int i){ // quantization vector
+int coef_quantization_Y(int16_t *D, int i){ // quantization vector
     D[i] = (float) D[i]/quantification_table_Y[i]; //D = D/Y
-    return D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
+    return (int) D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
 }
 
-void quantization(int16_t *D){ // quantization vector
+void quantization_Y(int16_t *D){ // quantization vector
     for (int i =0; i<64; i++){
-        D[i] = coef_quantization(D, i);
+        D[i] = coef_quantization_Y(D, i);
     }
 }
 
+int coef_quantization_C(int16_t *D, int i){ // quantization vector
+    D[i] = (float) D[i]/quantification_table_CbCr[i]; //D = D/C
+    return (int) D[i];  //better than floor for numbers between -1 and 0 (we want 0 and not 1)
+}
+
+void quantization_C(int16_t *D){ // quantization vector
+    for (int i =0; i<64; i++){
+        D[i] = coef_quantization_C(D, i);
+    }
+}
 
 void zigzag(float** D, int16_t* F){ // zigzag matrix
     int cpt = 0;
@@ -109,7 +119,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
             print_mat(p_mat, 8);
         }*/
         zigzag(p_mat, main_mcu->bloc[k]);
-        quantization(main_mcu->bloc[k]);
+        quantization_Y(main_mcu->bloc[k]);
         }  
 }
  
