@@ -11,6 +11,8 @@
 #include <jpeg_writer.h>
 #include <test.h>
 #include <huffman.h>
+#include <qtables.h>
+#include <costable.h>
 
 #define max(a,b) (a>=b?a:b) //if a>=b return a else return b
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
@@ -38,6 +40,16 @@ float coef_dct(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne
     return phi*0.25*C_function(i)*C_function(j);
 }
 
+float coef_dct_v2(float** S, int i, int j, int n){ // coefficient of DCT matrix (ne pas oublier de faire-128 au coef dans le dct du cours)
+    float phi = 0.0;
+    for (uint8_t x=0; x<n; x++){
+        for (uint8_t y=0; y<n; y++){ 
+            float s = S[x][y]; 
+            phi += s*costables[8*x+i][8*y+j];
+        }
+    }
+    return phi*0.25*C_function(i)*C_function(j);
+}
 
 
 void dct(float** S){ // DCT matrixs
@@ -45,12 +57,12 @@ void dct(float** S){ // DCT matrixs
     bloc_8x8_dtc *I = malloc(sizeof(bloc_8x8_dtc));
     for (uint8_t x=0; x<n; x++){
         for (uint8_t y=0; y<n; y++){
-            S[x][y]-=128.0; // (*S)
+            S[x][y]-=128.0;
         }
     }
     for (uint8_t i=0; i<n; i++){
         for (uint8_t j=0; j<n; j++){
-            I->matrix_bloc[i][j] = coef_dct(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
+            I->matrix_bloc[i][j] = coef_dct_v2(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
         }
     }
     for (uint8_t i=0; i<n; i++){
@@ -124,7 +136,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
 }
  
 void affiche_bloc(struct main_mcu *main_mcu){
-    for(uint32_t i = main_mcu->n_mcu-75; i<main_mcu->n_mcu; i++){
+    for(uint8_t i = 0; i<20; i++){
         printf("-------mcu : %u --------\n", i);
         uint8_t k = 0;
         for(uint8_t j = 0; j<64; j++){
@@ -180,7 +192,7 @@ void affiche_bloc(struct main_mcu *main_mcu){
 //         printf("%x ", (int)F[i]);
 //     }
 //     printf("\n");
-//     quantization(F);
+//     quantization_Y(F);
 //     printf("-----------quantization table-----------\n");
 //     for (int i=0; i<64; i++){
 //         printf("%x ", (short)quantification_table_Y[i]);
