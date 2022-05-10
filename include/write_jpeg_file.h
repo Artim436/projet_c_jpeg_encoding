@@ -12,6 +12,7 @@
 #include <structure.h>
 #include <qtables.h>
 #include <encoding.h>
+#include <MCU.h>
 
 extern void write_jpeg_Y(struct main_mcu *p_main);
 

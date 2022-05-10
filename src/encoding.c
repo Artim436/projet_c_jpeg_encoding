@@ -13,6 +13,7 @@
 #include <huffman.h>
 #include <encoding.h>
 #include <math.h>
+#include <write_jpeg_file.h>
 
 #define min(a,b) (a<=b?a:b) //if a<=b return a else return b
 
@@ -151,7 +152,7 @@ uint8_t encoding_rle_ac_2(int16_t* F, uint8_t* cpt_bloc_0, uint8_t *pos){
 
         }
     }
-    if(*pos == 64 && F[*pos-1] == 0){
+    if(*pos == 64 && F[*pos-1] == 0 ){
         return 0x00;
     }
     while(*cpt_bloc_0 != 0){
@@ -178,7 +179,8 @@ void rle(int16_t *F, uint8_t *R, uint8_t* taille_R){
         k++;
     }
     if(k == 2 && R[0] == 0){
-        k --;
+        R[1] = 0x00;
+        //k --;
     }
     *taille_R = k;
 }
@@ -195,7 +197,7 @@ uint32_t index(int16_t value){
 }
 
 void affichage_encodage(struct main_mcu *p_main){
-    for(uint32_t k = p_main->n_mcu-20; k <p_main->n_mcu; k++){
+    for(uint32_t k = 1108; k <1112; k++){
         printf("-----MCU : %u ------\n", k);
         uint8_t *R = calloc(65, sizeof(uint8_t));
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));

@@ -126,7 +126,7 @@ struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint32_t he
 
 void affiche_img_mcu(struct image_mcu *p_gmu){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = p_gmu->nmcu-3; j<p_gmu->nmcu; j++){
+    for(uint32_t j = 1108; j<1115; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint8_t i = 0; i<64; i++){
             printf("%x ", p_gmu->l_mcu[j][i]);
