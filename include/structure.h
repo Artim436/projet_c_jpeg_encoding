@@ -86,7 +86,7 @@ struct rgb{
 struct image_mcu_rgb{
      /*Structure des mcu*/
     char type_pgm[3];
-    struct rgb* **l_mcu;
+    struct rgb ***l_mcu;
     uint32_t nmcu;//Pour la largeur comme pour la hauteur on renverra la taille par pixel et non par MCU
     uint32_t max_value;
     uint8_t dev_width;//En soit pas utile pour la structure mais nécessaire pour la construction, il s'agit du reste modulo8 des dimensions de image pgm

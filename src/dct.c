@@ -116,25 +116,50 @@ void zigzag(float** D, int16_t* F){ // zigzag matrix
 
 
 void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
-    
     //On prépare la structure de bloc
     main_mcu->bloc = calloc(main_mcu->n_mcu, sizeof(float *));
     for (uint32_t i=0; i<main_mcu->n_mcu; i++) {
-            main_mcu->bloc[i] = calloc(64, sizeof(float));
+        main_mcu->bloc[i] = calloc(64, sizeof(float));
     }
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
         dct(p_mat);
+        // dct(p_matCb);
+        // dct(p_matCr);
         /*if(k < 20){
             printf("mat: %u   => dct\n", k);
             print_mat(p_mat, 8);
         }*/
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization_Y(main_mcu->bloc[k]);
-        }  
+    }  
 }
- 
+
+
+void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbcr){
+    //On prépare la structure de bloc
+    main_mcu_rgb->bloc = calloc(main_mcu_rgb->n_mcu, sizeof(float *));
+    for (uint32_t i=0; i<main_mcu_rgb->n_mcu; i++) {
+        main_mcu_rgb->bloc[i] = calloc(64, sizeof(float));
+    }
+    //On applique les dtc
+    for (uint32_t k =0; k<main_mcu_rgb->n_mcu; k++){
+        float*** p_mat_rgb= convert_YCbCr_mat_rgb(im_ycbcr->l_ycbcr[k]);
+        dct(p_mat_rgb[0]);
+        dct(p_mat_rgb[1]);
+        dct(p_mat_rgb[2]);
+        /*if(k < 20){
+            printf("mat: %u   => dct\n", k);
+            print_mat(p_mat, 8);
+        }*/
+        zigzag(p_mat_rgb, main_mcu_rgb->bloc[k]);
+        quantization_Y(main_mcu_rgb->bloc[k]);
+    }  
+}
+
+
+
 void affiche_bloc(struct main_mcu *main_mcu){
     for(uint32_t i = 1108; i<1113; i++){
         printf("-------mcu : %u --------\n", i);

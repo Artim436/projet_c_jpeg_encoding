@@ -13,13 +13,19 @@ typedef struct bloc_64_dtc bloc_64_dtc;
 
 extern float coef_dct(float** S, int i, int j, int n);
 
+extern float coef_dct_v2(float** S, int i, int j, int n);
+
 extern float C_function(int i);
 
 extern void dct(float** S);
 
-extern void quantization(int16_t* D);
+extern void quantization_Y(int16_t* D);
 
-extern int coef_quantization(int16_t* D, int i);
+extern void quantization_C(int16_t* D);
+
+extern int coef_quantization_Y(int16_t* D, int i);
+
+extern int coef_quantization_C(int16_t* D, int i);
 
 extern void zigzag(float** D, int16_t* F);
 
