@@ -55,13 +55,13 @@ int main (int argc, char **argv) {
              struct image_YCbCr *p_ycbcr = convert_YCbCr_RGB(img_mcu_rgb);
             //afficher_YCbCr_rgb(p_ycbcr);
             fonction_RGB(mcu_rgb, p_ycbcr);
-            printf("On est sortie de fonction_RGB\n");
+            //printf("On est sortie de fonction_RGB\n");
             // //clean_image_mcu(img_mcu);
             // clean_image_YCbCr(p_ycbcr);
             // printf(" on est l61\n");
-            // //affiche_bloc(mcu);
+            //affiche_bloc_rgb(mcu_rgb);
             // printf("On rentre dans write_jpeg : \n");
-            // write_jpeg_Y_RGB(mcu_rgb);
+            write_jpeg_Y_RGB(mcu_rgb);
         }
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");

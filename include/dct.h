@@ -35,4 +35,6 @@ extern void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *
 
 extern void affiche_bloc(struct main_mcu *main_mcu);
 
+extern void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu);
+
 #endif /* _DCT_H_ */

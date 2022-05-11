@@ -144,20 +144,17 @@ void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbc
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu_rgb->n_mcu; k++){
         float*** p_mat_rgb= convert_YCbCr_mat_rgb(im_ycbcr->l_ycbcr[k]);
-        dct(p_mat_rgb[0]);
-        dct(p_mat_rgb[1]);
-        dct(p_mat_rgb[2]);
-        printf("dct ok.\n");
+        dct(p_mat_rgb[0]);//Matrice des Y
+        dct(p_mat_rgb[1]);//Matrice des Cb
+        dct(p_mat_rgb[2]);//Matrice des Cr
 
         zigzag(p_mat_rgb[0], main_mcu_rgb->bloc[k][0]);
         zigzag(p_mat_rgb[1], main_mcu_rgb->bloc[k][1]);
         zigzag(p_mat_rgb[2], main_mcu_rgb->bloc[k][2]);
-        printf("zigzag ok. \n");
 
         quantization_Y(main_mcu_rgb->bloc[k][0]);
         quantization_C(main_mcu_rgb->bloc[k][1]);
         quantization_C(main_mcu_rgb->bloc[k][2]);
-        printf("quantization ok. \n");
 
     }  
 }
@@ -165,7 +162,7 @@ void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbc
 
 
 void affiche_bloc(struct main_mcu *main_mcu){
-    for(uint32_t i = 1108; i<1113; i++){
+    for(uint32_t i = 0; i<20; i++){
         printf("-------mcu : %u --------\n", i);
         uint8_t k = 0;
         for(uint8_t j = 0; j<64; j++){
@@ -176,6 +173,34 @@ void affiche_bloc(struct main_mcu *main_mcu){
             }
         }
         printf("\n");
+    }
+
+}
+
+void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu){
+    for(uint32_t i = 0; i<20; i++){
+        printf("-------mcu : %u --------\n", i);
+        printf("Composante Y :  \n");
+        for(uint8_t j = 0; j<64; j++){
+            printf("%x ", main_mcu->bloc[i][0][j]);
+            if(j%8  == 7){
+                printf("\n");
+            }
+        }
+        printf("Composante Cb :  \n");
+        for(uint8_t j = 0; j<64; j++){
+            printf("%x ", main_mcu->bloc[i][1][j]);
+            if(j%8  == 7){
+                printf("\n");
+            }
+        }
+        printf("Composante Cr :  \n");
+        for(uint8_t j = 0; j<64; j++){
+            printf("%x ", main_mcu->bloc[i][2][j]);
+            if(j%8  == 7){
+                printf("\n");
+            }
+        }
     }
 
 }

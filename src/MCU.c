@@ -304,18 +304,19 @@ float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
 
 float ***convert_YCbCr_mat_rgb(struct YCbCr **p_YCbCr){
     float ***matrice = malloc(3*sizeof(float**));
-    for(uint8_t j = 0;j<3; j++){
-        matrice[j] = malloc(8*sizeof(float*));
-        for(uint8_t k=0; k<8; k++){
-            matrice[0][k] = malloc(8*sizeof(float));
-            matrice[1][k] = malloc(8*sizeof(float));
-            matrice[2][k] = malloc(8*sizeof(float));
-            for(uint8_t i=0; i<8; i++){
-                matrice[0][k][i] = (float)p_YCbCr[k*8 +i]->Y;
-                matrice[1][k][i] = (float)p_YCbCr[k*8 +i]->Cb;
-                matrice[2][k][i] = (float)p_YCbCr[k*8 +i]->Cr;
-            }
+    matrice[0] = malloc(8*sizeof(float *));
+    matrice[1] = malloc(8*sizeof(float *));
+    matrice[2] = malloc(8*sizeof(float *));
+    for(uint8_t k=0; k<8; k++){
+        matrice[0][k] = malloc(8*sizeof(float));
+        matrice[1][k] = malloc(8*sizeof(float));
+        matrice[2][k] = malloc(8*sizeof(float));
+        for(uint8_t i=0; i<8; i++){
+            matrice[0][k][i] = (float)p_YCbCr[k*8 +i]->Y;
+            matrice[1][k][i] = (float)p_YCbCr[k*8 +i]->Cb;
+            matrice[2][k][i] = (float)p_YCbCr[k*8 +i]->Cr;
         }
     }
+
     return matrice;
 }
