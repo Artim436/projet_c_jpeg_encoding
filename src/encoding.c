@@ -126,31 +126,6 @@ uint8_t magnitude_table(int16_t value){
 }
  
 
-uint8_t encoding_rle_AC(int16_t *F, uint8_t *i){ 
-    uint8_t cpt_0 = 0;
-    for(uint8_t k = *i; k < min(64, *i+16); k++){
-        if(F[k] == 0){
-            cpt_0++;
-            if (k == 63){
-                *i = 64;
-                return 0x00;
-            }
-        }
-        else{
-            if(cpt_0 <= 15){ //0000000000bloc[k]
-                *i += cpt_0+1;
-                cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[k]);  //cpt_0magnitude(bloc[k])
-                return cpt_0;
-            }
-            else{ //cpt_0 =16
-                *i += 16; //
-                return 0xF0;
-            }
-        }        
-    }
-    return 0;//sert juste à enlever le warning
-}
-
 uint8_t encoding_rle_ac_2(int16_t* F, uint8_t* cpt_bloc_0, uint8_t *pos){
     uint8_t cpt_0 = 0;
     while(F[*pos] == 0 && *pos<64){
@@ -243,131 +218,6 @@ void affichage_encodage(struct main_mcu *p_main){
     }
 }
 
-void encodage_Y_RGB(struct main_mcu_rgb *p_main){
-    int16_t precursorY = 0;
-    int16_t precursorCb = 0;
-    int16_t precursorCr = 0;
-    // Y 
-    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
-        uint8_t *RY = calloc(64, sizeof(uint8_t));
-        uint8_t compteur = 1;
-        int16_t tmp = precursorY;
-        precursorY = p_main->bloc[mcu_i][0][0];
-        p_main->bloc[mcu_i][0][0] = p_main->bloc[mcu_i][0][0] - tmp;
-        uint8_t* taille = calloc(1, sizeof(uint8_t));
-        rle(p_main->bloc[mcu_i][0], RY, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
-        
-        //Encoding DC:
-        uint8_t *nb_bits = calloc(1, sizeof(uint8_t));
-        uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
-
-        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][0]), magnitude_table(p_main->bloc[mcu_i][0][0]), false);
-
-        //Encoding AC:
-        for (uint8_t i=1; i<64; i++){
-            if(p_main->bloc[mcu_i][i] != 0){
-                while(RY[compteur] == 0xF0){
-                    huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
-                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                    compteur ++;
-                }
-                huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
-                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][i]), magnitude_table(p_main->bloc[mcu_i][0][i]), false);
-                compteur ++;
-            }
-        }
-        if(compteur == *taille-1){
-            huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
-            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        }
-        else if(compteur < *taille){
-            printf("Erreur dans le compte\n");
-        }
-    }
-    
-    // Cb 
-    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
-        uint8_t *RCb = calloc(64, sizeof(uint8_t));
-        uint8_t compteur = 1;
-        int16_t tmp = precursorCb;
-        precursorCb = p_main->bloc[mcu_i][1][0];
-        p_main->bloc[mcu_i][1][0] = p_main->bloc[mcu_i][1][0] - tmp;
-        uint8_t* taille = calloc(1, sizeof(uint8_t));
-        rle(p_main->bloc[mcu_i][1], RCb, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
-        
-        //Encoding DC:
-        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
-        uint32_t huffman_path = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
-
-        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][0]), magnitude_table(p_main->bloc[mcu_i][1][0]), false);
-
-        //Encoding AC:
-        for (uint8_t i=1; i<64; i++){
-            if(p_main->bloc[mcu_i][1][i] != 0){
-                while(RCb[compteur] == 0xF0){
-                    huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
-                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                    compteur ++;
-                }
-                huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
-                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][i]), magnitude_table(p_main->bloc[mcu_i][1][i]), false);
-                compteur ++;
-            }
-        }
-        if(compteur == *taille-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
-            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        }
-        else if(compteur < *taille){
-            printf("Erreur dans le compte\n");
-        }
-    }
-
-    // Cr 
-    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
-        uint8_t *RCr = calloc(64, sizeof(uint8_t));
-        uint8_t compteur = 1;
-        int16_t tmp = precursorCr;
-        precursorCr = p_main->bloc[mcu_i][2][0];
-        p_main->bloc[mcu_i][2][0] = p_main->bloc[mcu_i][2][0] - tmp;
-        uint8_t* taille = calloc(1, sizeof(uint8_t));
-        rle(p_main->bloc[mcu_i][2], RCr, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
-        
-        //Encoding DC:
-        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
-        uint32_t huffman_path = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
-
-        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][0]), magnitude_table(p_main->bloc[mcu_i][2][0]), false);
-        //Encoding AC:
-        for (uint8_t i=1; i<64; i++){
-            if(p_main->bloc[mcu_i][2][i] != 0){
-                while(RCr[compteur] == 0xF0){
-                    huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
-                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                    compteur ++;
-                }
-                huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
-                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][i]), magnitude_table(p_main->bloc[mcu_i][2][i]), false);
-                compteur ++;
-            }
-        }
-        if(compteur == *taille-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
-            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
-        }
-        else if(compteur < *taille){
-            printf("Erreur dans le compte\n");
-        }
-    }
-}
-
-
 void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
     int16_t precursor_Y = 0;
     int16_t precursor_Cb = 0;
@@ -377,28 +227,34 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         uint8_t *RY = calloc(64, sizeof(uint8_t));
         uint8_t *RCb = calloc(64, sizeof(uint8_t));
         uint8_t *RCr = calloc(64, sizeof(uint8_t));
+
         uint8_t compteur_Y = 1;
         uint8_t compteur_Cb = 1;
         uint8_t compteur_Cr = 1;
+
         int16_t tmp = precursor_Y;
         precursor_Y = p_main->bloc[mcu_i][0][0];
         p_main->bloc[mcu_i][0][0] = p_main->bloc[mcu_i][0][0] - tmp;
+
         tmp = precursor_Cb;
         precursor_Cb = p_main->bloc[mcu_i][1][0];
         p_main->bloc[mcu_i][1][0] = p_main->bloc[mcu_i][1][0] - tmp;
+
         tmp = precursor_Cr;
         precursor_Cr = p_main->bloc[mcu_i][2][0];
         p_main->bloc[mcu_i][2][0] = p_main->bloc[mcu_i][2][0] - tmp;
+
         uint8_t* taille_Cb = calloc(1, sizeof(uint8_t));
         uint8_t* taille_Y = calloc(1, sizeof(uint8_t));
         uint8_t* taille_Cr = calloc(1, sizeof(uint8_t));
+
         rle(p_main->bloc[mcu_i][0], RY, taille_Y);//On écrit dans RY l'encodage RLE des valeurs de Y
         rle(p_main->bloc[mcu_i][1], RCb, taille_Cb);//On écrit dans RCb l'encodage RLE des valeurs de Cb
         rle(p_main->bloc[mcu_i][2], RCr, taille_Cr);//On écrit dans RCr l'encodage RLE des valeurs de Cr
         
 
         //On commence par Y:
-        //Encoding DC:
+            //Encoding DC:
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
         uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
 
@@ -406,7 +262,7 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][0]), magnitude_table(p_main->bloc[mcu_i][0][0]), false);
 
 
-        //Encoding AC:
+            //Encoding AC:
         for (uint8_t i=1; i<64; i++){
             if(p_main->bloc[mcu_i][0][i] != 0){
                 while(RY[compteur_Y] == 0xF0){
@@ -430,14 +286,14 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         
         
         //Encodage de Cb
-        //Encoding DC:
+            //Encoding DC:
         huffman_path = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
 
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][0]), magnitude_table(p_main->bloc[mcu_i][1][0]), false);
 
 
-        //Encoding AC:
+            //Encoding AC:
         for (uint8_t i=1; i<64; i++){
             if(p_main->bloc[mcu_i][1][i] != 0){
                 while(RCb[compteur_Cb] == 0xF0){
@@ -452,7 +308,7 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
             }
         }
         if(compteur_Cb == *taille_Cb-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+            huffman_path = huffman_table_get_path(p_main->htable[3], 0x00, nb_bits);
             bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         }
         else if(compteur_Cb < *taille_Cb){
@@ -460,14 +316,18 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         }
         
         //Encodage de Cr
-        //Encoding DC:
+            //Encoding DC:
+
+        if(mcu_i > 5089){
+            printf("Taille Cb= %u    Taille Cr = %u\n", *taille_Cb,*taille_Cr);
+        }
         huffman_path = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
 
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][0]), magnitude_table(p_main->bloc[mcu_i][2][0]), false);
 
 
-        //Encoding AC:
+            //Encoding AC:
         for (uint8_t i=1; i<64; i++){
             if(p_main->bloc[mcu_i][2][i] != 0){
                 while(RCr[compteur_Cr] == 0xF0){
@@ -482,7 +342,7 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
             }
         }
         if(compteur_Cr == *taille_Cr-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
+            huffman_path = huffman_table_get_path(p_main->htable[3], 0x00, nb_bits);
             bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         }
         else if(compteur_Cr < *taille_Cr){
@@ -493,16 +353,16 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
 
 
 void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
-    for(uint32_t mcu_i=0; mcu_i<20; mcu_i++){ 
+    for(uint32_t mcu_i=5089; mcu_i<p_main->n_mcu; mcu_i++){ 
         printf("-----MCU : %u ------\n", mcu_i);
  
         //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
         uint8_t *RY = calloc(64, sizeof(uint8_t));
         uint8_t *RCb = calloc(64, sizeof(uint8_t));
         uint8_t *RCr = calloc(64, sizeof(uint8_t));
-        uint8_t compteur_Y = 0;
-        uint8_t compteur_Cb = 0;
-        uint8_t compteur_Cr = 0;
+        uint8_t compteur_Y = 1;
+        uint8_t compteur_Cb = 1;
+        uint8_t compteur_Cr = 1;
         
         uint8_t* taille_Cb = calloc(1, sizeof(uint8_t));
         uint8_t* taille_Y = calloc(1, sizeof(uint8_t));
@@ -511,8 +371,22 @@ void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
         rle(p_main->bloc[mcu_i][0], RY, taille_Y);//On écrit dans RY l'encodage RLE des valeurs de Y
         rle(p_main->bloc[mcu_i][1], RCb, taille_Cb);//On écrit dans RCb l'encodage RLE des valeurs de Cb
         rle(p_main->bloc[mcu_i][2], RCr, taille_Cr);//On écrit dans RCr l'encodage RLE des valeurs de Cr
+
         printf("Composante Y : \n\n");
-        for (int i=0; i<64; i++){
+        printf(" DC : \n");
+        printf(" value: ");
+        printf(" %d ", p_main->bloc[mcu_i][0][0]);
+        printf(" magnitude: ");
+        printf(" %d ", magnitude_table(p_main->bloc[mcu_i][0][0]));
+        printf(" index: ");
+        printf(" %d ", index(p_main->bloc[mcu_i][0][0]));
+        printf(" rle: ");
+        printf(" %d ", RY[compteur_Y]);
+        uint32_t huffman = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
+        printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+        printf("\n");
+        printf(" AC : \n");
+        for (int i=1; i<64; i++){
             if(p_main->bloc[mcu_i][0][i] != 0){
                 while(RY[compteur_Y] == 0xF0){
                     printf("Ecriture de 0xF0\n");
@@ -538,8 +412,22 @@ void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
         else if(compteur_Y < *taille_Y){
             printf("erreur dans le compte\n");
         }
+        printf("\n\n");
         printf("Composante Cb : \n\n");
-        for (int i=0; i<64; i++){
+        printf(" DC : \n");
+        printf(" value: ");
+        printf(" %d ", p_main->bloc[mcu_i][1][0]);
+        printf(" magnitude: ");
+        printf(" %d ", magnitude_table(p_main->bloc[mcu_i][1][0]));
+        printf(" index: ");
+        printf(" %d ", index(p_main->bloc[mcu_i][1][0]));
+        printf(" rle: ");
+        printf(" %d ", RCb[compteur_Cb]);
+        huffman = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
+        printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+        printf("\n");
+        printf(" AC : \n");
+        for (int i=1; i<64; i++){
             if(p_main->bloc[mcu_i][1][i] != 0){
                 while(RCb[compteur_Cb] == 0xF0){
                     printf("Ecriture de 0xF0\n");
@@ -553,7 +441,7 @@ void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
                 printf(" %d ", index(p_main->bloc[mcu_i][1][i]));
                 printf(" rle: ");
                 printf(" %d ", RCb[compteur_Cb]);
-                uint32_t huffman = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+                huffman = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
                 printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
                 printf("\n");
                 compteur_Cb ++;
@@ -565,9 +453,24 @@ void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
         else if(compteur_Cb < *taille_Cb){
             printf("erreur dans le compte\n");
         }
+        printf("\n\n");
+
         printf("Composante Cr : \n\n");
-        for (int i=0; i<64; i++){
-            if(p_main->bloc[mcu_i][1][i] != 0){
+        printf(" DC : \n");
+        printf(" value: ");
+        printf(" %d ", p_main->bloc[mcu_i][2][0]);
+        printf(" magnitude: ");
+        printf(" %d ", magnitude_table(p_main->bloc[mcu_i][2][0]));
+        printf(" index: ");
+        printf(" %d ", index(p_main->bloc[mcu_i][2][0]));
+        printf(" rle: ");
+        printf(" %d ", RCr[compteur_Cr]);
+        huffman = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
+        printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+        printf("\n");
+        printf(" AC : \n");
+        for (int i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][2][i] != 0){
                 while(RCr[compteur_Cr] == 0xF0){
                     printf("Ecriture de 0xF0\n");
                     compteur_Cr ++;
@@ -592,5 +495,6 @@ void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
         else if(compteur_Cr < *taille_Cr){
             printf("erreur dans le compte\n");
         }
+        printf("\n\n\n\n");
     }
 }
