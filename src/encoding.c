@@ -142,6 +142,10 @@ uint8_t encoding_rle_ac_2(int16_t* F, uint8_t* cpt_bloc_0, uint8_t *pos){
     }
     while(*cpt_bloc_0 != 0){
         *cpt_bloc_0 = *cpt_bloc_0 - 1;
+        while(cpt_0 != 0){
+            *pos = *pos - 1;
+            cpt_0 --;
+        }
         return 0xF0;
     }    
     cpt_0 = cpt_0*pow(2,4) + magnitude_table(F[*pos]);  //cpt_0magnitude(bloc[k])
@@ -368,7 +372,7 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
 
 void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
     printf("On est dans affichage\n");
-    for(uint32_t mcu_i=3464; mcu_i<3475; mcu_i++){ 
+    for(uint32_t mcu_i=3466; mcu_i<3467; mcu_i++){ 
         printf("-----MCU : %u ------\n", mcu_i);
 
         //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs

@@ -177,7 +177,7 @@ void affiche_bloc(struct main_mcu *main_mcu){
 }
 
 void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu){
-    for(uint32_t i = 3464; i<3475; i++){
+    for(uint32_t i = 3466; i<3467; i++){
         printf("-------mcu : %u --------\n", i);
         printf("Composante Y :  \n");
         for(uint8_t j = 0; j<64; j++){
