@@ -207,7 +207,7 @@ uint32_t index(int16_t value){
 }
 
 void affichage_encodage(struct main_mcu *p_main){
-    for(uint32_t k = 1108; k <1112; k++){
+    for(uint32_t k = 0; k <20; k++){
         printf("-----MCU : %u ------\n", k);
         uint8_t *R = calloc(65, sizeof(uint8_t));
         uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
@@ -242,7 +242,6 @@ void affichage_encodage(struct main_mcu *p_main){
         }
     }
 }
-
 
 void encodage_Y_RGB(struct main_mcu_rgb *p_main){
     int16_t precursorY = 0;
@@ -453,7 +452,7 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
             }
         }
         if(compteur_Cb == *taille_Cb-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RY[compteur_Cb], nb_bits);
+            huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
             bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         }
         else if(compteur_Cb < *taille_Cb){
@@ -483,11 +482,115 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
             }
         }
         if(compteur_Cr == *taille_Cr-1){
-            huffman_path = huffman_table_get_path(p_main->htable[3], RY[compteur_Cr], nb_bits);
+            huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
             bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
         }
         else if(compteur_Cr < *taille_Cr){
             printf("Erreur dans le compte de Cr\n");
+        }
+    }
+}
+
+
+void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
+    for(uint32_t mcu_i=0; mcu_i<20; mcu_i++){ 
+        printf("-----MCU : %u ------\n", mcu_i);
+ 
+        //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
+        uint8_t *RY = calloc(64, sizeof(uint8_t));
+        uint8_t *RCb = calloc(64, sizeof(uint8_t));
+        uint8_t *RCr = calloc(64, sizeof(uint8_t));
+        uint8_t compteur_Y = 0;
+        uint8_t compteur_Cb = 0;
+        uint8_t compteur_Cr = 0;
+        
+        uint8_t* taille_Cb = calloc(1, sizeof(uint8_t));
+        uint8_t* taille_Y = calloc(1, sizeof(uint8_t));
+        uint8_t* taille_Cr = calloc(1, sizeof(uint8_t));
+        uint8_t* nb_bits = calloc(1, sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i][0], RY, taille_Y);//On écrit dans RY l'encodage RLE des valeurs de Y
+        rle(p_main->bloc[mcu_i][1], RCb, taille_Cb);//On écrit dans RCb l'encodage RLE des valeurs de Cb
+        rle(p_main->bloc[mcu_i][2], RCr, taille_Cr);//On écrit dans RCr l'encodage RLE des valeurs de Cr
+        printf("Composante Y : \n\n");
+        for (int i=0; i<64; i++){
+            if(p_main->bloc[mcu_i][0][i] != 0){
+                while(RY[compteur_Y] == 0xF0){
+                    printf("Ecriture de 0xF0\n");
+                    compteur_Y ++;
+                }
+                printf(" value: ");
+                printf(" %d ", p_main->bloc[mcu_i][0][i]);
+                printf(" magnitude: ");
+                printf(" %d ", magnitude_table(p_main->bloc[mcu_i][0][i]));
+                printf(" index: ");
+                printf(" %d ", index(p_main->bloc[mcu_i][0][i]));
+                printf(" rle: ");
+                printf(" %d ", RY[compteur_Y]);
+                uint32_t huffman = huffman_table_get_path(p_main->htable[1], RY[compteur_Y], nb_bits);
+                printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+                printf("\n");
+                compteur_Y ++;
+            }
+        }
+        if(compteur_Y == *taille_Y-1){
+            printf("EndOfBlock : %d\n", RY[compteur_Y]);
+        }
+        else if(compteur_Y < *taille_Y){
+            printf("erreur dans le compte\n");
+        }
+        printf("Composante Cb : \n\n");
+        for (int i=0; i<64; i++){
+            if(p_main->bloc[mcu_i][1][i] != 0){
+                while(RCb[compteur_Cb] == 0xF0){
+                    printf("Ecriture de 0xF0\n");
+                    compteur_Cb ++;
+                }
+                printf(" value: ");
+                printf(" %d ", p_main->bloc[mcu_i][1][i]);
+                printf(" magnitude: ");
+                printf(" %d ", magnitude_table(p_main->bloc[mcu_i][1][i]));
+                printf(" index: ");
+                printf(" %d ", index(p_main->bloc[mcu_i][1][i]));
+                printf(" rle: ");
+                printf(" %d ", RCb[compteur_Cb]);
+                uint32_t huffman = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+                printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+                printf("\n");
+                compteur_Cb ++;
+            }
+        }
+        if(compteur_Cb == *taille_Cb-1){
+            printf("EndOfBlock : %d\n", RCb[compteur_Cb]);
+        }
+        else if(compteur_Cb < *taille_Cb){
+            printf("erreur dans le compte\n");
+        }
+        printf("Composante Cr : \n\n");
+        for (int i=0; i<64; i++){
+            if(p_main->bloc[mcu_i][1][i] != 0){
+                while(RCr[compteur_Cr] == 0xF0){
+                    printf("Ecriture de 0xF0\n");
+                    compteur_Cr ++;
+                }
+                printf(" value: ");
+                printf(" %d ", p_main->bloc[mcu_i][2][i]);
+                printf(" magnitude: ");
+                printf(" %d ", magnitude_table(p_main->bloc[mcu_i][2][i]));
+                printf(" index: ");
+                printf(" %d ", index(p_main->bloc[mcu_i][2][i]));
+                printf(" rle: ");
+                printf(" %d ", RCr[compteur_Cr]);
+                uint32_t huffman = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
+                printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+                printf("\n");
+                compteur_Cr ++;
+            }
+        }
+        if(compteur_Cr == *taille_Cr-1){
+            printf("EndOfBlock : %d\n", RCr[compteur_Cr]);
+        }
+        else if(compteur_Cr < *taille_Cr){
+            printf("erreur dans le compte\n");
         }
     }
 }

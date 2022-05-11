@@ -29,4 +29,6 @@ extern void encodage_Y_RGB(struct main_mcu_rgb *p_main);
 
 extern void encodage_Y_rgb_2(struct main_mcu_rgb *p_main);
 
+extern void affiche_encodage_rgb(struct main_mcu_rgb *p_main);
+
 #endif

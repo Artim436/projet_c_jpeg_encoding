@@ -106,7 +106,7 @@ void write_jpeg_Y_RGB(struct main_mcu_rgb *p_main_rgb){
     p_main_rgb->blitzstream = jpeg_get_bitstream(p_jpeg);
     //encodage_Y_RGB(p_main_rgb);
     encodage_Y_rgb_2(p_main_rgb);
-    //affichage_encodage(p_main);
+    affiche_encodage_rgb(p_main_rgb);
     //On écrit dans le bitstream sur toutes les valeurs necéssaires
     bitstream_flush(p_main_rgb->blitzstream);
 
