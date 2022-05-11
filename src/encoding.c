@@ -28,6 +28,16 @@ void creation_table(struct main_mcu *mcu){
     mcu->htable[3] = huffman_table_build(htables_nb_symb_per_lengths[AC][Cb], htables_symbols[AC][Cb], htables_nb_symbols[AC][Cb]);
 }
 
+void creation_table_rgb(struct main_mcu_rgb *mcu){
+    /*Allocation mémoire pour Y : AC et DC,    et : Cb/Cr : Ac et DC*/
+    /* 0 Y Dc, 1 Y Ac, 2 CbCr Dc, 3CbCr Ac*/
+    mcu->htable = calloc(4,sizeof(struct huff_table *));
+    mcu->htable[0] = huffman_table_build(htables_nb_symb_per_lengths[DC][Y], htables_symbols[DC][Y], htables_nb_symbols[DC][Y]);
+    mcu->htable[1] = huffman_table_build(htables_nb_symb_per_lengths[AC][Y], htables_symbols[AC][Y], htables_nb_symbols[AC][Y]);
+    mcu->htable[2] = huffman_table_build(htables_nb_symb_per_lengths[DC][Cb], htables_symbols[DC][Cb], htables_nb_symbols[DC][Cb]);
+    mcu->htable[3] = huffman_table_build(htables_nb_symb_per_lengths[AC][Cb], htables_symbols[AC][Cb], htables_nb_symbols[AC][Cb]);
+}
+
 void encodage_Y(struct main_mcu *p_main){
     int16_t precursor = 0;
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
@@ -234,8 +244,6 @@ void affichage_encodage(struct main_mcu *p_main){
 }
 
 
-
-
 void encodage_Y_RGB(struct main_mcu_rgb *p_main){
     int16_t precursorY = 0;
     int16_t precursorCb = 0;
@@ -245,10 +253,10 @@ void encodage_Y_RGB(struct main_mcu_rgb *p_main){
         uint8_t *RY = calloc(64, sizeof(uint8_t));
         uint8_t compteur = 1;
         int16_t tmp = precursorY;
-        precursorY = p_main->bloc[mcu_i][0];
+        precursorY = p_main->bloc[mcu_i][0][0];
         p_main->bloc[mcu_i][0][0] = p_main->bloc[mcu_i][0][0] - tmp;
         uint8_t* taille = calloc(1, sizeof(uint8_t));
-        rle(p_main->bloc[mcu_i][0][0], RY, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
+        rle(p_main->bloc[mcu_i][0], RY, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
         
         //Encoding DC:
         uint8_t *nb_bits = calloc(1, sizeof(uint8_t));
@@ -361,3 +369,125 @@ void encodage_Y_RGB(struct main_mcu_rgb *p_main){
 }
 
 
+void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
+    int16_t precursor_Y = 0;
+    int16_t precursor_Cb = 0;
+    int16_t precursor_Cr = 0;
+    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
+        //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
+        uint8_t *RY = calloc(64, sizeof(uint8_t));
+        uint8_t *RCb = calloc(64, sizeof(uint8_t));
+        uint8_t *RCr = calloc(64, sizeof(uint8_t));
+        uint8_t compteur_Y = 1;
+        uint8_t compteur_Cb = 1;
+        uint8_t compteur_Cr = 1;
+        int16_t tmp = precursor_Y;
+        precursor_Y = p_main->bloc[mcu_i][0][0];
+        p_main->bloc[mcu_i][0][0] = p_main->bloc[mcu_i][0][0] - tmp;
+        tmp = precursor_Cb;
+        precursor_Cb = p_main->bloc[mcu_i][1][0];
+        p_main->bloc[mcu_i][1][0] = p_main->bloc[mcu_i][1][0] - tmp;
+        tmp = precursor_Cr;
+        precursor_Cr = p_main->bloc[mcu_i][2][0];
+        p_main->bloc[mcu_i][2][0] = p_main->bloc[mcu_i][2][0] - tmp;
+        uint8_t* taille_Cb = calloc(1, sizeof(uint8_t));
+        uint8_t* taille_Y = calloc(1, sizeof(uint8_t));
+        uint8_t* taille_Cr = calloc(1, sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i][0], RY, taille_Y);//On écrit dans RY l'encodage RLE des valeurs de Y
+        rle(p_main->bloc[mcu_i][1], RCb, taille_Cb);//On écrit dans RCb l'encodage RLE des valeurs de Cb
+        rle(p_main->bloc[mcu_i][2], RCr, taille_Cr);//On écrit dans RCr l'encodage RLE des valeurs de Cr
+        
+
+        //On commence par Y:
+        //Encoding DC:
+        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
+        uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][0]), magnitude_table(p_main->bloc[mcu_i][0][0]), false);
+
+
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][0][i] != 0){
+                while(RY[compteur_Y] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur_Y], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur_Y ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur_Y], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][i]), magnitude_table(p_main->bloc[mcu_i][0][i]), false);
+                compteur_Y ++;
+            }
+        }
+        if(compteur_Y == *taille_Y-1){
+            huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur_Y], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur_Y < *taille_Y){
+            printf("Erreur dans le compte de Y\n");
+        }
+        
+        
+        //Encodage de Cb
+        //Encoding DC:
+        huffman_path = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][0]), magnitude_table(p_main->bloc[mcu_i][1][0]), false);
+
+
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][1][i] != 0){
+                while(RCb[compteur_Cb] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur_Cb ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][i]), magnitude_table(p_main->bloc[mcu_i][1][i]), false);
+                compteur_Cb ++;
+            }
+        }
+        if(compteur_Cb == *taille_Cb-1){
+            huffman_path = huffman_table_get_path(p_main->htable[3], RY[compteur_Cb], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur_Cb < *taille_Cb){
+            printf("Erreur dans le compte de Cb\n");
+        }
+        
+        //Encodage de Cr
+        //Encoding DC:
+        huffman_path = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][0]), magnitude_table(p_main->bloc[mcu_i][2][0]), false);
+
+
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][2][i] != 0){
+                while(RCr[compteur_Cr] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur_Cr ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][i]), magnitude_table(p_main->bloc[mcu_i][2][i]), false);
+                compteur_Cr ++;
+            }
+        }
+        if(compteur_Cr == *taille_Cr-1){
+            huffman_path = huffman_table_get_path(p_main->htable[3], RY[compteur_Cr], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur_Cr < *taille_Cr){
+            printf("Erreur dans le compte de Cr\n");
+        }
+    }
+}

@@ -31,6 +31,8 @@ extern void zigzag(float** D, int16_t* F);
 
 extern void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr);
 
+extern void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbcr);
+
 extern void affiche_bloc(struct main_mcu *main_mcu);
 
 #endif /* _DCT_H_ */

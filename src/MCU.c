@@ -202,9 +202,8 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
 
             //Puis on calcule sa position dans le MCU
             
-//             uint32_t j = (pos_x % 8) * 8 + debord;
-
-//             //Puis on le rajoute à la matrice correspondante
+            uint32_t j = (pos_x % 8) * 8 + debord;
+             //Puis on le rajoute à la matrice correspondante
             
             p_mcu->l_mcu[i][j] = last_pix;
         }

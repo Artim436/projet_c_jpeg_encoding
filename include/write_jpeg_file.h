@@ -16,4 +16,8 @@
 
 extern void write_jpeg_Y(struct main_mcu *p_main);
 
+extern void write_jpeg_Y_RGB(struct main_mcu_rgb* p_main_rgb);
+
+extern void creation_table_rgb(struct main_mcu_rgb *mcu);
+
 #endif

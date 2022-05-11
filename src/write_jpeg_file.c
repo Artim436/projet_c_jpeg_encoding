@@ -83,7 +83,7 @@ void write_jpeg_Y_RGB(struct main_mcu_rgb *p_main_rgb){
     jpeg_set_sampling_factor(p_jpeg, Cr, V, 1);
 
     //Par convention, on fait l'encodage dès maintenant car on crée les tables de huffman dans cette fonction
-    creation_table(p_main_rgb);
+    creation_table_rgb(p_main_rgb);
 
     //Table de Huffman
     jpeg_set_huffman_table(p_jpeg, DC, Y, p_main_rgb->htable[0]);
@@ -104,7 +104,8 @@ void write_jpeg_Y_RGB(struct main_mcu_rgb *p_main_rgb){
     printf("Header done\n");
     //On récupère le bitstream positioné à la fin du header
     p_main_rgb->blitzstream = jpeg_get_bitstream(p_jpeg);
-    encodage_Y_RGB(p_main_rgb);
+    //encodage_Y_RGB(p_main_rgb);
+    encodage_Y_rgb_2(p_main_rgb);
     //affichage_encodage(p_main);
     //On écrit dans le bitstream sur toutes les valeurs necéssaires
     bitstream_flush(p_main_rgb->blitzstream);

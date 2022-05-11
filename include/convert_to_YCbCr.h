@@ -19,4 +19,6 @@ extern struct image_YCbCr *convert_YCbCr_RGB(struct image_mcu_rgb *p_mcu);
 
 extern void afficher_YCbCr_rgb(struct image_YCbCr *p_ycbcr);
 
+extern struct image_YCbCr *creation_YCbCr_rgb(struct image_mcu_rgb *p_mcu);
+
 #endif
