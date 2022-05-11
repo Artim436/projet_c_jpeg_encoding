@@ -232,3 +232,132 @@ void affichage_encodage(struct main_mcu *p_main){
         }
     }
 }
+
+
+
+
+void encodage_Y_RGB(struct main_mcu_rgb *p_main){
+    int16_t precursorY = 0;
+    int16_t precursorCb = 0;
+    int16_t precursorCr = 0;
+    // Y 
+    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
+        uint8_t *RY = calloc(64, sizeof(uint8_t));
+        uint8_t compteur = 1;
+        int16_t tmp = precursorY;
+        precursorY = p_main->bloc[mcu_i][0];
+        p_main->bloc[mcu_i][0][0] = p_main->bloc[mcu_i][0][0] - tmp;
+        uint8_t* taille = calloc(1, sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i][0][0], RY, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
+        
+        //Encoding DC:
+        uint8_t *nb_bits = calloc(1, sizeof(uint8_t));
+        uint32_t huffman_path = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][0]), magnitude_table(p_main->bloc[mcu_i][0][0]), false);
+
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][i] != 0){
+                while(RY[compteur] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][0][i]), magnitude_table(p_main->bloc[mcu_i][0][i]), false);
+                compteur ++;
+            }
+        }
+        if(compteur == *taille-1){
+            huffman_path = huffman_table_get_path(p_main->htable[1], RY[compteur], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur < *taille){
+            printf("Erreur dans le compte\n");
+        }
+    }
+    
+    // Cb 
+    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
+        uint8_t *RCb = calloc(64, sizeof(uint8_t));
+        uint8_t compteur = 1;
+        int16_t tmp = precursorCb;
+        precursorCb = p_main->bloc[mcu_i][1][0];
+        p_main->bloc[mcu_i][1][0] = p_main->bloc[mcu_i][1][0] - tmp;
+        uint8_t* taille = calloc(1, sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i][1], RCb, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
+        
+        //Encoding DC:
+        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
+        uint32_t huffman_path = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][0]), magnitude_table(p_main->bloc[mcu_i][1][0]), false);
+
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][1][i] != 0){
+                while(RCb[compteur] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][1][i]), magnitude_table(p_main->bloc[mcu_i][1][i]), false);
+                compteur ++;
+            }
+        }
+        if(compteur == *taille-1){
+            huffman_path = huffman_table_get_path(p_main->htable[3], RCb[compteur], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur < *taille){
+            printf("Erreur dans le compte\n");
+        }
+    }
+
+    // Cr 
+    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
+        uint8_t *RCr = calloc(64, sizeof(uint8_t));
+        uint8_t compteur = 1;
+        int16_t tmp = precursorCr;
+        precursorCr = p_main->bloc[mcu_i][2][0];
+        p_main->bloc[mcu_i][2][0] = p_main->bloc[mcu_i][2][0] - tmp;
+        uint8_t* taille = calloc(1, sizeof(uint8_t));
+        rle(p_main->bloc[mcu_i][2], RCr, taille);//On écrit dans R l'encodage RLE de toutes les valeurs
+        
+        //Encoding DC:
+        uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
+        uint32_t huffman_path = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
+
+        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][0]), magnitude_table(p_main->bloc[mcu_i][2][0]), false);
+        //Encoding AC:
+        for (uint8_t i=1; i<64; i++){
+            if(p_main->bloc[mcu_i][2][i] != 0){
+                while(RCr[compteur] == 0xF0){
+                    huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    compteur ++;
+                }
+                huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][2][i]), magnitude_table(p_main->bloc[mcu_i][2][i]), false);
+                compteur ++;
+            }
+        }
+        if(compteur == *taille-1){
+            huffman_path = huffman_table_get_path(p_main->htable[3], RCr[compteur], nb_bits);
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+        }
+        else if(compteur < *taille){
+            printf("Erreur dans le compte\n");
+        }
+    }
+}
+
+
