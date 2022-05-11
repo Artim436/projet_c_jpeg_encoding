@@ -20,7 +20,6 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
     //Allocation de la mémoire pour la data
     mcu->data = calloc(mcu->height, sizeof(char*)); //CLEANED
     //Stockage des pixels
-    printf("woola \n");
     if (mcu->type_pgm[1]== '5') {
         fgetc(file);
         for (uint32_t i=0; i<mcu->height; i++) {
@@ -28,18 +27,32 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
             //Ecrit les données sur la mémoire allouée
             fread(mcu->data[i], sizeof(uint8_t), mcu->width, file);
         }
-    // } else if (mcu->type_pgm[1]== '2') {
-    //     for (uint32_t i=0; i<mcu->height; i++) {
-    //         char *tmp[100000000];
-    //         mcu->data[i] = calloc(mcu->width, sizeof(char));
-    //         fgets(tmp, 10000000, file);
-    //     }
+    } else if (mcu->type_pgm[1] == '6') {
+        fgetc(file);
+        for (uint32_t i=0; i<mcu->height; i++) {
+            mcu->data[i] = calloc(mcu->width, 3*sizeof(uint8_t));
+            fread(mcu->data[i], 3*sizeof(uint8_t), mcu->width, file);
+        }
     }
     //Ferme le fichier
     fclose(file);
 }
 
 void affiche_details_image(struct main_mcu *mcu, const char * file_name) {
+    FILE *file = fopen(file_name,  "rb");
+    printf("Largeur : %d pixels \n", mcu->width);
+    printf("Hauteur : %d pixels \n", mcu->height);
+    printf("Max_valeur : %d pixels \n", mcu->max_value);
+    for (uint32_t i=0; i<mcu->height; i++) {
+        for (uint32_t j =0; j<mcu->width; j++) {
+            printf("%x ", mcu->data[i][j]);
+        }
+        printf("\n");
+    }
+    fclose(file);
+}
+
+void affiche_details_image_rgb(struct main_mcu_rgb *mcu, const char * file_name) {
     FILE *file = fopen(file_name,  "rb");
     printf("Largeur : %d pixels \n", mcu->width);
     printf("Hauteur : %d pixels \n", mcu->height);
