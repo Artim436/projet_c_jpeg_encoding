@@ -56,10 +56,10 @@ int main (int argc, char **argv) {
             //afficher_YCbCr_rgb(p_ycbcr);
             fonction_RGB(mcu_rgb, p_ycbcr);
             //printf("On est sortie de fonction_RGB\n");
-            // //clean_image_mcu(img_mcu);
-            // clean_image_YCbCr(p_ycbcr);
+            //clean_image_mcu(img_mcu);
+            clean_image_YCbCr(p_ycbcr);
             // printf(" on est l61\n");
-            //affiche_bloc_rgb(mcu_rgb);
+            affiche_bloc_rgb(mcu_rgb);
             // printf("On rentre dans write_jpeg : \n");
             write_jpeg_Y_RGB(mcu_rgb);
         }

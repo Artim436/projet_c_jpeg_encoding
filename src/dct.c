@@ -140,7 +140,6 @@ void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbc
         main_mcu_rgb->bloc[i][1] = calloc(64, sizeof(float));
         main_mcu_rgb->bloc[i][2] = calloc(64, sizeof(float));
     }
-    printf("Les callocs se passent bien \n");
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu_rgb->n_mcu; k++){
         float*** p_mat_rgb= convert_YCbCr_mat_rgb(im_ycbcr->l_ycbcr[k]);
@@ -178,7 +177,7 @@ void affiche_bloc(struct main_mcu *main_mcu){
 }
 
 void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu){
-    for(uint32_t i = 0; i<20; i++){
+    for(uint32_t i = 3464; i<3475; i++){
         printf("-------mcu : %u --------\n", i);
         printf("Composante Y :  \n");
         for(uint8_t j = 0; j<64; j++){

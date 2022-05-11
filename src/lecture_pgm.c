@@ -31,7 +31,7 @@ void process_file(const char *file_name, struct  main_mcu *mcu, struct main_mcu_
     }
     else if(mcu->type_pgm[1] == '6'){
         // ici : free mcu 
-        fscanf("%s", mcu_rgb->type_pgm);
+        *(mcu_rgb->type_pgm) = *(mcu->type_pgm);
         //Lecture des dimensions de l'image
         fscanf(file, "%d %d", &(mcu_rgb->width), &(mcu_rgb->height));
         //Lecture de la valeur maximal du gris
@@ -75,11 +75,11 @@ void affiche_details_image_rgb(struct main_mcu_rgb *mcu, const char * file_name)
     printf("Largeur : %d pixels \n", mcu->width);
     printf("Hauteur : %d pixels \n", mcu->height);
     printf("Max_valeur : %d pixels \n", mcu->max_value);
-    for (uint32_t i=0; i<mcu->height; i++) {
-        for (uint32_t j =0; j<mcu->width; j++) {
-            printf("%x%x%x ", mcu->data[i][j]->R,mcu->data[i][j]->G ,mcu->data[i][j]->B );
-        }
-        printf("\n");
-    }
+    // for (uint32_t i=0; i<mcu->height; i++) {
+    //     for (uint32_t j =0; j<mcu->width; j++) {
+    //         printf("%x%x%x ", mcu->data[i][j]->R,mcu->data[i][j]->G ,mcu->data[i][j]->B );
+    //     }
+    //     printf("\n");
+    // }
     fclose(file);
 }

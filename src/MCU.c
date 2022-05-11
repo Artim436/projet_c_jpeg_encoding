@@ -280,7 +280,7 @@ struct image_mcu_rgb *creation_mcu_8x8_rgb(char type_pgm[3], uint32_t width, uin
 
 void affiche_img_mcu_rgb(struct image_mcu_rgb *p_gmu){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 0; j<20; j++){
+    for(uint32_t j = 3460; j<3480; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint8_t i = 0; i<64; i++){
             printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);

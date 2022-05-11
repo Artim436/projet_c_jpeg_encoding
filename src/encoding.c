@@ -317,10 +317,6 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         
         //Encodage de Cr
             //Encoding DC:
-
-        if(mcu_i > 5089){
-            printf("Taille Cb= %u    Taille Cr = %u\n", *taille_Cb,*taille_Cr);
-        }
         huffman_path = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
 
         bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
@@ -348,14 +344,33 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         else if(compteur_Cr < *taille_Cr){
             printf("Erreur dans le compte de Cr\n");
         }
+        if(mcu_i >= 3464 && mcu_i < 3468){
+            printf("-----%u------\n", mcu_i);
+            printf("Y : \n");
+            for(uint8_t i = 0 ; i <*taille_Y; i++){
+               printf("%u,  ",RY[i]);
+            }
+            printf("\n");
+            printf("Cb : \n");
+            for(uint8_t i = 0 ; i <*taille_Cb; i++){
+               printf("%u,  ",RCb[i]);
+            }
+            printf("\n");
+            printf("Cr : \n");
+            for(uint8_t i = 0 ; i <*taille_Cr; i++){
+               printf("%u,  ",RCr[i]);
+            }
+            printf("\n");
+        }
     }
 }
 
 
 void affiche_encodage_rgb(struct main_mcu_rgb *p_main){
-    for(uint32_t mcu_i=5089; mcu_i<p_main->n_mcu; mcu_i++){ 
+    printf("On est dans affichage\n");
+    for(uint32_t mcu_i=3464; mcu_i<3475; mcu_i++){ 
         printf("-----MCU : %u ------\n", mcu_i);
- 
+
         //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
         uint8_t *RY = calloc(64, sizeof(uint8_t));
         uint8_t *RCb = calloc(64, sizeof(uint8_t));
