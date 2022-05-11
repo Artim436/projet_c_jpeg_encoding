@@ -137,6 +137,8 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
     }
 }
 
+
+
 void print_mat(float** mat, uint8_t len){
     for(uint8_t i =0; i<len;i++){
         for(uint8_t j =0; j<len;j++){
@@ -277,12 +279,40 @@ struct image_mcu_rgb *creation_mcu_8x8_rgb(char type_pgm[3], uint32_t width, uin
     return p_mcu;
 }
 
+void affiche_img_mcu_rgb(struct image_mcu_rgb *p_gmu){
+    /*Affiche les éléments de chaques MCU*/
+    for(uint32_t j = 0; j<20; j++){
+        printf("----- MCU numéro %u ----- \n", j);
+        for(uint8_t i = 0; i<64; i++){
+            printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);
+            if(i % 8 == 7){
+                printf("\n");
+            }
+        }
+    }
+}
+
 float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
     float **matrice = malloc(8*sizeof(float*));
     for(uint8_t j = 0;j<8; j++){
         matrice[j] = malloc(8*sizeof(float));
         for(uint8_t k=0; k<8; k++){
             matrice[j][k] = (float) p_YCbCr[j*8+k]->Y;
+        }
+    }
+    return matrice;
+}
+
+float ***convert_YCbCr_mat_rgb(struct YCbCr **p_YCbCr){
+    float ***matrice = malloc(8*sizeof(float**));
+    for(uint8_t j = 0;j<8; j++){
+        matrice[j] = malloc(8*sizeof(float*));
+        for(uint8_t k=0; k<8; k++){
+            float* new_YCbCr = calloc(3, sizeof(float));
+            new_YCbCr[0] = (float) p_YCbCr[j*8+k]->Y;
+            new_YCbCr[1] = (float) p_YCbCr[j*8+k]->Cb;
+            new_YCbCr[2] = (float) p_YCbCr[j*8+k]->Cr;
+            matrice[j][k] = new_YCbCr;
         }
     }
     return matrice;
