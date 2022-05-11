@@ -30,22 +30,9 @@ void process_file(const char *file_name, struct  main_mcu *mcu) {
     } else if (mcu->type_pgm[1] == '6') {
         fgetc(file);
         for (uint32_t i=0; i<mcu->height; i++) {
-            mcu->data[i] = calloc(mcu->width, sizeof(char)); //CLEANED
-            for (uint32_t j=0; j<mcu->width; j++) {
-                struct rgb *rgb_tpm = malloc(sizeof(struct rgb));
-                fread(rgb_tpm->R, sizeof(uint8_t), 1, file);
-                fread(rgb_tpm->G, sizeof(uint8_t), 1, file);
-                fread(rgb_tpm->B, sizeof(uint8_t), 1, file);
-                mcu->data[i][j] = rgb_tpm;
-            }
-
-    }
-    // } else if (mcu->type_pgm[1]== '2') {
-    //     for (uint32_t i=0; i<mcu->height; i++) {
-    //         char *tmp[100000000];
-    //         mcu->data[i] = calloc(mcu->width, sizeof(char));
-    //         fgets(tmp, 10000000, file);
-    //     }
+            mcu->data[i] = calloc(mcu->width, 3*sizeof(uint8_t));
+            fread(mcu->data[i], 3*sizeof(uint8_t), mcu->width, file);
+        }
     }
     //Ferme le fichier
     fclose(file);
@@ -65,7 +52,7 @@ void affiche_details_image(struct main_mcu *mcu, const char * file_name) {
     fclose(file);
 }
 
-void affiche_details_image_rgb(struct main_mcu *mcu, const char * file_name) {
+void affiche_details_image_rgb(struct main_mcu_rgb *mcu, const char * file_name) {
     FILE *file = fopen(file_name,  "rb");
     printf("Largeur : %d pixels \n", mcu->width);
     printf("Hauteur : %d pixels \n", mcu->height);

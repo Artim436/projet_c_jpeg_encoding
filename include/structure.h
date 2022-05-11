@@ -62,7 +62,7 @@ struct image_YCbCr{
 
 
 struct main_mcu_rgb {
-    struct rgb ***data; // On stock les données de l'image dans une nouvelle structure rgb
+    char ***data[3]; // On stock les données de l'image dans une nouvelle structure rgb
     int16_t **bloc; //Liste contenants les pointeurs vers les blocs
     uint32_t n_mcu;//taille de la liste bloc
     uint32_t width; // Largeur de l'image d'entrée
