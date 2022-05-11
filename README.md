@@ -64,6 +64,12 @@ Invaders marche, mais gris nous indique qu'il y a un problème sur l'encoding de
 Gris marche assez tôt dans la matinée grâce à l'encoding des coefficients. Cependant complexite.pgm ne marche pas ce qui pousse Cedric à retravailler le decoupage d'une image en MCU pednant que Arthur A. travaille avec l'outil valgrind afin de nettoyer notre code et empêcher tout problème qui pourrait être lié à l'écriture sur une case mémoire déjà occupée. Arthur L. de son côté réalise une optimisation du DCT avec la méthode de stockage du produit de cosinus.
 Le groupe est bloqué car aucune image générée par gimp en pgm (peu importe sa taille) n'est encodée par notre encodeur jpeg.
 
+#### Mercredi 11 Mai :
+Le groupe avait travaillé tard dans la soirée de la veille et avait réussi à débloquer bisou.pgm et complexite.pgm
+Nous avons ainsi pu profiter de la soirée pour adapter notre code aux couleurs.
+Nous avons eu un problème pendant toute l'après-midi sur les couleurs mais celui-ci sera réglé dans la soirée pour zig-zag.pgm.
+Au vu des compétences de chacun, nous commençons à nous demander si il n'est pas préférable de se séparer les tâches et de commencer à coder les modules pendant que d'autres se chargent des dernières images.
+
 ##### Questions pour les profs :
 
 
