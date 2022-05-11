@@ -348,24 +348,6 @@ void encodage_Y_rgb_2(struct main_mcu_rgb *p_main){
         else if(compteur_Cr < *taille_Cr){
             printf("Erreur dans le compte de Cr\n");
         }
-        if(mcu_i >= 3464 && mcu_i < 3468){
-            printf("-----%u------\n", mcu_i);
-            printf("Y : \n");
-            for(uint8_t i = 0 ; i <*taille_Y; i++){
-               printf("%u,  ",RY[i]);
-            }
-            printf("\n");
-            printf("Cb : \n");
-            for(uint8_t i = 0 ; i <*taille_Cb; i++){
-               printf("%u,  ",RCb[i]);
-            }
-            printf("\n");
-            printf("Cr : \n");
-            for(uint8_t i = 0 ; i <*taille_Cr; i++){
-               printf("%u,  ",RCr[i]);
-            }
-            printf("\n");
-        }
     }
 }
 

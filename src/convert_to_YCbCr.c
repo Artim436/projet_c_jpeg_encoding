@@ -35,10 +35,11 @@ struct image_YCbCr *convert_YCbCr_RGB(struct image_mcu_rgb *p_mcu){
     /*Prend en entrée le découpage MCU et transforme les RGB en YCbCr.
     La valeur retournée sera un pointeur vers l'image convertie en YCbCr et toujours découpée en MCU.
     Cette fonction traite dans un premier temps le cas où l'image est en noir et blanc (P5), on pourra l'améliorer à base de if.*/
-
     struct image_YCbCr *p_ycbcr = creation_YCbCr_rgb(p_mcu);
 
+    
     for(uint32_t i = 0; i < p_ycbcr->nmcu; i++){
+        printf("%u\n", i);
         for(uint8_t j = 0; j<64; j++){
             struct YCbCr *new_ycbcr= calloc(1, sizeof(struct YCbCr));
             uint8_t cR = p_mcu->l_mcu[i][j]->R;
@@ -78,10 +79,10 @@ struct image_YCbCr *creation_YCbCr_rgb(struct image_mcu_rgb *p_mcu){
     p_ycbcr->nmcu = p_mcu->nmcu;
     *(p_ycbcr -> type_pgm) = *p_mcu->type_pgm;
     
-    p_ycbcr->l_ycbcr = calloc(p_ycbcr->nmcu, sizeof(char *));
+    p_ycbcr->l_ycbcr = calloc(p_ycbcr->nmcu, sizeof(struct YCbCr **));
 
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
-            p_ycbcr->l_ycbcr[i] = calloc(64, sizeof(char *));
+            p_ycbcr->l_ycbcr[i] = calloc(64, sizeof(struct YCbCr *));
     }
     return p_ycbcr;
 }

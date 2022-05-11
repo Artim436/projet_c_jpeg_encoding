@@ -53,7 +53,7 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
 
             //Puis on calcule sa position dans le MCU
             
-            uint32_t j = (pos_x % 8) * 8 + debord;
+            uint32_t j = (pos_x % 8) * 8 + p_mcu->dev_width + debord -1;
 
             //Puis on le rajoute à la matrice correspondante
             
@@ -160,7 +160,8 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
     l_mcu[i][j] correspondra au j+1 ème pixel (avec  0<= j<= 63) lu de gauche à droite et de haut en bas du MCU i*/
     struct image_mcu_rgb *p_mcu = creation_mcu_8x8_rgb(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
-
+    printf("width = %u height = %u \n", p_main->width, p_main->height);
+    printf("dev_width = %u dev_height = %u \n", p_mcu->dev_width, p_mcu->dev_height);
     //Puis définit la de liste de mcu
     //On boucle directement sur la matrice ppm (de gauche à droite et de haut en bas)
     for(uint32_t pos_x = 0; pos_x < p_main->height; pos_x++){
@@ -182,6 +183,11 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
             new_rgb->R = p_main->data[pos_x][pos_y]->R;
             new_rgb->G = p_main->data[pos_x][pos_y]->G;
             p_mcu->l_mcu[i][j] = new_rgb;
+
+            if(i == 54){
+                printf("j = %u\n",j);
+                printf("%x%x%x \n", p_mcu->l_mcu[i][j]->R,p_mcu->l_mcu[i][j]->G,p_mcu->l_mcu[i][j]->B );
+            }
         }
         //Traite le cas du débordement sur y
         struct rgb* last_pix= calloc(1, sizeof (struct rgb));
@@ -199,13 +205,23 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
                 i = i + (p_main->width / 8 ) * (pos_x / 8);
             }
 
+            
 
             //Puis on calcule sa position dans le MCU
             
-            uint32_t j = (pos_x % 8) * 8 + debord;
-             //Puis on le rajoute à la matrice correspondante
+            uint32_t j = (pos_x % 8) * 8 + p_mcu->dev_width + debord-1;
             
-            p_mcu->l_mcu[i][j] = last_pix;
+            
+            //Puis on le rajoute à la matrice correspondante
+            p_mcu->l_mcu[i][j] = calloc(1, sizeof(struct rgb));
+            p_mcu->l_mcu[i][j]->B = last_pix->B;
+            p_mcu->l_mcu[i][j]->G = last_pix->G;
+            p_mcu->l_mcu[i][j]->R = last_pix->R;
+
+            if(i == 54){
+                printf("j = %u\n",j);
+                printf("%x%x%x \n", p_mcu->l_mcu[i][j]->R,p_mcu->l_mcu[i][j]->G,p_mcu->l_mcu[i][j]->B );
+            }
         }
     }
     for (uint8_t debord_x = 1; debord_x <= (8-p_mcu->dev_height)%8; debord_x ++){
@@ -228,7 +244,12 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
             uint32_t j = (((p_mcu->dev_height)+debord_x-1)%8) * 8 + pos_y%8;
 
             //Puis on le rajoute à la matrice correspondante
-            p_mcu->l_mcu[i][j] = last_pix;
+
+
+            p_mcu->l_mcu[i][j] = calloc(1, sizeof(struct rgb));
+            p_mcu->l_mcu[i][j]->B = last_pix->B;
+            p_mcu->l_mcu[i][j]->G = last_pix->G;
+            p_mcu->l_mcu[i][j]->R = last_pix->R;
         }
         //Traite le cas du débordement sur y
         struct rgb* last_pix= calloc(1, sizeof (struct rgb));
@@ -244,7 +265,11 @@ struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
             uint32_t j = (((p_mcu->dev_height)+debord_x-1)%8) * 8 + (p_mcu->dev_width+debord_y -1)%8;
 
             //Puis on le rajoute à la matrice correspondante
-            p_mcu->l_mcu[i][j] = last_pix;
+
+            p_mcu->l_mcu[i][j] = calloc(1, sizeof(struct rgb));
+            p_mcu->l_mcu[i][j]->B = last_pix->B;
+            p_mcu->l_mcu[i][j]->G = last_pix->G;
+            p_mcu->l_mcu[i][j]->R = last_pix->R;
         }
     }
     return p_mcu;
@@ -271,7 +296,7 @@ struct image_mcu_rgb *creation_mcu_8x8_rgb(char type_pgm[3], uint32_t width, uin
 
     p_mcu -> max_value = max_value;
     
-    p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(char *));
+    p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(struct rgb* *));
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
             p_mcu->l_mcu[i] = calloc(64, sizeof(struct rgb*));
     }
@@ -280,7 +305,7 @@ struct image_mcu_rgb *creation_mcu_8x8_rgb(char type_pgm[3], uint32_t width, uin
 
 void affiche_img_mcu_rgb(struct image_mcu_rgb *p_gmu){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 3460; j<3480; j++){
+    for(uint32_t j = 45; j<55; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint8_t i = 0; i<64; i++){
             printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);
