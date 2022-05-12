@@ -53,17 +53,9 @@ void subsampling(struct main_mcu_rgb*  p_main, uint8_t fact_Y, uint8_t fact_Cb, 
     
 }
 
-struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main){
-    /*Cette fonction prend en entrée une image pgm "écrite" en décimal et la renvoie avec un découpage en MCU.
+struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main , h1, v1){
 
-    La sortie sera une structure image_mcu définie ci-dessus
-
-    La partie qui nous intéresse: **l_mcu sera une liste de pointeur de taille égale aux nombre de MCUs.
-    Chaque pointeur dirigera vers une liste de taille 64(=8x8) donc chaque case comprend une des valeurs du pixel
-
-    l_mcu[i] correspondra au i+1 ème MCU (lu de gauche à droite de haut en bas.
-    l_mcu[i][j] correspondra au j+1 ème pixel (avec  0<= j<= 63) lu de gauche à droite et de haut en bas du MCU i*/
-    struct image_mcu_rgb *p_mcu = creation_mcu_8x8_rgb(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
+    struct image_mcu_rgb *p_mcu = creation_mcu_8x8_rgb_sub(p_main->type_pgm, p_main->width, h1, v1);
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
 
     //Puis définit la de liste de mcu
@@ -199,7 +191,7 @@ struct image_mcu_rgb_sub *creation_mcu_rgb(uint32_t width, uint32_t height, uint
 
     p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(struct rgb* *));
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
-            p_mcu->l_mcu[i] = calloc(64, sizeof(struct rgb*));
+            p_mcu->l_mcu[i] = calloc(8*h1*v1, sizeof(struct rgb*));
     }
     return p_mcu;
 }
