@@ -70,6 +70,10 @@ Nous avons ainsi pu profiter de la soirée pour adapter notre code aux couleurs.
 Nous avons eu un problème pendant toute l'après-midi sur les couleurs mais celui-ci sera réglé dans la soirée pour zig-zag.pgm.
 Au vu des compétences de chacun, nous commençons à nous demander si il n'est pas préférable de se séparer les tâches et de commencer à coder les modules pendant que d'autres se chargent des dernières images.
 
+#### Jeudi 12 Mai :
+Toutes les images couleurs marchent enfin même biiig avec un temps d'éxecution de moins de 40 secondes. Le problème se situait au niveau du découpage des mcus.
+Le reste de la journée a donc été consacré au downsampling et à la création des premiers modules.
+
 ##### Questions pour les profs :
 
 
