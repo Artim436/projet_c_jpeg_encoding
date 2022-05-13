@@ -7,8 +7,7 @@
 #include <huffman.h>
 #include <math.h>
 #include <dct.h>
-#include <costable.h>
-#include <qtables.h>
+
 
 
 struct image_mcu_rgb_sub{
@@ -231,13 +230,15 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
     struct image_YCbCr_sub *p_ycbcr = creation_YCbCr_rgb_sub(p_main);
 
     for(uint32_t i = 0; i < p_ycbcr->n_mcu; i++){
+        uint32_t* pos_x_cb = 0;
+        uint32_t* pos_x_cr = 0;
         for(uint32_t j = 0; j< p_ycbcr->nb_comp; j++){
             
             p_ycbcr->bloc[i][j] = calloc(64, sizeof(float));
             if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1]){
             //Cas pour la luminescence
                 for(uint8_t k = 0; k < 64; k++){
-                    uint8_t pos = j * 64 + k;
+                    uint8_t pos = p_main->sampling_factor[0] * 64 + k;
                     uint8_t cr = p_mcu -> l_mcu[i][pos]->R;
                     uint8_t cb = p_mcu -> l_mcu[i][pos]->G;
                     uint8_t cg = p_mcu -> l_mcu[i][pos]->B;
@@ -245,23 +246,58 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
                 }
             }
             else if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1] + p_ycbcr->sampling_factor[2] * p_ycbcr->sampling_factor[3]){
-                // Cas pour Cb
+            // Cas pour Cb:
+                uint8_t coeff_h = p_ycbcr->sampling_factor[0] / p_ycbcr->sampling_factor[2];
+                uint8_t coeff_v = p_ycbcr->sampling_factor[1] / p_ycbcr->sampling_factor[3];
+                
                 for(uint8_t k = 0; k < 64; k++){
-                    uint8_t pos = j * 64 + k;
-                    uint8_t cr = p_mcu -> l_mcu[i][pos]->R;
-                    uint8_t cb = p_mcu -> l_mcu[i][pos]->G;
-                    uint8_t cg = p_mcu -> l_mcu[i][pos]->B;
-                    p_ycbcr->bloc[i][j][k] = round(-0.1687 * cr + -0.3313 * cg + 0.5 * cb + 128);
-                }
+                    //On récupère les pixels qui nous intéressent:
+                    uint8_t cr, cb, cg = 0;
+                    for(uint8_t x = 0; x < coeff_v ; x ++){
+                        for(uint8_t y = *pos_x_cb; y < *pos_x_cb + coeff_h ; y ++){
+                        //Déroulement sur x
+                            cr += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->R;
+                            cb += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->B;
+                            cg += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->G;
+                        }
+                    }
+                    //On les affecte à l'emplacement correspondant (sans oublier la division):
+                    p_ycbcr->bloc[i][j][k] = round((-0.1687 * cr + 0.3313 * cg + 0.5 * cb)/(coeff_h * coeff_v)+128);
+
+                    //On met à jour la position de notre curseur dans le mcu
+                    *pos_x_cb = *pos_x_cb + coeff_h;//Incrémente la position du pointeur
+                    if(coeff_v != 1 && *pos_x_cb % (p_ycbcr->sampling_factor[0] *8 ) == 0){
+                        //cas où nous avons eu un changement de ligne qui nécessite un saut de ligne
+                        *pos_x_cb = *pos_x_cb + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);
+                    }
+                }                
             }
             else{
-               for(uint8_t k = 0; k < 64; k++){
-                    uint8_t pos = j * 64 + k;
-                    uint8_t cr = p_mcu -> l_mcu[i][pos]->R;
-                    uint8_t cb = p_mcu -> l_mcu[i][pos]->G;
-                    uint8_t cg = p_mcu -> l_mcu[i][pos]->B;
-                    p_ycbcr->bloc[i][j][k] = round(0.5 * cr + -0.4187 * cg + -0.0813 * cb + 128);
-                } 
+                // Cas pour Cr :
+                uint8_t coeff_h = p_ycbcr->sampling_factor[0] / p_ycbcr->sampling_factor[4];
+                uint8_t coeff_v = p_ycbcr->sampling_factor[1] / p_ycbcr->sampling_factor[5];
+                
+                for(uint8_t k = 0; k < 64; k++){
+                    //On récupère les pixels qui nous intéressent:
+                    uint8_t cr, cb, cg = 0;
+                    for(uint8_t x = 0; x < coeff_v ; x ++){
+                        for(uint8_t y = *pos_x_cr; y < *pos_x_cr + coeff_h ; y ++){
+                        //Déroulement sur x
+                            cr += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->R;
+                            cb += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->B;
+                            cg += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->G;
+                        }
+                    }
+                    //On les affecte à l'emplacement correspondant (sans oublier la division):
+                    p_ycbcr->bloc[i][j][k] = round((0.5 * cr + -0.4187 * cg + -0.0813 * cb)/(coeff_h * coeff_v)+128);
+
+                    //On met à jour la position de notre curseur dans le mcu
+                    *pos_x_cr = *pos_x_cr + coeff_h;//Incrémente la position du pointeur
+                    if(coeff_v != 1 && *pos_x_cr % (p_ycbcr->sampling_factor[0] *8 ) == 0){
+                        //cas où nous avons eu un changement de ligne qui nécessite un saut de ligne
+                        *pos_x_cr = *pos_x_cr + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);
+                    }
+                }          
             }
         }
     }
@@ -302,3 +338,4 @@ void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p
         }
     }
 }
+
