@@ -355,17 +355,28 @@ void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p
 
 
 void encodage_rgb_sub(struct main_mcu_rgb_sub *p_main){
+    int16_t precursor_g[3] = {0,0,0};//précurseur des 3 composantes
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
-        int16_t precursor = 0;
         for(uint8_t comp_i = 0; comp_i< p_main->nb_comp; comp_i ++){
+            uint8_t indice_precurseur;
+            if(comp_i < p_main->sampling_factor[0]*p_main->sampling_factor[1]){
+                indice_precurseur = 0;
+            }
+            else if(comp_i < p_main->sampling_factor[0]*p_main->sampling_factor[1] +p_main->sampling_factor[2]*p_main->sampling_factor[3]  ){
+                indice_precurseur = 1;
+            }
+            else{
+                indice_precurseur = 2;
+            }
+
             //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
             uint8_t *R = calloc(64, sizeof(uint8_t));
 
             uint8_t compteur = 1;
 
 
-            int16_t tmp = precursor;
-            precursor = p_main->bloc[mcu_i][comp_i][0];
+            int16_t tmp = precursor_g[indice_precurseur];
+            precursor_g[indice_precurseur] = p_main->bloc[mcu_i][comp_i][0];
             p_main->bloc[mcu_i][comp_i][0] = p_main->bloc[mcu_i][comp_i][0] - tmp;
 
 
@@ -532,3 +543,144 @@ void affiche_bloc_rgb_sub(struct main_mcu_rgb_sub *main_mcu){
         }
     }
 }
+
+// void affiche_encodage_rgb(struct main_mcu_rgb_sub *p_main){
+//     for(uint32_t mcu_i=0; mcu_i<20; mcu_i++){ 
+//         printf("-----MCU : %u ------\n", mcu_i);
+//         for(uint8_t comp_i=0; comp_i<p_main->nb_comp; comp_i ++){
+//             printf("Composante %u : \n\n", comp_i);
+//             //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
+//             uint8_t *R = calloc(64, sizeof(uint8_t));
+//             uint8_t compteur= 1;
+            
+//             uint8_t* taille = calloc(1, sizeof(uint8_t));
+//             uint8_t* nb_bits = calloc(1, sizeof(uint8_t));
+//             rle(p_main->bloc[mcu_i][comp_i][0], R, taille);//On écrit dans RY l'encodage RLE des valeurs de Y
+
+
+//             printf(" DC : \n");
+//             printf(" value: ");
+//             printf(" %d ", p_main->bloc[mcu_i][comp_i][0]);
+//             printf(" magnitude: ");
+//             printf(" %d ", magnitude_table(p_main->bloc[mcu_i][comp_i][0]));
+//             printf(" index: ");
+//             printf(" %d ", index(p_main->bloc[mcu_i][comp_i][0]));
+//             printf(" rle: ");
+//             printf(" %d ", R[compteur]);
+//             uint32_t huffman = huffman_table_get_path(p_main->htable[0], RY[0], nb_bits);
+//             printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//             printf("\n");
+//             printf(" AC : \n");
+//             for (int i=1; i<64; i++){
+//                 if(p_main->bloc[mcu_i][0][i] != 0){
+//                     while(RY[compteur_Y] == 0xF0){
+//                         printf("Ecriture de 0xF0\n");
+//                         compteur_Y ++;
+//                     }
+//                     printf(" value: ");
+//                     printf(" %d ", p_main->bloc[mcu_i][0][i]);
+//                     printf(" magnitude: ");
+//                     printf(" %d ", magnitude_table(p_main->bloc[mcu_i][0][i]));
+//                     printf(" index: ");
+//                     printf(" %d ", index(p_main->bloc[mcu_i][0][i]));
+//                     printf(" rle: ");
+//                     printf(" %d ", RY[compteur_Y]);
+//                     uint32_t huffman = huffman_table_get_path(p_main->htable[1], RY[compteur_Y], nb_bits);
+//                     printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//                     printf("\n");
+//                     compteur_Y ++;
+//                 }
+//             }
+//             if(compteur_Y == *taille_Y-1){
+//                 printf("EndOfBlock : %d\n", RY[compteur_Y]);
+//             }
+//             else if(compteur_Y < *taille_Y){
+//                 printf("erreur dans le compte\n");
+//             }
+//             printf("\n\n");
+//             printf("Composante Cb : \n\n");
+//             printf(" DC : \n");
+//             printf(" value: ");
+//             printf(" %d ", p_main->bloc[mcu_i][1][0]);
+//             printf(" magnitude: ");
+//             printf(" %d ", magnitude_table(p_main->bloc[mcu_i][1][0]));
+//             printf(" index: ");
+//             printf(" %d ", index(p_main->bloc[mcu_i][1][0]));
+//             printf(" rle: ");
+//             printf(" %d ", RCb[compteur_Cb]);
+//             huffman = huffman_table_get_path(p_main->htable[2], RCb[0], nb_bits);
+//             printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//             printf("\n");
+//             printf(" AC : \n");
+//             for (int i=1; i<64; i++){
+//                 if(p_main->bloc[mcu_i][1][i] != 0){
+//                     while(RCb[compteur_Cb] == 0xF0){
+//                         printf("Ecriture de 0xF0\n");
+//                         compteur_Cb ++;
+//                     }
+//                     printf(" value: ");
+//                     printf(" %d ", p_main->bloc[mcu_i][1][i]);
+//                     printf(" magnitude: ");
+//                     printf(" %d ", magnitude_table(p_main->bloc[mcu_i][1][i]));
+//                     printf(" index: ");
+//                     printf(" %d ", index(p_main->bloc[mcu_i][1][i]));
+//                     printf(" rle: ");
+//                     printf(" %d ", RCb[compteur_Cb]);
+//                     huffman = huffman_table_get_path(p_main->htable[3], RCb[compteur_Cb], nb_bits);
+//                     printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//                     printf("\n");
+//                     compteur_Cb ++;
+//                 }
+//             }
+//             if(compteur_Cb == *taille_Cb-1){
+//                 printf("EndOfBlock : %d\n", RCb[compteur_Cb]);
+//             }
+//             else if(compteur_Cb < *taille_Cb){
+//                 printf("erreur dans le compte\n");
+//             }
+//             printf("\n\n");
+
+//             printf("Composante Cr : \n\n");
+//             printf(" DC : \n");
+//             printf(" value: ");
+//             printf(" %d ", p_main->bloc[mcu_i][2][0]);
+//             printf(" magnitude: ");
+//             printf(" %d ", magnitude_table(p_main->bloc[mcu_i][2][0]));
+//             printf(" index: ");
+//             printf(" %d ", index(p_main->bloc[mcu_i][2][0]));
+//             printf(" rle: ");
+//             printf(" %d ", RCr[compteur_Cr]);
+//             huffman = huffman_table_get_path(p_main->htable[2], RCr[0], nb_bits);
+//             printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//             printf("\n");
+//             printf(" AC : \n");
+//             for (int i=1; i<64; i++){
+//                 if(p_main->bloc[mcu_i][2][i] != 0){
+//                     while(RCr[compteur_Cr] == 0xF0){
+//                         printf("Ecriture de 0xF0\n");
+//                         compteur_Cr ++;
+//                     }
+//                     printf(" value: ");
+//                     printf(" %d ", p_main->bloc[mcu_i][2][i]);
+//                     printf(" magnitude: ");
+//                     printf(" %d ", magnitude_table(p_main->bloc[mcu_i][2][i]));
+//                     printf(" index: ");
+//                     printf(" %d ", index(p_main->bloc[mcu_i][2][i]));
+//                     printf(" rle: ");
+//                     printf(" %d ", RCr[compteur_Cr]);
+//                     uint32_t huffman = huffman_table_get_path(p_main->htable[3], RCr[compteur_Cr], nb_bits);
+//                     printf("huffman path : %d   nb_bits : %u\n", huffman, *nb_bits);      
+//                     printf("\n");
+//                     compteur_Cr ++;
+//                 }
+//             }
+//             if(compteur_Cr == *taille_Cr-1){
+//                 printf("EndOfBlock : %d\n", RCr[compteur_Cr]);
+//             }
+//             else if(compteur_Cr < *taille_Cr){
+//                 printf("erreur dans le compte\n");
+//             }
+//             printf("\n\n\n\n");
+//         }
+//     }
+// }

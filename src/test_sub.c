@@ -18,8 +18,8 @@ int main (int argc, char **argv) {
         struct main_mcu_rgb_sub* mcu_rgb = malloc(sizeof(struct main_mcu_rgb_sub));
         mcu_rgb->jpeg_filename = "mon_test.jpg";
         mcu_rgb->ppm_filename = argv[1]; //We store the name of the file in the structure main_mcu
-        mcu_rgb->sampling_factor[0] = 1;
-        mcu_rgb->sampling_factor[1] = 1;
+        mcu_rgb->sampling_factor[0] = 4;
+        mcu_rgb->sampling_factor[1] = 2;
         mcu_rgb->sampling_factor[2] = 1;
         mcu_rgb->sampling_factor[3] = 1;
         mcu_rgb->sampling_factor[4] = 1;
@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
         //clean_image_mcu(img_mcu);
         //clean_image_YCbCr(p_ycbcr);
        
-        affiche_bloc_rgb_sub(mcu_rgb);
+        //affiche_bloc_rgb_sub(mcu_rgb);
         printf("On rentre dans write_jpeg : \n");
         write_jpeg_rgb_sub(mcu_rgb);
         //clean_main_mcu(mcu);
