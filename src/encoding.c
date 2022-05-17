@@ -6,7 +6,6 @@
 #include <MCU.h>
 #include <structure.h>
 #include <convert_to_YCbCr.h>
-#include <dct.h>
 #include <htables.h>
 #include <jpeg_writer.h>
 #include <test.h>

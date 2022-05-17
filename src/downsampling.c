@@ -7,6 +7,7 @@
 #include <huffman.h>
 #include <math.h>
 #include <dct.h>
+#include <encoding.h>
 
 
 
@@ -199,7 +200,6 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
     return p_mcu;
 }
 
-
 struct image_YCbCr_sub *creation_YCbCr_rgb_sub(struct main_mcu_rgb_sub* p_main){
     /*Création d'un YCbCr avec initialisation des valeurs*/
 
@@ -339,3 +339,125 @@ void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p
     }
 }
 
+
+void encodage_rgb_sub(struct main_mcu_rgb_sub *p_main){
+    for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
+        int16_t precursor = 0;
+        for(uint8_t comp_i = 0; comp_i< p_main->nb_comp; comp_i ++){
+            //Calcul des codes rle de toutes les composantes ainsi que desprécurseurs
+            uint8_t *R = calloc(64, sizeof(uint8_t));
+
+            uint8_t compteur = 1;
+
+
+            int16_t tmp = precursor;
+            precursor = p_main->bloc[mcu_i][comp_i][0];
+            p_main->bloc[mcu_i][comp_i][0] = p_main->bloc[mcu_i][comp_i][0] - tmp;
+
+
+            uint8_t* taille = calloc(1, sizeof(uint8_t));
+
+            rle(p_main->bloc[mcu_i][0], R, taille);//On écrit dans R l'encodage RLE des valeurs de de la composante en cours (comp_i)
+
+            
+
+            //Encoding DC:
+            uint8_t *nb_bits = calloc(1,sizeof(uint8_t));
+            
+            uint8_t ht_i = 2;//Cas où l'on traite une composante Cb/Cr
+            if(comp_i < p_main->sampling_factor[0]* p_main->sampling_factor[1]){
+                //Cas où on traite une luminescence
+                ht_i = 0;
+            }   
+
+            uint32_t huffman_path = huffman_table_get_path(p_main->htable[ht_i], R[0], nb_bits);
+
+            bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+            bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][comp_i][0]), magnitude_table(p_main->bloc[mcu_i][comp_i][0]), false);
+
+
+                //Encoding AC:
+            for (uint8_t i=1; i<64; i++){
+                if(p_main->bloc[mcu_i][comp_i][i] != 0){
+                    while(R[compteur] == 0xF0){
+                        huffman_path = huffman_table_get_path(p_main->htable[ht_i + 1], R[compteur], nb_bits);
+                        bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                        compteur ++;
+                    }
+                    huffman_path = huffman_table_get_path(p_main->htable[ht_i + 1], R[compteur], nb_bits);
+                    bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+                    bitstream_write_bits(p_main->blitzstream, index(p_main->bloc[mcu_i][comp_i][i]), magnitude_table(p_main->bloc[mcu_i][comp_i][i]), false);
+                    compteur ++;
+                }
+            }
+            if(compteur == *taille-1){
+                huffman_path = huffman_table_get_path(p_main->htable[ht_i + 1], R[compteur], nb_bits);
+                bitstream_write_bits(p_main->blitzstream, huffman_path, *nb_bits, false);
+            }
+            else if(compteur < *taille){
+                printf("Erreur dans le compte de Y\n");
+            }
+        }
+    }
+}
+
+void creation_table_sub(struct main_mcu_rgb_sub *mcu){
+    /*Allocation mémoire pour Y : AC et DC,    et : Cb/Cr : Ac et DC*/
+    /* 0 Y Dc, 1 Y Ac, 2 CbCr Dc, 3CbCr Ac*/
+    mcu->htable = calloc(4,sizeof(struct huff_table *));
+    mcu->htable[0] = huffman_table_build(htables_nb_symb_per_lengths[DC][Y], htables_symbols[DC][Y], htables_nb_symbols[DC][Y]);
+    mcu->htable[1] = huffman_table_build(htables_nb_symb_per_lengths[AC][Y], htables_symbols[AC][Y], htables_nb_symbols[AC][Y]);
+    mcu->htable[2] = huffman_table_build(htables_nb_symb_per_lengths[DC][Cb], htables_symbols[DC][Cb], htables_nb_symbols[DC][Cb]);
+    mcu->htable[3] = huffman_table_build(htables_nb_symb_per_lengths[AC][Cb], htables_symbols[AC][Cb], htables_nb_symbols[AC][Cb]);
+}
+
+void write_jpeg_rgb_sub(struct main_mcu_rgb_sub *p_main){
+    struct jpeg *p_jpeg = jpeg_create();
+    //On rentre les paramètre dans la structure entete set_XXX
+    // Caractèristique de l'image à traiter
+    jpeg_set_ppm_filename(p_jpeg, p_main->ppm_filename);
+    jpeg_set_image_height(p_jpeg, p_main->height);
+    jpeg_set_image_width(p_jpeg, p_main->width);
+    jpeg_set_nb_components(p_jpeg, p_main->nb_comp);
+    
+    // Paramètre de l'encodage
+    jpeg_set_jpeg_filename(p_jpeg, p_main->jpeg_filename);
+    jpeg_set_sampling_factor(p_jpeg, Y, H, p_main->sampling_factor[0]);
+    jpeg_set_sampling_factor(p_jpeg, Cb, H, p_main->sampling_factor[2]);
+    jpeg_set_sampling_factor(p_jpeg, Cr, H, p_main->sampling_factor[4]);
+    jpeg_set_sampling_factor(p_jpeg, Y, V, p_main->sampling_factor[1]);
+    jpeg_set_sampling_factor(p_jpeg, Cb, V, p_main->sampling_factor[3]);
+    jpeg_set_sampling_factor(p_jpeg, Cr, V, p_main->sampling_factor[6]);
+
+    //Par convention, on fait l'encodage dès maintenant car on crée les tables de huffman dans cette fonction
+    creation_table_sub(p_main);
+
+    //Table de Huffman
+    jpeg_set_huffman_table(p_jpeg, DC, Y, p_main->htable[0]);
+    jpeg_set_huffman_table(p_jpeg, AC, Y, p_main->htable[1]);
+    jpeg_set_huffman_table(p_jpeg, DC, Cb, p_main->htable[2]);
+    jpeg_set_huffman_table(p_jpeg, AC, Cb, p_main->htable[3]);
+    jpeg_set_huffman_table(p_jpeg, DC, Cr, p_main->htable[2]);
+    jpeg_set_huffman_table(p_jpeg, AC, Cr, p_main->htable[3]);
+    
+    //Table de quantification
+    jpeg_set_quantization_table(p_jpeg, Y, quantification_table_Y);
+    jpeg_set_quantization_table(p_jpeg, Cb, quantification_table_CbCr);
+    jpeg_set_quantization_table(p_jpeg, Cr, quantification_table_CbCr);
+
+    //On écrit l'entete dans le fichier
+
+    jpeg_write_header(p_jpeg);
+    printf("Header done\n");
+    //On récupère le bitstream positioné à la fin du header
+    p_main->blitzstream = jpeg_get_bitstream(p_jpeg);
+
+    encodage_rgb_sub(p_main);
+    //affiche_encodage_rgb(p_main_rgb);
+    //On écrit dans le bitstream sur toutes les valeurs necéssaires
+    bitstream_flush(p_main->blitzstream);
+
+    //On écrit le footer
+    jpeg_write_footer(p_jpeg);
+    jpeg_destroy(p_jpeg);
+}
