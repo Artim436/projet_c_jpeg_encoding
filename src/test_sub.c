@@ -36,7 +36,7 @@ int main (int argc, char **argv) {
         //printf("%u\n", img_mcu->nmcu);
         struct image_YCbCr_sub *p_ycbcr = convert_YCbCr_RGB_sub(img_mcu, mcu_rgb);
 
-        afficher_YCbCr_sub(p_ycbcr);
+        //afficher_YCbCr_sub(p_ycbcr);
 
         fonction_rgb_sub(mcu_rgb, p_ycbcr);
         //clean_image_mcu(img_mcu);
