@@ -92,7 +92,6 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
  
     struct image_mcu_rgb_sub *p_mcu = creation_mcu_rgb_sub(p_main->width, p_main->height, p_main->sampling_factor[0], p_main->sampling_factor[1]);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
-
     uint8_t h1= p_main->sampling_factor[0];
     uint8_t v1 = p_main->sampling_factor[1];
     //Puis définit la de liste de mcu
@@ -108,7 +107,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
                 i = i + (p_main->width / (h1*8) ) * (pos_x / (v1*8));//nb_de_mcu par lignes * la ligne
             }
             //Puis on calcule sa position dans le MCU
-            uint32_t j = pos_y % (h1*8) + (v1*8) * (pos_x % (v1*8)); 
+            uint32_t j = pos_y % (h1*8) + (v1*8) * (pos_x % (v1 * 8)); 
 
             //Puis on le rajoute à la matrice correspondante
             struct rgb* new_rgb = malloc(sizeof (struct rgb));
@@ -244,10 +243,12 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
             p_ycbcr->bloc[i][j] = calloc(64, sizeof(float));
             if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1]){
             //Cas pour la luminescence
-                for(uint8_t k = 0; k < 64; k++){ 
-                    uint8_t cr = p_mcu -> l_mcu[i][j * 64 + k]->R;
-                    uint8_t cb = p_mcu -> l_mcu[i][j * 64 + k]->B;
-                    uint8_t cg = p_mcu -> l_mcu[i][j * 64 + k]->G;
+                for(uint8_t k = 0; k < 64; k++){
+                    uint32_t pos =  (8*p_ycbcr->sampling_factor[0]) * (k/8)  + (k%8) + (j % p_ycbcr->sampling_factor[0]) * 8 + (j / p_ycbcr->sampling_factor[0]) * 64 * p_ycbcr->sampling_factor[0];
+                    // 1 : calcul la ligne , 2 : calcule la pos dans la ligne, 3 : décale ou non de 8, 4 : défini la position de départ du curseur
+                    uint8_t cr = p_mcu -> l_mcu[i][pos]->R;
+                    uint8_t cb = p_mcu -> l_mcu[i][pos]->B;
+                    uint8_t cg = p_mcu -> l_mcu[i][pos]->G;
                     p_ycbcr->bloc[i][j][k] = round(0.299 * cr + 0.587 * cg + 0.114 * cb);
                 }
             }
@@ -443,7 +444,8 @@ void write_jpeg_rgb_sub(struct main_mcu_rgb_sub *p_main){
     jpeg_set_ppm_filename(p_jpeg, p_main->ppm_filename);
     jpeg_set_image_height(p_jpeg, p_main->height);
     jpeg_set_image_width(p_jpeg, p_main->width);
-    jpeg_set_nb_components(p_jpeg, p_main->nb_comp);
+    printf("%u \n", p_main->nb_comp);
+    jpeg_set_nb_components(p_jpeg,3);
     
     // Paramètre de l'encodage
     jpeg_set_jpeg_filename(p_jpeg, p_main->jpeg_filename);
@@ -504,9 +506,15 @@ void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_
     /*Affiche les éléments de chaques MCU*/
     for(uint32_t j = 0; j<20; j++){
         printf("----- MCU numéro %u ----- \n", j);
-        for(uint8_t i = 0; i<64*h1*v1; i++){
+        for(uint32_t i = 0; i<64*h1*v1; i++){
             printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);
             if(i % 8 == 7){
+                printf("   ");
+            }
+            if(i % (8 * (uint32_t) h1) == 8 * (uint32_t) h1 -1){
+                printf("\n");
+            }
+            if(i % (64* (uint32_t) h1) == (uint32_t) h1*64 - 1){
                 printf("\n");
             }
         }
