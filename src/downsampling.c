@@ -8,6 +8,7 @@
 #include <math.h>
 #include <dct.h>
 #include <encoding.h>
+#include <downsampling.h>
 
 
 
