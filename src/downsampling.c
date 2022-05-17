@@ -235,11 +235,26 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
     struct image_YCbCr_sub *p_ycbcr = creation_YCbCr_rgb_sub(p_main);
 
     for(uint32_t i = 0; i < p_ycbcr->n_mcu; i++){
-        uint32_t pos_x = 0;
-        uint32_t pos_cr = 0;
-        uint32_t* pos_x_cb = &pos_x;
-        uint32_t* pos_x_cr = &pos_cr;
         for(uint8_t j = 0; j< p_ycbcr->nb_comp; j++){
+            uint32_t *pos_x_cb = malloc(sizeof(uint32_t));
+            uint32_t *pos_x_cr = malloc(sizeof(uint32_t));
+            uint32_t limite ; 
+            if( j >= p_ycbcr->sampling_factor[0] * p_ycbcr->sampling_factor[1]){
+                //Cas où l'on traite des cb / cr (évite les calculs inutiles)
+                uint8_t new_j = j - p_ycbcr->sampling_factor[0] * p_ycbcr->sampling_factor[0];
+                uint8_t coeff_h = p_ycbcr->sampling_factor[0] / p_ycbcr->sampling_factor[2];
+                uint8_t coeff_v = p_ycbcr->sampling_factor[1] / p_ycbcr->sampling_factor[3];
+                uint32_t pos_cb = (new_j%p_ycbcr->sampling_factor[2]) * 8 + (new_j / p_ycbcr->sampling_factor[3]) * 64 * p_ycbcr->sampling_factor[0];
+                printf("%u \n ", pos_cb);
+
+                uint32_t pos_cr = 0;
+                pos_x_cb = &pos_cb;
+                pos_x_cr = &pos_cr;
+                
+                limite = (pos_cb+coeff_h * 8-1) %(p_ycbcr->sampling_factor[0] * 8);
+            }
+
+
             p_ycbcr->bloc[i][j] = calloc(64, sizeof(float));
             if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1]){
             //Cas pour la luminescence
@@ -257,6 +272,7 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
             // Cas pour Cb:
                 uint8_t coeff_h = p_ycbcr->sampling_factor[0] / p_ycbcr->sampling_factor[2];
                 uint8_t coeff_v = p_ycbcr->sampling_factor[1] / p_ycbcr->sampling_factor[3];
+
                 for(uint8_t k = 0; k < 64; k++){
                         //On récupère les pixels qui nous intéressent:
                         uint32_t cr = 0;
@@ -278,10 +294,11 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
                     
                     //On met à jour la position de notre curseur dans le mcu
                     *pos_x_cb = *pos_x_cb + coeff_h;//Incrémente la position du pointeur
-                    if(coeff_v != 1 && *pos_x_cb % (p_ycbcr->sampling_factor[0] *8 ) == 0){
+                    if(coeff_v != 1 && (*pos_x_cb % (p_ycbcr->sampling_factor[0] *8 ) == 0 || *pos_x_cb % 8 > limite )){
                         //cas où nous avons eu un changement de ligne qui nécessite un saut de ligne
-                        *pos_x_cb = *pos_x_cb + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);//Il faut potentiellement multiplier par 8 ici
+                        *pos_x_cb = *pos_x_cb - (8*coeff_h) + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);//Il faut potentiellement multiplier par 8 ici
                     }
+
                 }         
             }
             else{

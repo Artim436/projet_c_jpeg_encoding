@@ -31,11 +31,11 @@ int main (int argc, char **argv) {
         //affiche_details_image_rgb_sub(mcu_rgb); // On affiche les données de l'image
         // printf("hauteur :  %u    largeur : %u\n",mcu_rgb->height, mcu_rgb->width );
         struct image_mcu_rgb_sub *img_mcu = decoupe_mcu_rgb_sub(mcu_rgb); //On découpe l'image en blocs de 8x8
-        printf("l36\n");
+
         //affiche_img_mcu_rgb_sub(img_mcu, 2,2);
         //printf("%u\n", img_mcu->nmcu);
         struct image_YCbCr_sub *p_ycbcr = convert_YCbCr_RGB_sub(img_mcu, mcu_rgb);
-        printf("l40\n");
+
         afficher_YCbCr_sub(p_ycbcr);
 
         fonction_rgb_sub(mcu_rgb, p_ycbcr);
@@ -43,7 +43,7 @@ int main (int argc, char **argv) {
         //clean_image_YCbCr(p_ycbcr);
        
         //affiche_bloc_rgb_sub(mcu_rgb);
-        printf("On rentre dans write_jpeg : \n");
+
         write_jpeg_rgb_sub(mcu_rgb);
         //clean_main_mcu(mcu);
 }
