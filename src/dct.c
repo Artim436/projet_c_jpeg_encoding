@@ -201,6 +201,5 @@ void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu){
             }
         }
     }
-
 }
 

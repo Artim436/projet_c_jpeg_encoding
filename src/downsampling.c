@@ -10,15 +10,35 @@
 #include <encoding.h>
 #include <downsampling.h>
 
+void process_file_sub(const char *file_name, struct main_mcu_rgb_sub* mcu_rgb) {
+    //Ouvre le fichier en mode lecture binaire
+    FILE *file = fopen(file_name, "rb");
+    //Lecture du type de fichier
+    fscanf(file, "%s", mcu_rgb->type_pgm);
 
 
-struct image_mcu_rgb_sub{
-    /*Structure des mcu*/
-    struct rgb ***l_mcu;
-    uint32_t nmcu;//Pour la largeur comme pour la hauteur on renverra la taille par pixel et non par MCU
-    uint8_t dev_width;
-    uint8_t dev_height;
-};
+    //Lecture des dimensions de l'image
+    fscanf(file, "%d %d", &(mcu_rgb->width), &(mcu_rgb->height));
+    //Lecture de la valeur maximal du gris
+    fscanf(file, "%d", &(mcu_rgb->max_value));
+    //Allocation de la mémoire pour la data
+    mcu_rgb->data = calloc(mcu_rgb->height, sizeof(struct rgb* *)); //CLEANED
+    //Stockage des pixel
+    fgetc(file);
+    for (uint32_t i=0; i<mcu_rgb->height; i++) {
+        mcu_rgb->data[i] = calloc(mcu_rgb->width, sizeof(struct rgb*));
+        for(uint32_t j=0; j<mcu_rgb->width; j ++){
+            mcu_rgb->data[i][j] = calloc(1, sizeof(struct rgb));
+            uint8_t *compo_rgb = calloc(3, sizeof(uint8_t));
+            fread(compo_rgb, sizeof(uint8_t), 3, file);
+            mcu_rgb->data[i][j]->R =compo_rgb[0];
+            mcu_rgb->data[i][j]->G =compo_rgb[1];
+            mcu_rgb->data[i][j]->B =compo_rgb[2];
+        }
+    }  
+    //Ferme le fichier
+    fclose(file);
+}
 
 void verif_sample_factor(uint8_t h1, uint8_t v1, uint8_t h2, uint8_t v2, uint8_t h3, uint8_t v3){
     if(h1 > 4|| h2 > 4||h3 > 4||v1 > 4||v2 > 4||v3 > 4){
@@ -40,34 +60,13 @@ void verif_sample_factor(uint8_t h1, uint8_t v1, uint8_t h2, uint8_t v2, uint8_t
     }
 }
 
-struct image_YCbCr_sub{
-    float ***bloc;
-    uint32_t n_mcu;
-    uint8_t sampling_factor[6];
-    uint8_t nb_comp;
-};
 
-struct main_mcu_rgb_sub {
-    struct rgb* **data; // On stock les données de l'image dans une nouvelle structure rgb
-    int16_t ***bloc; //Liste contenants les pointeurs vers les blocs
-    uint32_t n_mcu;//taille de la liste bloc
-    uint32_t width; // Largeur de l'image d'entrée
-    uint32_t height; // Hauteur de l'image d'entrée
-    uint32_t max_value; // Valeur maximal des nuances RGB
-    char type_pgm[3]; //Type de l'image d'entrée : permet de définir nb de components
-    const char *ppm_filename; // nom du fichier d'entrée
-    const char *jpeg_filename; // Nom du fichier de sortie
-    uint8_t sampling_factor[6]; // Facteur d'échantillonage
-    uint8_t nb_comp;
-    struct huff_table **htable;
-    struct bitstream *blitzstream;
-};
+
 
 
 struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, uint8_t h1, uint8_t v1){
     /*Création d'un mcu avec toutes les valeures*/
     struct image_mcu_rgb_sub *p_mcu = malloc(sizeof(struct image_mcu_rgb_sub));
-    
     /*Calcul du nombre de mcu de taille 8x8 qu'il y aura */
     uint32_t nmcu = width / (8*h1);
     p_mcu ->dev_height = height % (8*v1);
@@ -83,7 +82,7 @@ struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, 
 
     p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(struct rgb* *));
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
-            p_mcu->l_mcu[i] = calloc(8*h1*v1, sizeof(struct rgb*));
+            p_mcu->l_mcu[i] = calloc(64*h1*v1, sizeof(struct rgb*));
     }
     return p_mcu;
 }
@@ -217,6 +216,12 @@ struct image_YCbCr_sub *creation_YCbCr_rgb_sub(struct main_mcu_rgb_sub* p_main){
     p_ycbcr->nb_comp = nb_comp;
     p_main->nb_comp = nb_comp;
 
+
+    
+    for(uint8_t i=0; i<6; i++){
+        p_ycbcr->sampling_factor[i] = p_main->sampling_factor[i];
+    }
+
     for (uint32_t i=0; i<p_main->n_mcu; i++) {
             p_ycbcr->bloc[i] = calloc(nb_comp, sizeof(float *));
     }
@@ -231,47 +236,52 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
     struct image_YCbCr_sub *p_ycbcr = creation_YCbCr_rgb_sub(p_main);
 
     for(uint32_t i = 0; i < p_ycbcr->n_mcu; i++){
-        uint32_t* pos_x_cb = 0;
-        uint32_t* pos_x_cr = 0;
-        for(uint32_t j = 0; j< p_ycbcr->nb_comp; j++){
-            
+        uint32_t pos_x = 0;
+        uint32_t pos_cr = 0;
+        uint32_t* pos_x_cb = &pos_x;
+        uint32_t* pos_x_cr = &pos_cr;
+        for(uint8_t j = 0; j< p_ycbcr->nb_comp; j++){
             p_ycbcr->bloc[i][j] = calloc(64, sizeof(float));
             if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1]){
             //Cas pour la luminescence
-                for(uint8_t k = 0; k < 64; k++){
-                    uint8_t pos = p_main->sampling_factor[0] * 64 + k;
-                    uint8_t cr = p_mcu -> l_mcu[i][pos]->R;
-                    uint8_t cb = p_mcu -> l_mcu[i][pos]->G;
-                    uint8_t cg = p_mcu -> l_mcu[i][pos]->B;
+                for(uint8_t k = 0; k < 64; k++){ 
+                    uint8_t cr = p_mcu -> l_mcu[i][j * 64 + k]->R;
+                    uint8_t cb = p_mcu -> l_mcu[i][j * 64 + k]->B;
+                    uint8_t cg = p_mcu -> l_mcu[i][j * 64 + k]->G;
                     p_ycbcr->bloc[i][j][k] = round(0.299 * cr + 0.587 * cg + 0.114 * cb);
                 }
             }
-            else if(j < p_ycbcr->sampling_factor[0]*p_ycbcr->sampling_factor[1] + p_ycbcr->sampling_factor[2] * p_ycbcr->sampling_factor[3]){
+            
+            else if(j < p_ycbcr->sampling_factor[0] * p_ycbcr->sampling_factor[1] + p_ycbcr->sampling_factor[2] * p_ycbcr->sampling_factor[3]){
             // Cas pour Cb:
                 uint8_t coeff_h = p_ycbcr->sampling_factor[0] / p_ycbcr->sampling_factor[2];
                 uint8_t coeff_v = p_ycbcr->sampling_factor[1] / p_ycbcr->sampling_factor[3];
-                
                 for(uint8_t k = 0; k < 64; k++){
-                    //On récupère les pixels qui nous intéressent:
-                    uint8_t cr, cb, cg = 0;
-                    for(uint8_t x = 0; x < coeff_v ; x ++){
-                        for(uint8_t y = *pos_x_cb; y < *pos_x_cb + coeff_h ; y ++){
-                        //Déroulement sur x
-                            cr += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->R;
-                            cb += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->B;
-                            cg += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->G;
+                        //On récupère les pixels qui nous intéressent:
+                        uint32_t cr = 0;
+                        uint32_t cb = 0;
+                        uint32_t cg = 0;
+                        for(uint32_t x = 0; x < coeff_v ; x ++){
+                            for(uint32_t y = *pos_x_cb; y < *pos_x_cb + coeff_h ; y ++){
+                            //Déroulement sur x
+                                cr += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->R;
+                                cb += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->B;
+                                cg += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->G;
+                            }
                         }
-                    }
-                    //On les affecte à l'emplacement correspondant (sans oublier la division):
-                    p_ycbcr->bloc[i][j][k] = round((-0.1687 * cr + 0.3313 * cg + 0.5 * cb)/(coeff_h * coeff_v)+128);
+                        //On les affecte à l'emplacement correspondant (sans oublier la division):
 
+                        p_ycbcr->bloc[i][j][k] =  round(((-0.1687 * cr - 0.3313 * cg + 0.5 * cb)/(coeff_h * coeff_v))+128);
+
+                        
+                    
                     //On met à jour la position de notre curseur dans le mcu
                     *pos_x_cb = *pos_x_cb + coeff_h;//Incrémente la position du pointeur
                     if(coeff_v != 1 && *pos_x_cb % (p_ycbcr->sampling_factor[0] *8 ) == 0){
                         //cas où nous avons eu un changement de ligne qui nécessite un saut de ligne
-                        *pos_x_cb = *pos_x_cb + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);
+                        *pos_x_cb = *pos_x_cb + p_ycbcr->sampling_factor[0] *8 * (coeff_v-1);//Il faut potentiellement multiplier par 8 ici
                     }
-                }                
+                }         
             }
             else{
                 // Cas pour Cr :
@@ -280,9 +290,11 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
                 
                 for(uint8_t k = 0; k < 64; k++){
                     //On récupère les pixels qui nous intéressent:
-                    uint8_t cr, cb, cg = 0;
-                    for(uint8_t x = 0; x < coeff_v ; x ++){
-                        for(uint8_t y = *pos_x_cr; y < *pos_x_cr + coeff_h ; y ++){
+                    uint32_t cr = 0;
+                    uint32_t cb = 0;
+                    uint32_t cg = 0;
+                    for(uint32_t x = 0; x < coeff_v ; x ++){
+                        for(uint32_t y = *pos_x_cr; y < *pos_x_cr + coeff_h ; y ++){
                         //Déroulement sur x
                             cr += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->R;
                             cb += p_mcu -> l_mcu[i][x * p_ycbcr->sampling_factor[0] *8 + y]->B;
@@ -290,7 +302,7 @@ struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , 
                         }
                     }
                     //On les affecte à l'emplacement correspondant (sans oublier la division):
-                    p_ycbcr->bloc[i][j][k] = round((0.5 * cr + -0.4187 * cg + -0.0813 * cb)/(coeff_h * coeff_v)+128);
+                    p_ycbcr->bloc[i][j][k] = round(((0.5 * cr + -0.4187 * cg + -0.0813 * cb)/(coeff_h * coeff_v))+128);
 
                     //On met à jour la position de notre curseur dans le mcu
                     *pos_x_cr = *pos_x_cr + coeff_h;//Incrémente la position du pointeur
@@ -321,12 +333,13 @@ float **convert_mat_sub(float *p_YCbCr){
 void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p_ycbcr){
     p_main->bloc = calloc(p_main->n_mcu, sizeof(int16_t **));
     for(uint32_t mcu_i = 0; mcu_i< p_main->n_mcu; mcu_i++){
-        for(uint8_t comp_i = 0; comp_i<p_main->n_mcu; comp_i ++){
-            p_main->bloc[mcu_i][comp_i] = calloc(64, sizeof(float));
+        p_main->bloc[mcu_i] = calloc(p_main->nb_comp, sizeof(int16_t *));
+        for(uint8_t comp_i = 0; comp_i<p_main->nb_comp; comp_i ++){
+            p_main->bloc[mcu_i][comp_i] = calloc(64, sizeof(int16_t));
         }
     }
     for(uint32_t mcu_i = 0; mcu_i < p_main->n_mcu; mcu_i ++){
-        for(uint8_t comp_i = 0; comp_i<p_main->n_mcu; comp_i ++){
+        for(uint8_t comp_i = 0; comp_i<p_main->nb_comp; comp_i ++){
             float **mat = convert_mat_sub(p_ycbcr->bloc[mcu_i][comp_i]);
             dct(mat);
             zigzag(mat, p_main->bloc[mcu_i][comp_i]);
@@ -358,7 +371,7 @@ void encodage_rgb_sub(struct main_mcu_rgb_sub *p_main){
 
             uint8_t* taille = calloc(1, sizeof(uint8_t));
 
-            rle(p_main->bloc[mcu_i][0], R, taille);//On écrit dans R l'encodage RLE des valeurs de de la composante en cours (comp_i)
+            rle(p_main->bloc[mcu_i][comp_i], R, taille);//On écrit dans R l'encodage RLE des valeurs de de la composante en cours (comp_i)
 
             
 
@@ -428,7 +441,7 @@ void write_jpeg_rgb_sub(struct main_mcu_rgb_sub *p_main){
     jpeg_set_sampling_factor(p_jpeg, Cr, H, p_main->sampling_factor[4]);
     jpeg_set_sampling_factor(p_jpeg, Y, V, p_main->sampling_factor[1]);
     jpeg_set_sampling_factor(p_jpeg, Cb, V, p_main->sampling_factor[3]);
-    jpeg_set_sampling_factor(p_jpeg, Cr, V, p_main->sampling_factor[6]);
+    jpeg_set_sampling_factor(p_jpeg, Cr, V, p_main->sampling_factor[5]);
 
     //Par convention, on fait l'encodage dès maintenant car on crée les tables de huffman dans cette fonction
     creation_table_sub(p_main);
@@ -461,4 +474,61 @@ void write_jpeg_rgb_sub(struct main_mcu_rgb_sub *p_main){
     //On écrit le footer
     jpeg_write_footer(p_jpeg);
     jpeg_destroy(p_jpeg);
+}
+
+//Fonctions d'affichage:
+void affiche_details_image_rgb_sub(struct main_mcu_rgb_sub *mcu) {
+    printf("Largeur : %d pixels \n", mcu->width);
+    printf("Hauteur : %d pixels \n", mcu->height);
+    printf("Max_valeur : %d pixels \n", mcu->max_value);
+    for (uint32_t i=0; i<mcu->height; i++) {
+        for (uint32_t j =0; j<mcu->width; j++) {
+            printf("%x%x%x ", mcu->data[i][j]->R,mcu->data[i][j]->G ,mcu->data[i][j]->B );
+        }
+        printf("\n");
+    }
+}
+
+void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_t v1){
+    /*Affiche les éléments de chaques MCU*/
+    for(uint32_t j = 0; j<20; j++){
+        printf("----- MCU numéro %u ----- \n", j);
+        for(uint8_t i = 0; i<64*h1*v1; i++){
+            printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);
+            if(i % 8 == 7){
+                printf("\n");
+            }
+        }
+    }
+}
+
+void afficher_YCbCr_sub(struct image_YCbCr_sub *p_ycbcr){
+    //Parcours les éléments de image_YCbCr et affiche le Y
+    for(uint32_t j = 0; j<20; j++){
+        printf("----- MCU numéro %u YCbCr----- \n", j);
+        for(uint8_t comp_i = 0; comp_i< p_ycbcr->nb_comp; comp_i ++){
+            printf("comp_i = %u : \n", comp_i);
+            for(uint8_t i = 0; i<64; i++){
+                printf("%x ", ( int32_t) p_ycbcr->bloc[j][comp_i][i]);
+                if(i % 8 == 7){
+                    printf("\n");
+                }
+            }
+        }
+    }
+}
+
+void affiche_bloc_rgb_sub(struct main_mcu_rgb_sub *main_mcu){
+    for(uint32_t i = 0; i<20; i++){
+        printf("-------mcu : %u --------\n", i);
+        for(uint8_t comp_i=0; comp_i<main_mcu->nb_comp; comp_i ++){
+            printf("Comp %u\n", comp_i);
+            for(uint8_t j = 0; j<64; j++){
+                printf("%x ", main_mcu->bloc[i][comp_i][j]);
+                if(j%8  == 7){
+                    printf("\n");
+                }
+            }
+        }
+    }
 }

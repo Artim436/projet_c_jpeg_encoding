@@ -1,5 +1,5 @@
-#ifndef _ENCODING_H
-#define _ENCODING_H
+#ifndef _DOWNSAMPLING_H
+#define _DOWNSAMPLING_H
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +26,7 @@ struct image_YCbCr_sub{
     uint8_t nb_comp;
 };
 
-struct main_mcu_rgb_sub {
+struct main_mcu_rgb_sub{
     struct rgb* **data; // On stock les données de l'image dans une nouvelle structure rgb
     int16_t ***bloc; //Liste contenants les pointeurs vers les blocs
     uint32_t n_mcu;//taille de la liste bloc
@@ -42,7 +42,32 @@ struct main_mcu_rgb_sub {
     struct bitstream *blitzstream;
 };
 
-void verif_sample_factor(uint8_t h1, uint8_t v1, uint8_t h2, uint8_t v2, uint8_t h3, uint8_t v3);
+extern void process_file_sub(const char *file_name, struct main_mcu_rgb_sub* mcu_rgb);
 
+extern void verif_sample_factor(uint8_t h1, uint8_t v1, uint8_t h2, uint8_t v2, uint8_t h3, uint8_t v3);
+
+extern struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, uint8_t h1, uint8_t v1);
+
+extern struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main);
+
+extern struct image_YCbCr_sub *convert_YCbCr_RGB_sub(struct image_mcu_rgb_sub *p_mcu , struct main_mcu_rgb_sub* p_main);
+
+extern float **convert_mat_sub(float *p_YCbCr);
+
+extern void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p_ycbcr);
+
+extern void encodage_rgb_sub(struct main_mcu_rgb_sub *p_main);
+
+extern void creation_table_sub(struct main_mcu_rgb_sub *mcu);
+
+extern void write_jpeg_rgb_sub(struct main_mcu_rgb_sub *p_main);
+
+extern void affiche_details_image_rgb_sub(struct main_mcu_rgb_sub *mcu);
+
+extern void affiche_bloc_rgb_sub(struct main_mcu_rgb_sub *main_mcu);
+
+extern void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_t v1);
+
+extern void afficher_YCbCr_sub(struct image_YCbCr_sub *p_ycbcr);
 
 # endif
