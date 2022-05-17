@@ -41,6 +41,49 @@ struct huff_table_M *huffman_table_build_M(uint8_t *nb_symb_per_lengths, uint8_t
  permettant de stocker la longueur du chemin retourné.
 */
 uint32_t huffman_table_get_path_M(struct huff_table_M *ht, uint8_t value, uint8_t *nb_bits);
+    uint8_t *path = calloc(1, sizeof(uint8_t));
+    uint8_t nb_bits = 0;
+    uint8_t i = 0;
+    while (i < ht->nb_symbols) {
+        if (ht->symbols[i] == value) {
+            break;
+        }
+        i++;
+    }
+    while (i > 0) {
+        uint8_t j = i;
+        while (j > 0) {
+            if (ht->nb_symb_per_lengths[j] == 0) {
+                j--;
+            } else {
+                break;
+            }
+        }
+        if (j == 0) {
+            break;
+        }
+        uint8_t k = 0;
+        while (k < j) {
+            if (ht->nb_symb_per_lengths[k] == 0) {
+                k++;
+            } else {
+                break;
+            }
+        }
+        if (k == j) {
+            break;
+        }
+        if (ht->nb_symb_per_lengths[k] > ht->nb_symb_per_lengths[j]) {
+            path[nb_bits] = 1;
+            i -= ht->nb_symb_per_lengths[k];
+        } else {
+            path[nb_bits] = 0;
+            i -= ht->nb_symb_per_lengths[j];
+        }
+        nb_bits++;
+        path = realloc(path, (nb_bits + 1) * sizeof(uint8_t));
+    }
+    return path;
 
 
 /*
