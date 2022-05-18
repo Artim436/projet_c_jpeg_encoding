@@ -48,31 +48,41 @@ Nous avons également exploiter les tables de Huffman pour l'écriture en jpeg.
 On a passé la journée à réadapter notre code à la nouvelle structure.
 Nous pouvons à présent terminer les codes restants pour finir invader.
 
-#### Vendredi 6 Mai :
+##### Vendredi 6 Mai :
 Nous avons corriger les dernières erreurs de conversions, nous avons également commencé l'encodage RLE ainsi que les tables de Huffman.
 
-#### Samedi 7 Mai :
+##### Samedi 7 Mai :
 Journée consacrée à l'encodage RLE et à l'utilisation des tables de Huffman. Création des fonctions magnitudes et indices dans la magnitude.
 
-#### Dimanche 8 Mai :
+##### Dimanche 8 Mai :
 Travail sur le fichier write_jpeg_file afin d'avoir un rendu.
 
-#### Lundi 9 Mai :
+##### Lundi 9 Mai :
 Invaders marche, mais gris nous indique qu'il y a un problème sur l'encoding des coefficients AC. Nous faisons également l'encoding de DC.
 
-#### Mardi 10 Mai :
+##### Mardi 10 Mai :
 Gris marche assez tôt dans la matinée grâce à l'encoding des coefficients. Cependant complexite.pgm ne marche pas ce qui pousse Cedric à retravailler le decoupage d'une image en MCU pednant que Arthur A. travaille avec l'outil valgrind afin de nettoyer notre code et empêcher tout problème qui pourrait être lié à l'écriture sur une case mémoire déjà occupée. Arthur L. de son côté réalise une optimisation du DCT avec la méthode de stockage du produit de cosinus.
 Le groupe est bloqué car aucune image générée par gimp en pgm (peu importe sa taille) n'est encodée par notre encodeur jpeg.
 
-#### Mercredi 11 Mai :
+##### Mercredi 11 Mai :
 Le groupe avait travaillé tard dans la soirée de la veille et avait réussi à débloquer bisou.pgm et complexite.pgm
 Nous avons ainsi pu profiter de la soirée pour adapter notre code aux couleurs.
 Nous avons eu un problème pendant toute l'après-midi sur les couleurs mais celui-ci sera réglé dans la soirée pour zig-zag.pgm.
 Au vu des compétences de chacun, nous commençons à nous demander si il n'est pas préférable de se séparer les tâches et de commencer à coder les modules pendant que d'autres se chargent des dernières images.
 
-#### Jeudi 12 Mai :
+##### Jeudi 12 Mai :
 Toutes les images couleurs marchent enfin même biiig avec un temps d'éxecution de moins de 40 secondes. Le problème se situait au niveau du découpage des mcus.
 Le reste de la journée a donc été consacré au downsampling et à la création des premiers modules.
+
+##### Vendredi 13 Mai :
+Avec l'optimisation du stockage des cosinus et du "zoning" pour dct, biiiiig prend moins de 10 secondes, de plus nous nous sommes attelés à continuer la création des modules jpegwriter, bitsream et huffman. De plus nous travaillons encore sur le downsampling qui prend plus de temps que prévu.
+
+##### Lundi 16 Mai :
+Bitsream est fini dans la journée, nous commençons à préparer un merge final de nos branch qui peut s'avérer compliqué. Jpegwriter semble marcher également. Pour huffman tout est fait à part le get_path.
+
+##### Mardi 17 Mai :
+Finalement le get_path à pris plus de temps que prévu, j'ai complétement changé ma manière de faire en qui me simplifie le get_path mais qui m'oblige à créer des fonctions auxiliaires et à changer la structure de huff_table
+
 
 ##### Questions pour les profs :
 
