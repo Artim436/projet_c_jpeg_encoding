@@ -36,6 +36,6 @@ extern float **convert_mat_sub(float *p_YCbCr);
 
 extern void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p_ycbcr);
 
-extern float **convert_YCbCr_mat(struct YCbCr **p_YCbCr);
+extern float **convert_YCbCr_mat(float *p_YCbCr);
 
 #endif /* _DCT_H_ */

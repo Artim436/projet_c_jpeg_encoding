@@ -16,7 +16,7 @@ void write_jpeg_Y(struct main_mcu *p_main){
     //On rentre les paramètre dans la structure entete set_XXX
     // Caractèristique de l'image à traiter
     jpeg_set_ppm_filename(p_jpeg, p_main->ppm_filename);
-        printf("ok\n");
+
 
     jpeg_set_image_height(p_jpeg, p_main->height);
     jpeg_set_image_width(p_jpeg, p_main->width);
@@ -24,7 +24,6 @@ void write_jpeg_Y(struct main_mcu *p_main){
     
     // Paramètre de l'encodage
     jpeg_set_jpeg_filename(p_jpeg, p_main->jpeg_filename);
-        printf("ok\n");
 
     jpeg_set_sampling_factor(p_jpeg, Y, H, 1);
     jpeg_set_sampling_factor(p_jpeg, Cb, H, 1);

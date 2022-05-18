@@ -41,21 +41,11 @@ struct image_mcu{
 
 
 
-struct YCbCr{
-    /*Donnée contenant les valeurs de YCbCr d'un pixel*/
-    uint32_t Y;
-    uint32_t Cb;
-    uint32_t Cr;
-};
-
-
 struct image_YCbCr{
     /*Structure des YCbCr, ressemble beaucoup aux structures différentes mais nécessaires pour la manipulation.*/
-    struct YCbCr ***l_ycbcr;
+    float **l_ycbcr;
     uint32_t nmcu;//Equivalent aux nombre de MCU
 };
-
-
 
 struct rgb{
     uint8_t R;

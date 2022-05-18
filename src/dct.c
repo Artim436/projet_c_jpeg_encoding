@@ -195,12 +195,12 @@ float **convert_mat_sub(float *p_YCbCr){
     return matrice;
 }
 
-float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
+float **convert_YCbCr_mat(float *p_YCbCr){
     float **matrice = malloc(8*sizeof(float*));
     for(uint8_t j = 0;j<8; j++){
         matrice[j] = malloc(8*sizeof(float));
         for(uint8_t k=0; k<8; k++){
-            matrice[j][k] = (float) p_YCbCr[j*8+k]->Y;
+            matrice[j][k] = (float) p_YCbCr[j*8+k];
         }
     }
     return matrice;

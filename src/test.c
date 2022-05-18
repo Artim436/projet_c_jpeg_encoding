@@ -18,34 +18,49 @@
 
 
 int main (int argc, char **argv) {
+    /*La fonction main est celle qui contient le code de l'exécutable généré.
+    Elle ne print rien mais est juste là pour encoder une image ppm P5 ou P6 en jpeg
+    Des fonctions d'affichage sont présentes dans la fonction mais sont commentées, les décommenter peut aider à débugger
+    
+    Nous encodons les fichiers jpeg en suivant le mode baseline.
+    Le cheminement est simple, nous créons une structure principale dans laquelle nous ajoutons au fur et à mesure du code
+    tous les éléments nécessaires pour l'écriture du jpeg.*/
     if (argc >= 2) {
-        //Analyse des arguments : 
+        /*Analyse des arguments */
+        /*En sortie de cette fonction, nous avons un tableau de taille 3 dans lequel est stocké les positions de chaque argument
+        (sample, outfile et fichier_ppm) dans le tableau argv*/
         uint8_t *pos_des_arg = controle_arg(argc, argv);
-        //On commence par créer les structures:
-        struct main_mcu *mcu = malloc(sizeof(struct main_mcu)); //On alloue la mémoire pour la structure main_mcu
-        mcu->ppm_filename = argv[pos_des_arg[2]]; //We store the name of the file in the structure main_mcu
-        struct main_mcu_rgb_sub* mcu_rgb = malloc(sizeof(struct main_mcu_rgb_sub));
-        mcu_rgb->ppm_filename = argv[pos_des_arg[2]]; //We store the name of the file in the structure main_mcu
 
-        process_file(mcu->ppm_filename, mcu, mcu_rgb); //We call the function process_file to read the file
+        //Création des structures principales
+        struct main_mcu *mcu = malloc(sizeof(struct main_mcu)); //On alloue la mémoire pour la structure main_mcu
+        mcu->ppm_filename = argv[pos_des_arg[2]]; //On récupère le nom du fichier .ppm
+        struct main_mcu_rgb_sub* mcu_rgb = malloc(sizeof(struct main_mcu_rgb_sub));
+        mcu_rgb->ppm_filename = argv[pos_des_arg[2]]; //On récupère le nom du fichier .ppm
+
+        process_file(mcu->ppm_filename, mcu, mcu_rgb); //Lecture du fichier et récupération des données
         if(mcu->type_pgm[1] == '5'){
+            /*Nous sommes rentrés dans le cas où nous avons un fichier P5 et donc des composantes en noir et blanc.*/
+
             //affiche_details_image(mcu, mcu->ppm_filename); // On affiche les données de l'image
 
+            /*Analyse des arguments passés en lignes de commandes*/
             analyse_arg(pos_des_arg, mcu, argv);
-
             
-            //Cas où le fichier est en noir et blanc
-            
+            /*Découpage des données en MCU*/
             struct image_mcu *img_mcu = decoupe_mcu_8x8(mcu); //On découpe l'image en blocs de 8x8
-
             //affiche_img_mcu(img_mcu);
+            
+            /*Conversion des Données en Y*/
             struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
             //afficher_YCbCr(p_ycbcr);
+            
+            
+            /*Étapes de dct, zig-zag et quantification*/
             fonction(mcu, p_ycbcr);
             //clean_image_mcu(img_mcu);
             //clean_image_YCbCr(p_ycbcr);
             //affiche_bloc(mcu);
-            
+
             write_jpeg_Y(mcu);
             //clean_main_mcu(mcu);
         }

@@ -17,11 +17,8 @@ struct image_YCbCr *creation_YCbCr(struct image_mcu *p_mcu){
     
     p_ycbcr->nmcu = p_mcu->nmcu;
     
-    p_ycbcr->l_ycbcr = calloc(p_ycbcr->nmcu, sizeof(char *));
+    p_ycbcr->l_ycbcr = calloc(p_ycbcr->nmcu, sizeof(float *));
 
-    for (uint32_t i=0; i<p_mcu->nmcu; i++) {
-            p_ycbcr->l_ycbcr[i] = calloc(64, sizeof(char *));
-    }
     return p_ycbcr;
 }
 
@@ -33,13 +30,10 @@ struct image_YCbCr *convert_YCbCr(struct image_mcu *p_mcu){
     struct image_YCbCr *p_ycbcr = creation_YCbCr(p_mcu);
 
     for(uint32_t i = 0; i < p_ycbcr->nmcu; i++){
+        p_ycbcr->l_ycbcr[i] = calloc(64, sizeof(float));
         for(uint8_t j = 0; j<64; j++){
-            struct YCbCr *new_ycbcr= calloc(1, sizeof(struct YCbCr));
             uint8_t coeff = p_mcu->l_mcu[i][j];
-            new_ycbcr->Y = round(0.299 * coeff + 0.587 * coeff + 0.114 * coeff);
-            new_ycbcr->Cb = round(-0.1687 * coeff + -0.3313 * coeff + 0.5 * coeff+ 128);
-            new_ycbcr->Cr = round(0.5 * coeff + -0.4187 * coeff + -0.0813 * coeff+ 128);
-            p_ycbcr->l_ycbcr[i][j] = new_ycbcr;
+            p_ycbcr->l_ycbcr[i][j] = round(0.299 * coeff + 0.587 * coeff + 0.114 * coeff);
         }
     }
     return p_ycbcr;
@@ -206,7 +200,7 @@ void afficher_YCbCr(struct image_YCbCr *p_ycbcr){
         printf("----- MCU numéro %u YCbCr----- \n", j);
         printf("Affichage de Y: \n");
         for(uint8_t i = 0; i<64; i++){
-            printf("%x ", p_ycbcr->l_ycbcr[j][i]->Y);
+            printf("%x ", p_ycbcr->l_ycbcr[j][i]);
             if(i % 8 == 7){
                 printf("\n");
             }
