@@ -3,30 +3,23 @@
 Bienvenue sur la page d'accueil de _votre_ projet JPEG, un grand espace de liberté, sous le regard bienveillant de vos enseignants préférés.
 Le sujet sera disponible dès le lundi 2 mai à l'adresse suivante : [https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/](https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/).
 
-Vous pouvez reprendre cette page d'accueil comme bon vous semble, mais elle devra au moins comporter les infos suivantes **avant la fin de la première semaine (vendredi 6 mai)** :
 
-1. des informations sur le découpage des fonctionnalités du projet en modules, en spécifiant les données en entrée et sortie de chaque étape ;
-2. (au moins) un dessin des structures de données de votre projet (format libre, ça peut être une photo d'un dessin manuscrit par exemple) ;
-3. une répartition des tâches au sein de votre équipe de développement, comportant une estimation du temps consacré à chacune d'elle (là encore, format libre, du truc cracra fait à la main, au joli Gantt chart).
+Vous êtes sur le README du projet C de l'équipe 28 composée de LASSALLE Cedric, AUGER Arthur et Lebeurrier Arthur.
+Dans le répertoire principal vous trouverez tout ce qu'il faut pour encoder une image en format brut au format JPEG. Pour cela il suffit de compiler à l'aide de la commande make puis d'éxecuter la commande suivante ./ppm2jpeg images/nom_de_l_image.pgm depuis le répertoire team28.
+Toutes les images données dans l'énoncé au format brut sont bien encodées dans un temps acceptable, mais nous avons également testé notre encodeur sur des images bruts tirées d'internet. 
+Dans le répertoire modules, vous trouverez une autre version de notre projet, sans le downsampling mais avec les modules bitstream, huffman et jpeg_writer écrits par nos soins. Ces derniers fonctionnent pour toutes les images en noir et blanc (la preuve en est que dans cette version de notre projet nous avons supprimés les modules données en amont par les professeurs, ainsi que les .o correspondants aux modules que nous avons écrit).
 
-Rajouter **régulièrement** des informations sur l'avancement de votre projet est aussi **une très bonne idée** (prendre 10 min tous les trois chaque matin pour résumer ce qui a été fait la veille, établir un plan d'action pour la journée qui commence et reporter tout ça ici, par exemple).
+Nous vous laissons apprécier le journal de bord que nous avons tenu durant ces deux dernières semaines et qui témoigne des difficultées que nous avons du surmonter afin de vous présenter la meilleure version de notre projet.
 
-# Liens utiles
 
-- Bien former ses messages de commits : [https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/) ;
-- Problème relationnel au sein du groupe ? Contactez [Pascal](https://fr.wikipedia.org/wiki/Pascal,_le_grand_fr%C3%A8re) !
-- Besoin de prendre l'air ? Le [Mont Rachais](https://fr.wikipedia.org/wiki/Mont_Rachais) est accessible à pieds depuis la salle E301 !
-- Un peu juste sur le projet à quelques heures de la deadline ? Le [Montrachet](https://www.vinatis.com/achat-vin-puligny-montrachet) peut faire passer l'envie à vos profs de vous mettre une tôle !
 
 #### Journal de bord
 ##### Lundi 2 Mai :
 Nous allons commencer par réaliser un encodeur simple pour pouvoir transformer l'image invader :
-
 Auger s'occupe d'extraire les données de l'image PGM, créer les headers pour l'image JPEG et transformer les données RGB en YCbCr.
-
 Cédric se charge du découpage en MCU, gestion des tables de Huffman, écrire bit à bit dans le flux. 
-
 Lebeurrier se charge du DCT, Zigzag et quantification. 
+
 ##### A l'aubre du mardi 3 Mai:
 Extraction donnée ppm et passage en argument fait.
 Découpage MCU fait.
@@ -86,7 +79,5 @@ Finalement le get_path à pris plus de temps que prévu, j'ai complétement chan
 ##### Mercredi 18 Mai :
 Dernier jour consacré au merge et à la finalisation de la création des modules. Il faut également supprimer les .o et .bla ainsi que ppm2jpeg afin de nettoyer la branch master
 
-
-##### Questions pour les profs :
 
 
