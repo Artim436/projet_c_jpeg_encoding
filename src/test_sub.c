@@ -33,17 +33,22 @@ int main (int argc, char **argv) {
         struct image_mcu_rgb_sub *img_mcu = decoupe_mcu_rgb_sub(mcu_rgb); //On découpe l'image en blocs de 8x8
         
 
-        affiche_img_mcu_rgb_sub(img_mcu, mcu_rgb->sampling_factor[0], mcu_rgb->sampling_factor[1]);
+        //affiche_img_mcu_rgb_sub(img_mcu, mcu_rgb->sampling_factor[0], mcu_rgb->sampling_factor[1]);
         struct image_YCbCr_sub *p_ycbcr = convert_YCbCr_RGB_sub(img_mcu, mcu_rgb);
 
         //afficher_YCbCr_sub(p_ycbcr);
 
         fonction_rgb_sub(mcu_rgb, p_ycbcr);
-        //clean_image_mcu(img_mcu);
-        //clean_image_YCbCr(p_ycbcr);
-       
+
+
+        clean_image_mcu_sub(img_mcu, mcu_rgb->sampling_factor[0], mcu_rgb->sampling_factor[1]);
+
+        clean_image_YCbCr_sub(p_ycbcr);
+
+
         //affiche_bloc_rgb_sub(mcu_rgb);
 
         write_jpeg_rgb_sub(mcu_rgb);
-        //clean_main_mcu(mcu);
+        printf("on est la\n");
+        clean_main_mcu_sub(mcu_rgb);
 }

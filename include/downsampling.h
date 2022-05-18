@@ -70,4 +70,10 @@ extern void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1,
 
 extern void afficher_YCbCr_sub(struct image_YCbCr_sub *p_ycbcr);
 
+extern void clean_main_mcu_sub(struct main_mcu_rgb_sub *mcu);
+
+extern void clean_image_mcu_sub(struct image_mcu_rgb_sub *image, uint8_t h1, uint8_t v1);
+
+extern void clean_image_YCbCr_sub(struct image_YCbCr_sub *ycbcr);
+
 # endif
