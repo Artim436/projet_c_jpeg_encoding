@@ -12,6 +12,7 @@
 #include <encoding.h>
 #include <write_jpeg_file.h>
 #include <nettoyage.h>
+#include <downsampling.h>
 
 
 
@@ -38,10 +39,7 @@ int main (int argc, char **argv) {
             fonction(mcu, p_ycbcr);
             //clean_image_mcu(img_mcu);
             //clean_image_YCbCr(p_ycbcr);
-            printf("\n on est l42\n");
-            printf("nmcu = %u\n", mcu->n_mcu);
             //affiche_bloc(mcu);
-            printf("On rentre dans write_jpeg : \n");
             write_jpeg_Y(mcu);
             //clean_main_mcu(mcu);
         }

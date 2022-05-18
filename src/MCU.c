@@ -18,7 +18,6 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
     struct image_mcu *p_mcu = creation_mcu_8x8(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
 
-    printf("débordement droite : %u \n débordement bas : %u\n",p_mcu->dev_width, p_mcu->dev_height);
     //Puis définit la de liste de mcu
     //On boucle directement sur la matrice ppm (de gauche à droite et de haut en bas)
     for(uint32_t pos_x = 0; pos_x < p_main->height; pos_x++){
@@ -291,29 +290,13 @@ void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_
     }
 }
 
-void clean_main_mcu_sub(struct main_mcu_rgb_sub *mcu) {
-    // On nettoie data
-    for (uint32_t i=0; i<mcu->height; i++) {
-        for(uint32_t j=0; j<mcu->width; j++){
-            free(mcu->data[i][j]);
+void clean_image_mcu_sub(struct image_mcu_rgb_sub *image, uint8_t h1, uint8_t v1) {
+    for (uint32_t i=0; i<image->nmcu; i++) {
+        for(uint32_t j=0; j<64*h1*v1; j++){
+            free(image->l_mcu[i][j]);
         }
-        free(mcu->data[i]);
+        free(image->l_mcu[i]);
     }
-
-    // On nettoie bloc
-    for (uint32_t i=0; i<mcu->n_mcu; i++) {
-        for(uint8_t comp_i = 0; comp_i<mcu->nb_comp; comp_i++){
-            free(mcu->bloc[i][comp_i]);
-        }
-        free(mcu->bloc[i]);
-    }
-
-    //On nettoie les htable
-    for(uint8_t i = 0; i<4; i++){
-        huffman_table_destroy(mcu->htable[i]);
-    }
-    free(mcu->htable);
-    free(mcu->data);
-    free(mcu->bloc);
-    free(mcu);
+    free(image->l_mcu);
+    free(image);
 }

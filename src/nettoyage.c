@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <nettoyage.h>
 #include <structure.h>
+#include <huffman.h>
 
 void clean_main_mcu(struct main_mcu *mcu) {
     // On nettoie data
@@ -40,13 +41,31 @@ void clean_image_YCbCr(struct image_YCbCr *ycbcr) {
     free(ycbcr);
 }
 
-void clean_image_mcu_sub(struct image_mcu_rgb_sub *image, uint8_t h1, uint8_t v1) {
-    for (uint32_t i=0; i<image->nmcu; i++) {
-        for(uint32_t j=0; j<64*h1*v1; j++){
-            free(image->l_mcu[i][j]);
+
+
+void clean_main_mcu_sub(struct main_mcu_rgb_sub *mcu) {
+    // On nettoie data
+    for (uint32_t i=0; i<mcu->height; i++) {
+        for(uint32_t j=0; j<mcu->width; j++){
+            free(mcu->data[i][j]);
         }
-        free(image->l_mcu[i]);
+        free(mcu->data[i]);
     }
-    free(image->l_mcu);
-    free(image);
+
+    // On nettoie bloc
+    for (uint32_t i=0; i<mcu->n_mcu; i++) {
+        for(uint8_t comp_i = 0; comp_i<mcu->nb_comp; comp_i++){
+            free(mcu->bloc[i][comp_i]);
+        }
+        free(mcu->bloc[i]);
+    }
+
+    //On nettoie les htable
+    for(uint8_t i = 0; i<4; i++){
+        huffman_table_destroy(mcu->htable[i]);
+    }
+    free(mcu->htable);
+    free(mcu->data);
+    free(mcu->bloc);
+    free(mcu);
 }

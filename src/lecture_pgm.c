@@ -14,7 +14,6 @@ void process_file(const char *file_name, struct  main_mcu *mcu, struct main_mcu_
     fscanf(file, "%s", mcu->type_pgm);
     if(mcu->type_pgm[1] == '5'){
         //ici  : free mcu_rgb
-        printf("%s \n", mcu->type_pgm);
         //Lecture des dimensions de l'image
         fscanf(file, "%d %d", &(mcu->width), &(mcu->height));
         //Lecture de la valeur maximal du gris
