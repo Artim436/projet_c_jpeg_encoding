@@ -81,7 +81,10 @@ Avec l'optimisation du stockage des cosinus et du "zoning" pour dct, biiiiig pre
 Bitsream est fini dans la journée, nous commençons à préparer un merge final de nos branch qui peut s'avérer compliqué. Jpegwriter semble marcher également. Pour huffman tout est fait à part le get_path.
 
 ##### Mardi 17 Mai :
-Finalement le get_path à pris plus de temps que prévu, j'ai complétement changé ma manière de faire en qui me simplifie le get_path mais qui m'oblige à créer des fonctions auxiliaires et à changer la structure de huff_table
+Finalement le get_path à pris plus de temps que prévu, j'ai complétement changé ma manière de faire ce qui me simplifie le get_path mais qui m'oblige à créer des fonctions auxiliaires et à changer la structure de huff_table_M. Ce dernier point pose particulièrement problème dans la fusion du travail avec les modules.
+
+##### Mercredi 18 Mai :
+Dernier jour consacré au merge et à la finalisation de la création des modules. Il faut également supprimer les .o et .bla ainsi que ppm2jpeg afin de nettoyer la branch master
 
 
 ##### Questions pour les profs :
