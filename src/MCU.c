@@ -15,7 +15,7 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
 
     l_mcu[i] correspondra au i+1 ème MCU (lu de gauche à droite de haut en bas.
     l_mcu[i][j] correspondra au j+1 ème pixel (avec  0<= j<= 63) lu de gauche à droite et de haut en bas du MCU i*/
-    struct image_mcu *p_mcu = creation_mcu_8x8(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
+    struct image_mcu *p_mcu = creation_mcu_8x8(p_main->width, p_main->height);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
 
     //Puis définit la de liste de mcu
@@ -95,7 +95,7 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
     return p_mcu;
 }
 
-struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint32_t height, uint32_t max_value){
+struct image_mcu *creation_mcu_8x8(uint32_t width, uint32_t height){
     /*Création d'un mcu avec toutes les valeures*/
     struct image_mcu *p_mcu = malloc(sizeof(struct image_mcu));
 

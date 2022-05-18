@@ -8,7 +8,7 @@
 
 extern struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main);
 
-extern struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint32_t height, uint32_t max_value);
+extern struct image_mcu *creation_mcu_8x8(uint32_t width, uint32_t height);
 
 extern void affiche_img_mcu(struct image_mcu *p_gmu);
 

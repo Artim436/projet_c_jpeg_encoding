@@ -200,7 +200,7 @@ void afficher_YCbCr(struct image_YCbCr *p_ycbcr){
         printf("----- MCU numéro %u YCbCr----- \n", j);
         printf("Affichage de Y: \n");
         for(uint8_t i = 0; i<64; i++){
-            printf("%x ", p_ycbcr->l_ycbcr[j][i]);
+            printf("%x ", (uint32_t) p_ycbcr->l_ycbcr[j][i]);
             if(i % 8 == 7){
                 printf("\n");
             }

@@ -32,9 +32,6 @@ void clean_image_mcu(struct image_mcu *image) {
 
 void clean_image_YCbCr(struct image_YCbCr *ycbcr) {
     for (uint32_t i = 0; i<ycbcr->nmcu; i++) {
-        for (uint32_t j = 0; j<64; j++) {
-            free(ycbcr->l_ycbcr[i][j]);
-        }
         free(ycbcr->l_ycbcr[i]);
     }
     free(ycbcr->l_ycbcr);
