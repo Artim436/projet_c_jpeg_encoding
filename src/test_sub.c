@@ -18,10 +18,10 @@ int main (int argc, char **argv) {
         struct main_mcu_rgb_sub* mcu_rgb = malloc(sizeof(struct main_mcu_rgb_sub));
         mcu_rgb->jpeg_filename = "mon_test.jpg";
         mcu_rgb->ppm_filename = argv[1]; //We store the name of the file in the structure main_mcu
-        mcu_rgb->sampling_factor[0] = 2;
-        mcu_rgb->sampling_factor[1] = 2;
+        mcu_rgb->sampling_factor[0] = 1;
+        mcu_rgb->sampling_factor[1] = 3;
         mcu_rgb->sampling_factor[2] = 1;
-        mcu_rgb->sampling_factor[3] = 1;
+        mcu_rgb->sampling_factor[3] = 3;
         mcu_rgb->sampling_factor[4] = 1;
         mcu_rgb->sampling_factor[5] = 1;
 
@@ -31,9 +31,9 @@ int main (int argc, char **argv) {
         //affiche_details_image_rgb_sub(mcu_rgb); // On affiche les données de l'image
         // printf("hauteur :  %u    largeur : %u\n",mcu_rgb->height, mcu_rgb->width );
         struct image_mcu_rgb_sub *img_mcu = decoupe_mcu_rgb_sub(mcu_rgb); //On découpe l'image en blocs de 8x8
+        
 
-        //affiche_img_mcu_rgb_sub(img_mcu, 2,2);
-        printf("%u\n", img_mcu->nmcu);
+        affiche_img_mcu_rgb_sub(img_mcu, mcu_rgb->sampling_factor[0], mcu_rgb->sampling_factor[1]);
         struct image_YCbCr_sub *p_ycbcr = convert_YCbCr_RGB_sub(img_mcu, mcu_rgb);
 
         //afficher_YCbCr_sub(p_ycbcr);
@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
         //clean_image_mcu(img_mcu);
         //clean_image_YCbCr(p_ycbcr);
        
-        affiche_bloc_rgb_sub(mcu_rgb);
+        //affiche_bloc_rgb_sub(mcu_rgb);
 
         write_jpeg_rgb_sub(mcu_rgb);
         //clean_main_mcu(mcu);
