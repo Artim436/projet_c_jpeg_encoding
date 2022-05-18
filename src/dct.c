@@ -47,7 +47,6 @@ float coef_dct_v2(float** S, int i, int j, int n){ // coefficient of DCT matrix 
 }
 
 
-
 void dct(float** S){ // DCT matrixs
     uint8_t n=8;
     bloc_8x8_dtc *I = malloc(sizeof(bloc_8x8_dtc));
@@ -66,36 +65,6 @@ void dct(float** S){ // DCT matrixs
             S[i][j] = I->matrix_bloc[i][j];
         }
     }
-    free(I);
-}
-
-void dct_zone(float **S){
-    uint8_t n=8;
-    float **I = calloc(8, sizeof(float*));
-    for (uint8_t i=0; i<n; i++){
-        I[i] = calloc(8, sizeof(float));
-    }
-    for (uint8_t x=0; x<n; x++){
-        for (uint8_t y=0; y<n; y++){
-            S[x][y]-=128.0;
-        }
-    }
-    for (uint8_t i=0; i<n; i++){
-        for (uint8_t j=0; j<n; j++){
-            if ( i+j < n-2){
-                I[i][j] = coef_dct_v2(S, i, j, n);  // I is a middle matrix use to changeall coef with dct at the same time (first change doesn't have to influence others)
-            }
-            else{
-                I[i][j] = 0.0;
-            }
-        }
-    }
-    for (uint8_t i=0; i<n; i++){
-        for (uint8_t j=0; j<n; j++){
-            S[i][j] = I[i][j];
-        }
-    }
-    free(I);
 }
 
 
@@ -150,7 +119,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     //On applique les dtc
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
-        dct_zone(p_mat);
+        dct(p_mat);
         zigzag(p_mat, main_mcu->bloc[k]);
         quantization_Y(main_mcu->bloc[k]);
     }  
@@ -177,22 +146,6 @@ void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p
                 quantization_C(p_main->bloc[mcu_i][comp_i]);
             }
         }
-    }
-    //On applique les dtc
-    for (uint32_t k =0; k<main_mcu_rgb->n_mcu; k++){
-        float*** p_mat_rgb= convert_YCbCr_mat_rgb(im_ycbcr->l_ycbcr[k]);
-        dct_zone(p_mat_rgb[0]);//Matrice des Y
-        dct_zone(p_mat_rgb[1]);//Matrice des Cb
-        dct_zone(p_mat_rgb[2]);//Matrice des Cr
-
-        zigzag(p_mat_rgb[0], main_mcu_rgb->bloc[k][0]);
-        zigzag(p_mat_rgb[1], main_mcu_rgb->bloc[k][1]);
-        zigzag(p_mat_rgb[2], main_mcu_rgb->bloc[k][2]);
-
-        quantization_Y(main_mcu_rgb->bloc[k][0]);
-        quantization_C(main_mcu_rgb->bloc[k][1]);
-        quantization_C(main_mcu_rgb->bloc[k][2]);
-
     }
 }
 
