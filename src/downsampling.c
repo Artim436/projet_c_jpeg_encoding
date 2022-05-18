@@ -92,6 +92,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
  
     struct image_mcu_rgb_sub *p_mcu = creation_mcu_rgb_sub(p_main->width, p_main->height, p_main->sampling_factor[0], p_main->sampling_factor[1]);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
+    printf("dev_width = %u dev_height = %u \n", p_mcu->dev_width, p_mcu->dev_height);
     uint8_t h1= p_main->sampling_factor[0];
     uint8_t v1 = p_main->sampling_factor[1];
     //Puis définit la de liste de mcu
@@ -99,6 +100,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
     for(uint32_t pos_x = 0; pos_x < p_main->height; pos_x++){
         for(uint32_t pos_y = 0; pos_y < p_main->width; pos_y++){
             //On commence par calculer l'appartenance du pixel au MCU correspondant en fonction de la position
+            
             uint32_t i = pos_y / (h1*8);
             if((float)p_main->width / (h1*8) > p_main->width/(h1*8)){
                 i = i + (floor((p_main->width / (h1*8) ))+1) * (pos_x / (v1*8));
@@ -109,6 +111,9 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
             //Puis on calcule sa position dans le MCU
             uint32_t j = pos_y % (h1*8) + (v1*8) * (pos_x % (v1 * 8)); 
 
+            // if(i == 29){
+            //     printf("ok0\n");
+            // }
             //Puis on le rajoute à la matrice correspondante
             struct rgb* new_rgb = malloc(sizeof (struct rgb));
             new_rgb->B = p_main->data[pos_x][pos_y]->B;
@@ -123,7 +128,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
         last_pix->R = p_main->data[pos_x][p_main->width-1]->R;
         last_pix->G = p_main->data[pos_x][p_main->width-1]->G;
 
-        for(uint8_t debord = 1; debord <= ((h1*8)-p_mcu->dev_width); debord ++){
+        for(uint8_t debord = 1; debord <= ((h1*8)-p_mcu->dev_width)%(h1*8); debord ++){
             //On commence par calculer l'appartenance du pixel au MCU correspondant en fonction de la position
             uint32_t i = ((p_main->width - 1)) / (h1*8);
             if((float)p_main->width / (h1*8) > p_main->width/(h1*8)){
@@ -148,7 +153,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
 
         }
     }
-    for (uint8_t debord_x = 1; debord_x <= ((v1*8)-p_mcu->dev_height); debord_x ++){
+    for (uint8_t debord_x = 1; debord_x <= ((v1*8)-p_mcu->dev_height)%(v1 * 8); debord_x ++){
         for(uint32_t pos_y = 0; pos_y < p_main->width; pos_y++){
             struct rgb* last_pix= malloc(sizeof (struct rgb));
             last_pix->B = p_main->data[p_main->height-1][pos_y]->B;
@@ -522,7 +527,7 @@ void affiche_details_image_rgb_sub(struct main_mcu_rgb_sub *mcu) {
 
 void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_t v1){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 0; j<20; j++){
+    for(uint32_t j = 28; j<31; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint32_t i = 0; i<64*h1*v1; i++){
             printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);
