@@ -8,7 +8,7 @@
 #include <MCU.h>
 #include <convert_to_YCbCr.h>
 #include <lecture_pgm.h>
-#include <jpeg_writer.h>
+#include <jpeg_writer_maison.h>
 #include <test.h>
 #include <huffman_maison.h>
 #include <qtables.h>

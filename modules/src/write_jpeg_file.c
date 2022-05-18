@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <write_jpeg_file.h> 
-#include <bitstream.h>
+#include <bitstream_maison.h>
 #include <structure.h>
 #include <qtables.h>
 #include <encoding.h>

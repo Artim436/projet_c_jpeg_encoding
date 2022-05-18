@@ -9,7 +9,7 @@
 #include <MCU.h>
 #include <convert_to_YCbCr.h>
 #include <lecture_pgm.h>
-#include <jpeg_writer.h>
+#include <jpeg_writer_maison.h>
 #include <test.h>
 #include <qtables.h>
 #include <encoding.h>
@@ -17,7 +17,7 @@
 #include <nettoyage.h>
 #include <time.h>
 #include <htables.h>
-#include <huffman.h>
+#include <huffman_maison.h>
 
 
 /* Type opaque représentant un arbre de Huffman. */

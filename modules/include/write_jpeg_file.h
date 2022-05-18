@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <jpeg_writer.h>
+#include <jpeg_writer_maison.h>
 #include <write_jpeg_file.h> 
-#include <bitstream.h>
+#include <bitstream_maison.h>
 #include <structure.h>
 #include <qtables.h>
 #include <encoding.h>

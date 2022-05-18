@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <jpeg_writer.h>
-#include <bitstream.h>
+#include <jpeg_writer_maison.h>
+#include <bitstream_maison.h>
 #include <huffman_maison.h>
 #include <structure.h>
 

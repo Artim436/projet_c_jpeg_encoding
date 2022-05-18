@@ -9,7 +9,7 @@
 #include <convert_to_YCbCr.h>
 #include <dct.h>
 #include <htables.h>
-#include <jpeg_writer.h>
+#include <jpeg_writer_maison.h>
 #include <test.h>
 #include <huffman_maison.h>
 #include <encoding.h>

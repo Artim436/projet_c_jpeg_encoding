@@ -1,7 +1,7 @@
 #ifndef HUFFMAN_MAISON_H
 #define HUFFMAN_MAISON_H
 
-#include <jpeg_writer.h>
+#include <jpeg_writer_maison.h>
 #include <stdint.h>
 
 /* Type opaque représentant un arbre de Huffman. */
