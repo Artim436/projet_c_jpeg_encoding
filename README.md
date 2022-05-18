@@ -1,7 +1,6 @@
-# Notre encodeur JPEG à nous
+# L'encodeur JPEG de l'équipe 28
 
-Bienvenue sur la page d'accueil de _votre_ projet JPEG, un grand espace de liberté, sous le regard bienveillant de vos enseignants préférés.
-Le sujet sera disponible dès le lundi 2 mai à l'adresse suivante : [https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/](https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/).
+Le lien du sujet : [https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/](https://formationc.pages.ensimag.fr/projet/jpeg/jpeg/).
 
 
 Vous êtes sur le README du projet C de l'équipe 28 composée de LASSALLE Cedric, AUGER Arthur et Lebeurrier Arthur.
