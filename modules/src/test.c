@@ -37,19 +37,19 @@ int main (int argc, char **argv) {
             //printf("%u\n", img_mcu->nmcu);
             struct image_YCbCr *p_ycbcr = convert_YCbCr(img_mcu);
             //afficher_YCbCr(p_ycbcr);
-            printf("\n on est l38\n");
+            //printf("\n on est l38\n");
             fonction(mcu, p_ycbcr);
             //clean_image_mcu(img_mcu);
             //clean_image_YCbCr(p_ycbcr);
-            printf("\n on est l42\n");
-            printf("nmcu = %u\n", mcu->n_mcu);
+            //printf("\n on est l42\n");
+            //printf("nmcu = %u\n", mcu->n_mcu);
             //affiche_bloc(mcu);
-            printf("On rentre dans write_jpeg : \n");
+            //printf("On rentre dans write_jpeg : \n");
             write_jpeg_Y(mcu);
             //clean_main_mcu(mcu);
             clock_t end = clock();
             double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-            printf(" %f\n", time_spent);
+            //printf(" %f\n", time_spent);
         }
         else{
             clock_t start = clock();
@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
             //affiche_img_mcu_rgb(img_mcu_rgb);
 
             struct image_YCbCr *p_ycbcr = convert_YCbCr_RGB(img_mcu_rgb);
-            printf("On sort de YCbCr. \n");
+            //printf("On sort de YCbCr. \n");
             //afficher_YCbCr_rgb(p_ycbcr);
             fonction_RGB(mcu_rgb, p_ycbcr);
             //printf("On est sortie de fonction_RGB\n");
@@ -71,7 +71,7 @@ int main (int argc, char **argv) {
             write_jpeg_Y_RGB(mcu_rgb);
             clock_t end = clock();
             double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
-            printf(" %f\n", time_spent);
+            //printf(" %f\n", time_spent);
         }
     } else {
         printf("Il faut passer en paramètre le nom d'un fichier image valide \n");

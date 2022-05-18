@@ -19,7 +19,7 @@ struct image_mcu *decoupe_mcu_8x8(struct main_mcu *p_main){
     struct image_mcu *p_mcu = creation_mcu_8x8(p_main->type_pgm, p_main->width, p_main->height, p_main->max_value);//Commence par créer une table de MCU vierge.
     p_main->n_mcu = p_mcu->nmcu;//On oublie pas de mettre à jour la structure principale
 
-    printf("débordement droite : %u \n débordement bas : %u\n",p_mcu->dev_width, p_mcu->dev_height);
+    //printf("débordement droite : %u \n débordement bas : %u\n",p_mcu->dev_width, p_mcu->dev_height);
     //Puis définit la de liste de mcu
     //On boucle directement sur la matrice ppm (de gauche à droite et de haut en bas)
     for(uint32_t pos_x = 0; pos_x < p_main->height; pos_x++){

@@ -25,12 +25,7 @@
 
 /* structure d'un noeud */
 
-/**
- * @brief structure d'un noeud
- * @param left
- * @param right
- * @param used
- */
+
 struct node_M {
     bool used;
     struct node_M *left;
@@ -38,11 +33,7 @@ struct node_M {
 };
 
 
-/*fonction de création d'un noeud*/
-/**
- * @brief fonction de création d'un noeud
- * @return noeud
- */
+
 
 struct node_M *create_node_M(void) {
     struct node_M *node = calloc(1, sizeof(node_M));
@@ -52,21 +43,7 @@ struct node_M *create_node_M(void) {
     return node;
 }
 
-
-/* fonction recursive intermedaire pour la création de la liste encoded à partir de la structure d'un arbre de Huffman */
-
-/**
- * @brief 
- * 
- * @param encoded_table 
- * @param huff 
- * @param current_node 
- * @param index 
- * @param depth 
- * @param encoded_value 
- * @return true 
- * @return false 
- */
+/* fcontion récursive servant à la création de l'encoded table */
 
 bool fct_rec(uint16_t *encoded_table, huff_table_M *huff, node_M *current_node, uint32_t *index, uint8_t depth, uint32_t encoded_value){
     if (depth==0){

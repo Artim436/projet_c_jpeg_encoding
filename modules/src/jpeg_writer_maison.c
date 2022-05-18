@@ -209,7 +209,7 @@ void jpeg_write_header_M(struct jpeg_M *jpg) {
     fwrite(&m_SOS, sizeof(uint16_t), 1, file);
     uint16_t l_SOS= (2*jpg->nb_component + 6)<<8;
     fwrite(&l_SOS, sizeof(uint16_t), 1, file);
-    printf("zebi \n");
+    //printf("zebi \n");
     fwrite(&(jpg->nb_component), sizeof(uint8_t), 1, file);
     //Y
     uint8_t i_C = 1;

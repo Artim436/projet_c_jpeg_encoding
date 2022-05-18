@@ -51,7 +51,7 @@ void write_jpeg_Y(struct main_mcu *p_main){
     //On écrit l'entete dans le fichier
 
     jpeg_write_header_M(p_jpeg);
-    printf("Header done\n");
+    //printf("Header done\n");
     //On récupère le bitstream positioné à la fin du header
     p_main->blitzstream = bitstream_create_M(p_jpeg->jpeg_filename);
     encodage_Y(p_main);
