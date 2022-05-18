@@ -12,16 +12,13 @@ extern struct image_mcu *creation_mcu_8x8(char type_pgm[3], uint32_t width, uint
 
 extern void affiche_img_mcu(struct image_mcu *p_gmu);
 
-extern void print_mat(float** mat, uint8_t  len);
+extern struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, uint8_t h1, uint8_t v1);
 
-extern void affiche_img_mcu_rgb(struct image_mcu_rgb *p_gmu);
+extern struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main);
 
-extern struct image_mcu_rgb *creation_mcu_8x8_rgb(char type_pgm[3], uint32_t width, uint32_t height, uint32_t max_value);
+extern void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_t v1);
 
-extern struct image_mcu_rgb *decoupe_mcu_8x8_rgb(struct main_mcu_rgb *p_main);
+extern void clean_image_mcu_sub(struct image_mcu_rgb_sub *image, uint8_t h1, uint8_t v1);
 
-extern float **convert_YCbCr_mat(struct YCbCr **p_YCbCr);
-
-extern float ***convert_YCbCr_mat_rgb(struct YCbCr **p_YCbCr);
 
 #endif

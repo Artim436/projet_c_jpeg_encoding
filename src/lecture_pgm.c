@@ -7,7 +7,7 @@
 #include <lecture_pgm.h>
 #include <structure.h>
 //#CLEANED
-void process_file(const char *file_name, struct  main_mcu *mcu, struct main_mcu_rgb* mcu_rgb) {
+void process_file(const char *file_name, struct  main_mcu *mcu, struct main_mcu_rgb_sub* mcu_rgb) {
     //Ouvre le fichier en mode lecture binaire
     FILE *file = fopen(file_name, "rb");
     //Lecture du type de fichier
@@ -51,7 +51,7 @@ void process_file(const char *file_name, struct  main_mcu *mcu, struct main_mcu_
                 mcu_rgb->data[i][j]->B =compo_rgb[2];
             }
         }
-    }
+    }  
     //Ferme le fichier
     fclose(file);
 }
@@ -70,16 +70,15 @@ void affiche_details_image(struct main_mcu *mcu, const char * file_name) {
     fclose(file);
 }
 
-void affiche_details_image_rgb(struct main_mcu_rgb *mcu, const char * file_name) {
-    FILE *file = fopen(file_name,  "rb");
+void affiche_details_image_rgb_sub(struct main_mcu_rgb_sub *mcu) {
     printf("Largeur : %d pixels \n", mcu->width);
     printf("Hauteur : %d pixels \n", mcu->height);
     printf("Max_valeur : %d pixels \n", mcu->max_value);
-    // for (uint32_t i=0; i<mcu->height; i++) {
-    //     for (uint32_t j =0; j<mcu->width; j++) {
-    //         printf("%x%x%x ", mcu->data[i][j]->R,mcu->data[i][j]->G ,mcu->data[i][j]->B );
-    //     }
-    //     printf("\n");
-    // }
-    fclose(file);
+    for (uint32_t i=0; i<mcu->height; i++) {
+        for (uint32_t j =0; j<mcu->width; j++) {
+            printf("%x%x%x ", mcu->data[i][j]->R,mcu->data[i][j]->G ,mcu->data[i][j]->B );
+        }
+        printf("\n");
+    }
 }
+

@@ -5,12 +5,7 @@
 #include <stdlib.h>
 #include <dct.h>
 #include <structure.h>
-#include <MCU.h>
 #include <convert_to_YCbCr.h>
-#include <lecture_pgm.h>
-#include <jpeg_writer.h>
-#include <test.h>
-#include <huffman.h>
 #include <qtables.h>
 #include <costable.h>
 
@@ -131,34 +126,28 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
 }
 
 
-void fonction_RGB(struct main_mcu_rgb *main_mcu_rgb, struct image_YCbCr *im_ycbcr){
-    //On prépare la structure de bloc
-    main_mcu_rgb->bloc = calloc(main_mcu_rgb->n_mcu, sizeof(float *));
-    for (uint32_t i=0; i<main_mcu_rgb->n_mcu; i++) {
-        main_mcu_rgb->bloc[i] = calloc(3, sizeof(float*));
-        main_mcu_rgb->bloc[i][0] = calloc(64, sizeof(float));
-        main_mcu_rgb->bloc[i][1] = calloc(64, sizeof(float));
-        main_mcu_rgb->bloc[i][2] = calloc(64, sizeof(float));
+void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p_ycbcr){
+    p_main->bloc = calloc(p_main->n_mcu, sizeof(int16_t **));
+    for(uint32_t mcu_i = 0; mcu_i< p_main->n_mcu; mcu_i++){
+        p_main->bloc[mcu_i] = calloc(p_main->nb_comp, sizeof(int16_t *));
+        for(uint8_t comp_i = 0; comp_i<p_main->nb_comp; comp_i ++){
+            p_main->bloc[mcu_i][comp_i] = calloc(64, sizeof(int16_t));
+        }
     }
-    //On applique les dtc
-    for (uint32_t k =0; k<main_mcu_rgb->n_mcu; k++){
-        float*** p_mat_rgb= convert_YCbCr_mat_rgb(im_ycbcr->l_ycbcr[k]);
-        dct(p_mat_rgb[0]);//Matrice des Y
-        dct(p_mat_rgb[1]);//Matrice des Cb
-        dct(p_mat_rgb[2]);//Matrice des Cr
-
-        zigzag(p_mat_rgb[0], main_mcu_rgb->bloc[k][0]);
-        zigzag(p_mat_rgb[1], main_mcu_rgb->bloc[k][1]);
-        zigzag(p_mat_rgb[2], main_mcu_rgb->bloc[k][2]);
-
-        quantization_Y(main_mcu_rgb->bloc[k][0]);
-        quantization_C(main_mcu_rgb->bloc[k][1]);
-        quantization_C(main_mcu_rgb->bloc[k][2]);
-
-    }  
+    for(uint32_t mcu_i = 0; mcu_i < p_main->n_mcu; mcu_i ++){
+        for(uint8_t comp_i = 0; comp_i<p_main->nb_comp; comp_i ++){
+            float **mat = convert_mat_sub(p_ycbcr->bloc[mcu_i][comp_i]);
+            dct(mat);
+            zigzag(mat, p_main->bloc[mcu_i][comp_i]);
+            if(comp_i < p_main->sampling_factor[0]* p_main->sampling_factor[1]){
+                quantization_Y(p_main->bloc[mcu_i][comp_i]);
+            }
+            else{
+                quantization_C(p_main->bloc[mcu_i][comp_i]);
+            }
+        }
+    }
 }
-
-
 
 void affiche_bloc(struct main_mcu *main_mcu){
     for(uint32_t i = 0; i<20; i++){
@@ -176,30 +165,43 @@ void affiche_bloc(struct main_mcu *main_mcu){
 
 }
 
-void affiche_bloc_rgb(struct main_mcu_rgb *main_mcu){
-    for(uint32_t i = 3466; i<3467; i++){
+void affiche_bloc_rgb_sub(struct main_mcu_rgb_sub *main_mcu){
+    for(uint32_t i = 0; i<20; i++){
         printf("-------mcu : %u --------\n", i);
-        printf("Composante Y :  \n");
-        for(uint8_t j = 0; j<64; j++){
-            printf("%x ", main_mcu->bloc[i][0][j]);
-            if(j%8  == 7){
-                printf("\n");
-            }
-        }
-        printf("Composante Cb :  \n");
-        for(uint8_t j = 0; j<64; j++){
-            printf("%x ", main_mcu->bloc[i][1][j]);
-            if(j%8  == 7){
-                printf("\n");
-            }
-        }
-        printf("Composante Cr :  \n");
-        for(uint8_t j = 0; j<64; j++){
-            printf("%x ", main_mcu->bloc[i][2][j]);
-            if(j%8  == 7){
-                printf("\n");
+        for(uint8_t comp_i=0; comp_i<main_mcu->nb_comp; comp_i ++){
+            printf("Comp %u\n", comp_i);
+            for(uint8_t j = 0; j<64; j++){
+                printf("%x ", main_mcu->bloc[i][comp_i][j]);
+                if(j%8  == 7){
+                    printf("\n");
+                }
             }
         }
     }
 }
 
+
+
+float **convert_mat_sub(float *p_YCbCr){
+    float **matrice = malloc(8*sizeof(float*));
+    for(uint8_t k=0; k<8; k++){
+        matrice[k] = malloc(8*sizeof(float));
+        for(uint8_t i=0; i<8; i++){
+            matrice[k][i] = p_YCbCr[k*8 +i];
+            matrice[k][i] = p_YCbCr[k*8 +i];
+            matrice[k][i] = p_YCbCr[k*8 +i];
+        }
+    }
+    return matrice;
+}
+
+float **convert_YCbCr_mat(struct YCbCr **p_YCbCr){
+    float **matrice = malloc(8*sizeof(float*));
+    for(uint8_t j = 0;j<8; j++){
+        matrice[j] = malloc(8*sizeof(float));
+        for(uint8_t k=0; k<8; k++){
+            matrice[j][k] = (float) p_YCbCr[j*8+k]->Y;
+        }
+    }
+    return matrice;
+}

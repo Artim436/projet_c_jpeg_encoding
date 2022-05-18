@@ -39,3 +39,14 @@ void clean_image_YCbCr(struct image_YCbCr *ycbcr) {
     free(ycbcr->l_ycbcr);
     free(ycbcr);
 }
+
+void clean_image_mcu_sub(struct image_mcu_rgb_sub *image, uint8_t h1, uint8_t v1) {
+    for (uint32_t i=0; i<image->nmcu; i++) {
+        for(uint32_t j=0; j<64*h1*v1; j++){
+            free(image->l_mcu[i][j]);
+        }
+        free(image->l_mcu[i]);
+    }
+    free(image->l_mcu);
+    free(image);
+}
