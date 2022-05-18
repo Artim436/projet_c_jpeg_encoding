@@ -57,12 +57,12 @@ int main (int argc, char **argv) {
             
             /*Étapes de dct, zig-zag et quantification*/
             fonction(mcu, p_ycbcr);
-            //clean_image_mcu(img_mcu);
-            //clean_image_YCbCr(p_ycbcr);
+            clean_image_mcu(img_mcu);
+            clean_image_YCbCr(p_ycbcr);
             //affiche_bloc(mcu);
 
             write_jpeg_Y(mcu);
-            //clean_main_mcu(mcu);
+            clean_main_mcu(mcu);
         }
         else{
             analyse_arg_sub(pos_des_arg, mcu_rgb, argv);
