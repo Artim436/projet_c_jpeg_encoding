@@ -110,8 +110,9 @@ struct image_mcu *creation_mcu_8x8(uint32_t width, uint32_t height){
     if (p_mcu -> dev_height != 0){
         tmp ++ ;
     }
-    p_mcu -> nmcu = nmcu*tmp;
-   
+    p_mcu -> nmcu = nmcu*tmp;//Calcul du nombre de mcu
+    
+    //Allocation des mémoires pour les données
     p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(char *));
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
             p_mcu->l_mcu[i] = calloc(64, sizeof(uint8_t));
@@ -124,8 +125,8 @@ struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, 
     struct image_mcu_rgb_sub *p_mcu = malloc(sizeof(struct image_mcu_rgb_sub));
     /*Calcul du nombre de mcu de taille 8x8 qu'il y aura */
     uint32_t nmcu = width / (8*h1);
-    p_mcu ->dev_height = height % (8*v1);
-    p_mcu ->dev_width = width % (8*h1);
+    p_mcu ->dev_height = height % (8*v1);//Calcul des bordures en hauteur
+    p_mcu ->dev_width = width % (8*h1);//Calcul des bordures en largeur
     if (p_mcu->dev_width != 0){
         nmcu ++;
     }
@@ -133,8 +134,9 @@ struct image_mcu_rgb_sub *creation_mcu_rgb_sub(uint32_t width, uint32_t height, 
     if (p_mcu -> dev_height != 0){
         tmp ++ ;
     }
-    p_mcu -> nmcu = nmcu*tmp;
+    p_mcu -> nmcu = nmcu*tmp;//Calcul du nombre de mcu
 
+    //Allocation des mémoires pour les données
     p_mcu->l_mcu = calloc(p_mcu->nmcu, sizeof(struct rgb* *));
     for (uint32_t i=0; i<p_mcu->nmcu; i++) {
             p_mcu->l_mcu[i] = calloc(64*h1*v1, sizeof(struct rgb*));
@@ -260,7 +262,7 @@ struct image_mcu_rgb_sub *decoupe_mcu_rgb_sub(struct main_mcu_rgb_sub *p_main){
 
 void affiche_img_mcu(struct image_mcu *p_gmu){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 1108; j<1115; j++){
+    for(uint32_t j = 0; j<p_gmu->nmcu; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint8_t i = 0; i<64; i++){
             printf("%x ", p_gmu->l_mcu[j][i]);
@@ -273,7 +275,7 @@ void affiche_img_mcu(struct image_mcu *p_gmu){
 
 void affiche_img_mcu_rgb_sub(struct image_mcu_rgb_sub *p_gmu, uint8_t h1, uint8_t v1){
     /*Affiche les éléments de chaques MCU*/
-    for(uint32_t j = 0; j<20; j++){
+    for(uint32_t j = 0; j<p_gmu->nmcu; j++){
         printf("----- MCU numéro %u ----- \n", j);
         for(uint32_t i = 0; i<64*h1*v1; i++){
             printf("%x%x%x ", p_gmu->l_mcu[j][i]->R, p_gmu->l_mcu[j][i]->G, p_gmu->l_mcu[j][i]->B);

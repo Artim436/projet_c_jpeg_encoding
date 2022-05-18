@@ -37,6 +37,7 @@ void creation_table_sub(struct main_mcu_rgb_sub *mcu){
 
 
 void encodage_Y(struct main_mcu *p_main){
+    /*Calcul l'encodage de chaque mcu pour une image en noir et blanc et l'écrit dans le bitstream*/
     int16_t precursor = 0;
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){  
         uint8_t *R = calloc(64, sizeof(uint8_t));
@@ -82,6 +83,7 @@ void encodage_Y(struct main_mcu *p_main){
 
 
 uint8_t magnitude_table(int16_t value){
+    /*Calcul la magnitude de la valeur donnée en entrée*/
     if (value < 0){
         value = -value;
     }
@@ -125,6 +127,7 @@ uint8_t magnitude_table(int16_t value){
  
 
 uint8_t encoding_rle_ac_2(int16_t* F, uint8_t* cpt_bloc_0, uint8_t *pos){
+    /*Calcul l'encodage RLE de la prochaine valeur qui nécessite un encodage*/
     uint8_t cpt_0 = 0;
     while(F[*pos] == 0 && *pos<64){
         cpt_0 ++;
@@ -153,6 +156,8 @@ uint8_t encoding_rle_ac_2(int16_t* F, uint8_t* cpt_bloc_0, uint8_t *pos){
 }
 
 void rle(int16_t *F, uint8_t *R, uint8_t* taille_R){
+    /*Écrit dans R l'ensemble des encodages RLE nécessaire pour la Composante F donnée en entrée.
+    On range dans taille_R le nombre d'éléments inscris dans R*/
     uint8_t index = 0;
     uint8_t k = 0;
     uint8_t cpt_bloc_0 = 0;
@@ -174,6 +179,7 @@ void rle(int16_t *F, uint8_t *R, uint8_t* taille_R){
 
 
 uint32_t index(int16_t value){
+    /*Calcul de l'index de la valeur donnée en entrée*/
     uint8_t m = magnitude_table(value);
     if(value < 0){
         return pow(2,m)-1 + value;
@@ -184,6 +190,8 @@ uint32_t index(int16_t value){
 }
 
 void affichage_encodage(struct main_mcu *p_main){
+    /*Affiche l'ensemble de l'encodage d'une image en noir et blanc (appeler cette fonction recalcule tous l'encodage depuis le début)
+    vu que celui-ci n'est pas stocké et peut donc faire perdere du temps. */
     for(uint32_t k = 0; k <20; k++){
         printf("-----MCU : %u ------\n", k);
         uint8_t *R = calloc(65, sizeof(uint8_t));
@@ -221,6 +229,7 @@ void affichage_encodage(struct main_mcu *p_main){
 }
 
 void encodage_rgb_sub(struct main_mcu_rgb_sub *p_main){
+    /*Calcul l'encodage d'une image en couleur et l'écrit dans le bitstream.*/
     int16_t precursor_g[3] = {0,0,0};//précurseur des 3 composantes
     for(uint32_t mcu_i=0; mcu_i<p_main->n_mcu; mcu_i++){
         for(uint8_t comp_i = 0; comp_i< p_main->nb_comp; comp_i ++){

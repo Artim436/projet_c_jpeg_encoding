@@ -1,11 +1,12 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>    
+#include <stdlib.h>  
 #include <structure.h>
 #include <downsampling.h>
 
 void verif_sample_factor(struct main_mcu_rgb_sub* p_main){
+    /*Vérifie que les sampling factor sont respectent les différentes conditions
+    Dans le cas contraire, l'encodage est appliqué sans sous-échantillonage*/
     uint8_t h1, h2, h3, v1, v2, v3;
     h1 = p_main->sampling_factor[0];
     h2 = p_main->sampling_factor[2];

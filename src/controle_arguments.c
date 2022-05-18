@@ -16,6 +16,7 @@ enum argument{
 };
 
 uint8_t* controle_arg(int argc, char **argv){
+    /*Vérifie que tous les paramètres donnés sont biens ceux attendus, et range leur position dans le tableau de sortie*/
     if(argc < 2 || argc > 7){
         printf("Erreur : le nombre d'arguments n'est pas correct\n");
         exit( EXIT_FAILURE);

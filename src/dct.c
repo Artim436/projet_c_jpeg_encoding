@@ -116,7 +116,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
     for (uint32_t i=0; i<main_mcu->n_mcu; i++) {
         main_mcu->bloc[i] = calloc(64, sizeof(float));
     }
-    //On applique les dtc
+    //On applique les dtc, zigzag et quantification
     for (uint32_t k =0; k<main_mcu->n_mcu; k++){
         float** p_mat= convert_YCbCr_mat(im_ycbcr->l_ycbcr[k]);
         dct(p_mat);
@@ -127,6 +127,7 @@ void fonction(struct main_mcu *main_mcu, struct image_YCbCr *im_ycbcr){
 
 
 void fonction_rgb_sub(struct main_mcu_rgb_sub *p_main, struct image_YCbCr_sub *p_ycbcr){
+    /*Fonction qui applique les dtc, zigzag et quantification et range les résultats dans la structure main*/
     p_main->bloc = calloc(p_main->n_mcu, sizeof(int16_t **));
     for(uint32_t mcu_i = 0; mcu_i< p_main->n_mcu; mcu_i++){
         p_main->bloc[mcu_i] = calloc(p_main->nb_comp, sizeof(int16_t *));
@@ -183,6 +184,7 @@ void affiche_bloc_rgb_sub(struct main_mcu_rgb_sub *main_mcu){
 
 
 float **convert_mat_sub(float *p_YCbCr){
+    /*Prend en entrée un vecteur de taille 64 et renvoie une matrice de taille 8x8*/
     float **matrice = malloc(8*sizeof(float*));
     for(uint8_t k=0; k<8; k++){
         matrice[k] = malloc(8*sizeof(float));
@@ -196,6 +198,7 @@ float **convert_mat_sub(float *p_YCbCr){
 }
 
 float **convert_YCbCr_mat(float *p_YCbCr){
+    /*Prend en entrée un vecteur de taille 64 et renvoie une matrice de taille 8x8*/
     float **matrice = malloc(8*sizeof(float*));
     for(uint8_t j = 0;j<8; j++){
         matrice[j] = malloc(8*sizeof(float));
